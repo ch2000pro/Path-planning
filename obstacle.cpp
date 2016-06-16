@@ -16,9 +16,15 @@
       vertices_.pop_back();
     }
   }
-  
+
   int Obstacle::get_num_vert(){
     return vertices_.size();
   }
 
+  Point* Obstacle::next_vertice(int x, int y){
+    
+  }
 
+  Point* Obstacle::previous_vertice(int x, int y){
+    
+  }

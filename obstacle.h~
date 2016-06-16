@@ -6,13 +6,18 @@ class Point;
 using namespace std;
 
 class Obstacle{
+
   public:
     Obstacle(){};
     Obstacle(vector<Point*> vertices){
       vertices_ = vertices;
     };
-    ~Obstacle(){};
+    ~Obstacle();
     int get_num_vert();
+    Point* next_vertice(Point*);
+    Point* previous_vertice(Point*);
+    
+    
   private:
     vector<Point*> vertices_;
 };
