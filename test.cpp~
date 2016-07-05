@@ -57,9 +57,9 @@ int main (){
          default:{
            break;
          }
-       } // End switch(option)
+       }//End switch(option)
      
-     }while(option != 0); //End menu
+     }while(option != 0);//End menu
      
      //------ Free memory ----------
      Obstacle *deleting;

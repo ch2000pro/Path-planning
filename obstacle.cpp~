@@ -8,29 +8,24 @@
 #include "point.h"
 #include "obstacle.h"
 
+
+  Obstacle::Obstacle(vector<Point*>vertices, int height){
+    //vertices_[0] = vertices;
+    height_ = height;
+  }
+  
   Obstacle::~Obstacle(){
-    Point* deleting;
-    while(vertices_.size() != 0){
-      deleting = vertices_[vertices_.size()-1];
-      delete deleting;
-      vertices_.pop_back();
-    }
+
   }
 
   int Obstacle::get_num_vert(){
-    return vertices_.size();
+    
   }
 
   Point* Obstacle::next_vertice(int x, int y){
-    Point search = Point(x,y);
-    vector<Point*>::iterator it;
-    for(it = vertices_.begin(); it != vertices_.end(); ++it){
-      if(*it == search){
-        
-      }
-    }
+    return 0; //REMOVE
   }
 
   Point* Obstacle::previous_vertice(int x, int y){
-    
+    return 0; //REMOVE
   }

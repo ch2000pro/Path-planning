@@ -45,7 +45,7 @@ int main (){
               vertices_input.push_back(new Point(x,y));
               vertices --;
             }
-            Map.push_back(new Obstacle(vertices_input));
+            //Map.push_back(new Obstacle(vertices_input));
             break;
          }
          // =================== CASE 2 ===================

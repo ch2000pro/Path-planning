@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <map>
 
 class Point;
 
@@ -9,9 +10,7 @@ class Obstacle{
 
   public:
     Obstacle(){};
-    Obstacle(vector<Point*> vertices){
-      vertices_ = vertices;
-    };
+    Obstacle(vector<Point*> vertices, int height);
     ~Obstacle();
     int get_num_vert();
     Point* next_vertice(int x, int y);
@@ -19,5 +18,6 @@ class Obstacle{
     
     
   private:
-    vector<Point*> vertices_;
+    int height_;
+    map<int,vector<Point*> > vertices_;
 };
