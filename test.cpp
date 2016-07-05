@@ -12,7 +12,7 @@
 using namespace std;
 
 int main (){
-  unsigned int option = 0, vertices = 0;
+  unsigned int option = 0, vertices = 0, planes = 0, flag_planes=0, height;
   vector<Obstacle*> Map;
     
      do{ //Start menu
@@ -32,20 +32,40 @@ int main (){
          case 1:{
             vector<Point*> vertices_input;
             do{
-               cout << "How many vertices does this object have? ";
+               cout << "How many planes does this object have? ";
+               cin >> planes;
+               if(planes<2) cout << "An object of are non-zero must " 
+                                  << "have at least 2 plane." << endl;
+            }while(planes < 2);
+            
+            flag_planes = 0;
+            while(planes > 1){
+              cout << endl << "Input for the new plane..." << endl;
+              do{
+               cout << "How many verties does this plane have? ";
                cin >> vertices;
                if(vertices<3) cout << "An object of are non-zero must " 
                                   << "have at least 3 vertices." << endl;
-            }while(vertices < 3);
-            while(vertices > 0){
-              int x, y;
-              cout << "Enter x y: ";
-              cin >> x;
-              cin >> y;
-              vertices_input.push_back(new Point(x,y));
-              vertices --;
+              }while(vertices < 3);
+              cout << "What is the height of these segments? ";
+              cin >> height;
+              while(vertices > 0){
+                int x, y;
+                cout << "Enter x y: ";
+                cin >> x;
+                cin >> y;
+                vertices_input.push_back(new Point(x,y));
+                vertices --;
+              }
+              if(flag_planes == 0){
+                Map.push_back(new Obstacle(vertices_input,height));
+                flag_planes = 1;
+              }else{
+                Map[Map.size()-1]->add_vertices(vertices_input, height);
+              }
+              planes--;
+              height = 0;
             }
-            //Map.push_back(new Obstacle(vertices_input));
             break;
          }
          // =================== CASE 2 ===================

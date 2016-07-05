@@ -12,12 +12,14 @@ class Obstacle{
     Obstacle(){};
     Obstacle(vector<Point*> vertices, int height);
     ~Obstacle();
-    int get_num_vert();
-    Point* next_vertice(int x, int y);
-    Point* previous_vertice(int x, int y);
-    
+    void add_vertices(vector<Point*> vertices, int height);
+    int get_num_vert(int height);
+    Point* next_vertice(int height, int x, int y);
+    Point* previous_vertice(int height, int x, int y);
+    int get_numPlanes();
     
   private:
-    int height_;
+    int height_, num_planes;
     map<int,vector<Point*> > vertices_;
+    vector<int> planes_;
 };
