@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <map>
 
 class Point;
 
@@ -20,4 +21,5 @@ class Obstacle{
     
   private:
     vector<Point*> vertices_;
+    map<int,vector<Point*> > vertice_;
 };

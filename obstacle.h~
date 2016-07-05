@@ -14,8 +14,8 @@ class Obstacle{
     };
     ~Obstacle();
     int get_num_vert();
-    Point* next_vertice(Point*);
-    Point* previous_vertice(Point*);
+    Point* next_vertice(int x, int y);
+    Point* previous_vertice(int x, int y);
     
     
   private:
