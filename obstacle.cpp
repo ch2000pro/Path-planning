@@ -26,9 +26,11 @@
     planes_.push_back(height_);
   }
 
-  int Obstacle::get_num_vert(int height){
-    if(height < height_){
+  int Obstacle::get_num_vert(int height_search){
+    int height_found;
+    if(height_search < height_){
       //search the plane
+      
     }
     return 0;
   }
