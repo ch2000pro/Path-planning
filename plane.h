@@ -6,13 +6,13 @@
 #include "point.h"
 using namespace std;
 
-class Sweep {
+class Plane {
 public:
-	Sweep() {}
+	Plane() {}
 
 	list<Point> endpoints;
 
-	void sortEndpoints(vector<Point*>);
+	void lineSweep();
 	void split(vector<Point*>, int, int, vector<Point*>);
 	void merge(vector<Point*>, int, int, int, vector<Point*>);
 };
