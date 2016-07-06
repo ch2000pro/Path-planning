@@ -10,8 +10,9 @@ class Plane {
 public:
 	Plane() {}
 
-	list<Point> endpoints;
+	vector<Point*> endpoints;
 
+	void addEndpoints(vector<Point*>);
 	void lineSweep();
 	void split(vector<Point*>, int, int, vector<Point*>);
 	void merge(vector<Point*>, int, int, int, vector<Point*>);

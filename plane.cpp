@@ -2,6 +2,11 @@
 #include <vector>
 #include "plane.h"
 
+void Plane::addEndpoints(vector<Point*> points) {
+	for (vector<Point*>::iterator it = points.begin() ; it != points.end(); ++it)
+	    endpoints.push_back(*it);
+}
+
 void Plane::split(vector<Point*> A, int iStart, int iEnd, vector<Point*> B) {
 	if (iEnd - iStart < 2)
 		return;
