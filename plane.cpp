@@ -36,6 +36,7 @@ void Plane::addObstacle(vector<Point*> points) {
 	p2->setSeg1(seg);
 	segments.push_back(seg);
 	endpoints.push_back(*it);
+	delete seg;
 }
 
 void Plane::split(vector<Point*> A, int iStart, int iEnd, vector<Point*> B) {
