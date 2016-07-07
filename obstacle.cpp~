@@ -8,7 +8,7 @@
 #include "obstacle.h" 
 
 
-  Obstacle::Obstacle(vector<Point*>vertices, int height){
+  Obstacle::Obstacle(vector<Point*>vertices, unsigned int height){
     vertices_[0] = vertices;
     height_ = height;
     planes_.push_back(0);
@@ -18,7 +18,7 @@
   Obstacle::~Obstacle(){
 
   }
-    int Obstacle::get_height(){
+    unsigned int Obstacle::get_height(){
         return height_;
     }
 
@@ -26,13 +26,13 @@
         return vertices_;
     }
 
-  void Obstacle::add_vertices(vector<Point*> vertices, int height){
+  void Obstacle::add_vertices(vector<Point*> vertices, unsigned int height){
     vertices_[height_] = vertices;
     height_ += height;
     planes_.push_back(height_);
   }
 
-  int Obstacle::get_num_vert(int height_search){
+  unsigned int Obstacle::get_num_vert(unsigned int height_search){
     //int height_found;
     if(height_search < height_){
       //search the plane
@@ -42,7 +42,7 @@
   }
 
     //get vertices at a given height or get at a height below
-    vector<Point*> Obstacle::get_vertices(int height_search){
+    vector<Point*> Obstacle::get_vertices(unsigned int height_search){
     if(height_search <= height_){
         for(unsigned int i = 0; i< planes_.size() -1; i++){
             if(planes_[i] == height_search){
@@ -56,26 +56,36 @@
     return {};
     }
 
-  Point* Obstacle::next_vertice(int height, int x, int y){
+  Point* Obstacle::next_vertice(unsigned int height, int x, int y){
     return 0; //REMOVE
   }
 
-  Point* Obstacle::previous_vertice(int height, int x, int y){
+  Point* Obstacle::previous_vertice(unsigned int height, int x, int y){
     return 0; //REMOVE
   }
   
   //Return the number of planes of the obstacle. Minimum is 2
-  int Obstacle::get_numPlanes(){
+  unsigned int Obstacle::get_numPlanes(){
     return planes_.size();
   }
   
-  
+  unsigned int Obstacle::find_plane(unsigned int toFind){
+    for(unsigned int i = 0; i < planes_.size()-1; i++){
+      if(toFind >= planes_[i] && toFind < planes_[i+1]){
+        return planes_[i];
+      }
+    }
+    return 0;
+  }
   
   
   //debugging
   void Obstacle::print_num_vertices(){
-    vector<int>::iterator it;
+    vector<unsigned int>::iterator it;
+    cout << endl << "---DEBUG FUNCTION---";
     for(it = planes_.begin(); it != planes_.end(); ++it){
-      cout << endl << "Plane " << *it << " has " << ((vertices_[*it]).second).size() << " vertices." << endl;
+      cout << endl <<"Plane " << *it << " has " << (vertices_[*it]).size() << " vertices.";
     }
+    cout << endl;
+    cout << "--------END---------" << endl;
   }

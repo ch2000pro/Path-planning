@@ -68,7 +68,7 @@ int main (){
               height = 0;
             }
             
-            Map[0].print_num_vertices();
+            cout << "Plane is " << Map[0]->find_plane(10) << endl;
             /*
              cout << "TESTING" << endl;
              Obstacle* obs =  Map[Map.size()-1];

@@ -10,23 +10,26 @@ class Obstacle{
 
   public:
     Obstacle(){};
-    Obstacle(vector<Point*> vertices, int height);
+    Obstacle(vector<Point*> vertices, unsigned int height);
     ~Obstacle();
-    void add_vertices(vector<Point*> vertices, int height);
-    int get_num_vert(int height);
-    Point* next_vertice(int height, int x, int y);
-    Point* previous_vertice(int height, int x, int y);
-    int get_numPlanes();
-    vector<Point*> get_vertices(int height_search);
+    void add_vertices(vector<Point*> vertices, unsigned int height);
+    unsigned int get_num_vert(unsigned int height);
+    Point* next_vertice(unsigned int height, int x, int y);
+    Point* previous_vertice(unsigned int height, int x, int y);
+    unsigned int get_numPlanes();
+    vector<Point*> get_vertices(unsigned int height_search);
     vector<Point*> get_Allvertices();
-    int get_height();
+    unsigned int get_height();
     map<int,vector<Point*> > get_vert_map();
+    unsigned int find_plane(unsigned int);
     
     //debugging
-    void print_num_vertices();
+    void print_num_vertices(void);
     
   private:
-    int height_;
+    unsigned int height_;
     map<int,vector<Point*> > vertices_;
-    vector<int> planes_;
+    vector<unsigned int> planes_;
+    
+    
 };
