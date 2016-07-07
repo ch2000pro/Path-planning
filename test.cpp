@@ -67,20 +67,10 @@ int main (){
               planes--;
               height = 0;
             }
-            
-<<<<<<< HEAD
+    
             cout << "Plane is " << Map[0]->find_plane(5) << endl;
-            /*
-             cout << "TESTING" << endl;
-             Obstacle* obs =  Map[Map.size()-1];
-             cout << "for each obstacle plane" << endl;
-             map<int,vector<Point*>> mapvertices = (*obs).get_vert_map();
-             for (const auto& kv :mapvertices) {
-                 cout << "key: " << kv.first << " value: " << kv.second.size();
-             }*/
-=======
+
             Map[0]->print_num_vertices();
->>>>>>> dd9c3cff9770c72883b8be12ee5577325cc3f879
             break;
          }
          // =================== CASE 2 ===================

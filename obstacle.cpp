@@ -32,17 +32,10 @@
     planes_.push_back(height_);
   }
 
-<<<<<<< HEAD
+
   unsigned int Obstacle::get_num_vert(unsigned int height_search){
-    //int height_found;
-    if(height_search < height_){
-      //search the plane
-      
-=======
-    int Obstacle::get_num_vert(int height_search){
-        return get_vertices(height_search).size();
->>>>>>> dd9c3cff9770c72883b8be12ee5577325cc3f879
-    }
+      return get_vertices(height_search).size();
+ }
 
     //get vertices at a given height or get at a height below
     vector<Point*> Obstacle::get_vertices(unsigned int height_search){
@@ -59,15 +52,7 @@
     return {};
     }
 
-<<<<<<< HEAD
   Point* Obstacle::next_vertice(unsigned int height, int x, int y){
-    return 0; //REMOVE
-  }
-
-  Point* Obstacle::previous_vertice(unsigned int height, int x, int y){
-    return 0; //REMOVE
-=======
-  Point* Obstacle::next_vertice(int height, int x, int y){
       vector<Point*> points_at_height = get_vertices(height);
       for(unsigned int i = 0; i < points_at_height.size(); i++){
           Point* p = points_at_height[i];
@@ -83,7 +68,7 @@
       return NULL;
   }
 
-  Point* Obstacle::previous_vertice(int height, int x, int y){
+  Point* Obstacle::previous_vertice(unsigned int height, int x, int y){
       vector<Point*> points_at_height = get_vertices(height);
       for(unsigned int i = 0; i < points_at_height.size(); i++){
           Point* p = points_at_height[i];
@@ -97,7 +82,6 @@
           }
       }
       return NULL;
->>>>>>> dd9c3cff9770c72883b8be12ee5577325cc3f879
   }
   
   //Return the number of planes of the obstacle. Minimum is 2
@@ -105,7 +89,7 @@
     return planes_.size();
   }
   
-<<<<<<< HEAD
+
   unsigned int Obstacle::find_plane(unsigned int toFind){
     for(unsigned int i = 0; i < planes_.size()-1; i++){
       if(toFind >= planes_[i] && toFind < planes_[i+1]){
@@ -115,9 +99,6 @@
     return planes_[planes_.size()-1];
   }
   
-  
-=======
->>>>>>> dd9c3cff9770c72883b8be12ee5577325cc3f879
   //debugging
   void Obstacle::print_num_vertices(){
     vector<unsigned int>::iterator it;
