@@ -16,6 +16,7 @@ int main (){
   vector<Obstacle*> Map;
     
      do{ //Start menu
+         //test
        cout << endl;
        cout << "Select an option:" << endl;
        cout << "1 - Create new obstacle" << endl;
@@ -42,7 +43,7 @@ int main (){
             while(planes > 1){
               cout << endl << "Input for the new plane..." << endl;
               do{
-               cout << "How many verties does this plane have? ";
+               cout << "How many vertices does this plane have? ";
                cin >> vertices;
                if(vertices<3) cout << "An object of are non-zero must " 
                                   << "have at least 3 vertices." << endl;
@@ -66,6 +67,13 @@ int main (){
               planes--;
               height = 0;
             }
+             cout << "TESTING" << endl;
+             Obstacle* obs =  Map[Map.size()-1];
+             cout << "for each obstacle plane" << endl;
+             map<int,vector<Point*>> mapvertices = (*obs).get_vert_map();
+             for (const auto& kv :mapvertices) {
+                 cout << "key: " << kv.first << " value: " << kv.second.size();
+             }
             break;
          }
          // =================== CASE 2 ===================

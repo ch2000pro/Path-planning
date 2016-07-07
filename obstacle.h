@@ -17,6 +17,10 @@ class Obstacle{
     Point* next_vertice(int height, int x, int y);
     Point* previous_vertice(int height, int x, int y);
     int get_numPlanes();
+    vector<Point*> get_vertices(int height_search);
+    vector<Point*> get_Allvertices();
+    int get_height();
+    map<int,vector<Point*> > get_vert_map();
     
   private:
     int height_;
