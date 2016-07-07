@@ -31,7 +31,6 @@ int main (){
          }
          // =================== CASE 1 ===================
          case 1:{
-            vector<Point*> vertices_input;
             do{
                cout << "How many planes does this object have? ";
                cin >> planes;
@@ -41,6 +40,7 @@ int main (){
             
             flag_planes = 0;
             while(planes > 1){
+            vector<Point*> vertices_input;
               cout << endl << "Input for the new plane..." << endl;
               do{
                cout << "How many vertices does this plane have? ";
@@ -67,13 +67,16 @@ int main (){
               planes--;
               height = 0;
             }
+            
+            Map[0]->print_num_vertices();
+            /*
              cout << "TESTING" << endl;
              Obstacle* obs =  Map[Map.size()-1];
              cout << "for each obstacle plane" << endl;
              map<int,vector<Point*>> mapvertices = (*obs).get_vert_map();
              for (const auto& kv :mapvertices) {
                  cout << "key: " << kv.first << " value: " << kv.second.size();
-             }
+             }*/
             break;
          }
          // =================== CASE 2 ===================

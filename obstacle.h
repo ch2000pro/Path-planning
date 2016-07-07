@@ -22,6 +22,9 @@ class Obstacle{
     int get_height();
     map<int,vector<Point*> > get_vert_map();
     
+    //debugging
+    void print_num_vertices(void);
+    
   private:
     int height_;
     map<int,vector<Point*> > vertices_;

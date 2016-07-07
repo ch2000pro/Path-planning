@@ -44,7 +44,7 @@
     //get vertices at a given height or get at a height below
     vector<Point*> Obstacle::get_vertices(int height_search){
     if(height_search <= height_){
-        for(int i = 0; i< planes_.size() -1; i++){
+        for(unsigned int i = 0; i< planes_.size() -1; i++){
             if(planes_[i] == height_search){
                 return vertices_[height_search];
             }
@@ -67,4 +67,15 @@
   //Return the number of planes of the obstacle. Minimum is 2
   int Obstacle::get_numPlanes(){
     return planes_.size();
+  }
+  
+  
+  
+  
+  //debugging
+  void Obstacle::print_num_vertices(){
+    vector<int>::iterator it;
+    for(it = planes_.begin(); it != planes_.end(); ++it){
+      cout << endl << "Plane " << *it << " has " << (vertices_[*it]).size() << " vertices." << endl;
+    }
   }
