@@ -5,7 +5,7 @@
 /*  Start: June 15th                             */
 /*-----------------------------------------------*/
 
-#include "point.h"
+//#include "point.h"
 #include "obstacle.h" 
 
 
@@ -28,7 +28,7 @@
 
   int Obstacle::get_num_vert(int height_search){
     int height_found;
-    if(height < height_){
+    if(height_search < height_){
       //search the plane
       
     }

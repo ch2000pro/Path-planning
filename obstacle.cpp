@@ -5,7 +5,6 @@
 /*  Start: June 15th                             */
 /*-----------------------------------------------*/
 
-#include "point.h"
 #include "obstacle.h" 
 
 
