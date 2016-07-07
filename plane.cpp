@@ -5,13 +5,37 @@
  *      Author: feisabel
  */
 
-#include "point.h"
 #include <vector>
 #include "plane.h"
 
-void Plane::addEndpoints(vector<Point*> points) {
-	for (vector<Point*>::iterator it = points.begin() ; it != points.end(); ++it)
+void Plane::addObstacle(vector<Point*> points) {
+	vector<Point*>::iterator it;
+	Point* p1;
+	Point* p2;
+	for (it = points.begin() ; it != points.end() - 1; ++it) {
+		p1 = *it;
+		p2 = *(it + 1);
+		Segment* seg;
+		if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
+			seg = new Segment(p1, p2);
+		else
+			seg = new Segment(p2, p1);
+		p1->setSeg2(seg);
+		p2->setSeg1(seg);
+		segments.push_back(seg);
 	    endpoints.push_back(*it);
+	}
+	p1 = *it;
+	p2 = points.begin();
+	Segment* seg;
+	if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
+		seg = new Segment(p1, p2);
+	else
+		seg = new Segment(p2, p1);
+	p1->setSeg2(seg);
+	p2->setSeg1(seg);
+	segments.push_back(seg);
+	endpoints.push_back(*it);
 }
 
 void Plane::split(vector<Point*> A, int iStart, int iEnd, vector<Point*> B) {

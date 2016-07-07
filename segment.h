@@ -12,17 +12,21 @@
 
 class Segment {
 public:
-	Segment() {}
-	Segment(Point a, Point b) {
+	Segment() {
+		left = 0;
+		right = 0;
+	}
+	Segment(Point* a, Point* b) {
 		left = a;
 		right = b;
 	}
 
-	Point getLeft() {return left;}
-	Point getRight() {return right;}
+	Point* getLeft() {return left;}
+	Point* getRight() {return right;}
 
 private:
-	Point left, right;
+	Point* left;
+	Point* right;
 };
 
 

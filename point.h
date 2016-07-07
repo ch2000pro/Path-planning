@@ -25,6 +25,8 @@ class Point
  int getY() {return y;}
  Segment* getSeg1() {return seg1;}
  Segment* getSeg2() {return seg2;}
+ void setSeg1(Segment* s) {seg1 = s;}
+ void setSeg2(Segment* s) {seg2 = s;}
 
  private:
  int x;

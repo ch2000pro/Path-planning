@@ -11,6 +11,7 @@
 #include <list>
 #include <vector>
 #include "point.h"
+#include "segment.h"
 
 using namespace std;
 
@@ -19,8 +20,9 @@ public:
 	Plane() {}
 
 	vector<Point*> endpoints;
+	vector<Segment*> segments;
 
-	void addEndpoints(vector<Point*>);
+	void addObstacle(vector<Point*>);
 	void lineSweep();
 	void split(vector<Point*>, int, int, vector<Point*>);
 	void merge(vector<Point*>, int, int, int, vector<Point*>);
