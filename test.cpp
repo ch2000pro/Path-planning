@@ -69,14 +69,6 @@ int main (){
             }
             
             Map[0]->print_num_vertices();
-            /*
-             cout << "TESTING" << endl;
-             Obstacle* obs =  Map[Map.size()-1];
-             cout << "for each obstacle plane" << endl;
-             map<int,vector<Point*>> mapvertices = (*obs).get_vert_map();
-             for (const auto& kv :mapvertices) {
-                 cout << "key: " << kv.first << " value: " << kv.second.size();
-             }*/
             break;
          }
          // =================== CASE 2 ===================

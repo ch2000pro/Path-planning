@@ -32,14 +32,9 @@
     planes_.push_back(height_);
   }
 
-  int Obstacle::get_num_vert(int height_search){
-    //int height_found;
-    if(height_search < height_){
-      //search the plane
-      
+    int Obstacle::get_num_vert(int height_search){
+        return get_vertices(height_search).size();
     }
-    return 0;
-  }
 
     //get vertices at a given height or get at a height below
     vector<Point*> Obstacle::get_vertices(int height_search){
@@ -68,9 +63,6 @@
   int Obstacle::get_numPlanes(){
     return planes_.size();
   }
-  
-  
-  
   
   //debugging
   void Obstacle::print_num_vertices(){
