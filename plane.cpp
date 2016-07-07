@@ -26,7 +26,7 @@ void Plane::addObstacle(vector<Point*> points) {
 	    endpoints.push_back(*it);
 	}
 	p1 = *it;
-	p2 = points.begin();
+	p2 = *(points.begin());
 	Segment* seg;
 	if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
 		seg = new Segment(p1, p2);
