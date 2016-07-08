@@ -86,3 +86,5 @@ void Plane::merge(vector<Point*> A, int iStart, int iMiddle, int iEnd, vector<Po
 		}
 	}
 }
+
+//teste
