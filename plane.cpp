@@ -39,7 +39,7 @@ void Plane::addObstacle(vector<Point*> points) {
 	delete seg;
 }
 
-vector<Segment*> createMedianLines(vector<Point*> points, int w) {
+vector<Segment*> Plane::createMedianLines(vector<Point*> points, int w) {
 	vector<Segment*> lines;
 	if (points.size() == 1)
 		return lines;
@@ -50,12 +50,14 @@ vector<Segment*> createMedianLines(vector<Point*> points, int w) {
 		Point* p2 = new Point(x, -2147483648);
 		Segment* l = new Segment(p1, p2, w);
 		vector<Point*> aux1(points.begin(), middle - 1), aux2(middle + 1, points.end());
-		vector<Segment*> lines2, lines3;
-		lines2 = createMedianLines(aux1, w+1);
-		lines3 = createMedianLines(aux2, w+1);
+		vector<Segment*> lines2;
+		vector<Segment*> lines3;
+		lines2 = Plane::createMedianLines(aux1, w+1);
+		lines3 = Plane::createMedianLines(aux2, w+1);
 		lines.push_back(l);
-		lines.insert(next(lines.end()), lines2.begin(), lines2.end());
-		lines.insert(next(lines.end()), lines3.begin(), lines3.end());
+		lines.insert(next(lines.end()), lines2, lines2 + lines2.size());
+		lines.insert(next(lines.end()), lines3, lines3 + lines3.size());
+		delete p1, p2, l;
 		return lines;
 	}
 }
