@@ -12,9 +12,9 @@ void Plane::addObstacle(vector<Point*> points) {
 	vector<Point*>::iterator it;
 	Point* p1;
 	Point* p2;
-	for (it = points.begin() ; it != points.end() - 1; ++it) {
+	for (it = points.begin() ; it != prev(points.end()); ++it) {
 		p1 = *it;
-		p2 = *(it + 1);
+		p2 = *(next(it));
 		Segment* seg;
 		if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
 			seg = new Segment(p1, p2);
@@ -37,6 +37,27 @@ void Plane::addObstacle(vector<Point*> points) {
 	segments.push_back(seg);
 	endpoints.push_back(*it);
 	delete seg;
+}
+
+vector<Segment*> createMedianLines(vector<Point*> points, int w) {
+	vector<Segment*> lines;
+	if (points.size() == 1)
+		return lines;
+	else {
+		vector<Point*>::iterator middle = points.begin() + points.size()/2;
+		int x = (*middle).getX();
+		Point* p1 = new Point(x, 2147483647);
+		Point* p2 = new Point(x, -2147483648);
+		Segment* l = new Segment(p1, p2, w);
+		vector<Point*> aux1(points.begin(), middle - 1), aux2(middle + 1, points.end());
+		vector<Segment*> lines2, lines3;
+		lines2 = createMedianLines(aux1, w+1);
+		lines3 = createMedianLines(aux2, w+1);
+		lines.push_back(l);
+		lines.insert(next(lines.end()), lines2.begin(), lines2.end());
+		lines.insert(next(lines.end()), lines3.begin(), lines3.end());
+		return lines;
+	}
 }
 
 void Plane::split(vector<Point*> A, int iStart, int iEnd, vector<Point*> B) {
