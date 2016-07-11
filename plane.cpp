@@ -24,52 +24,79 @@ void Plane::addObstacle(vector<Point*> points) {
 	for (it = points.begin() ; it != prev(points.end()); ++it) {
 		p1 = *it;
 		p2 = *(next(it));
-		Segment* seg;
-		if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
-			seg = new Segment(p1, p2);
-		else
-			seg = new Segment(p2, p1);
-		p1->setSeg2(seg);
-		p2->setSeg1(seg);
-		segments.push_back(seg);
+		Segment seg;
+		if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY())) {
+			seg.setLeft(p1);
+            seg.setRight(p2);
+        }
+		else {
+			seg.setLeft(p2);
+            seg.setRight(p1);
+        }
+		p1->setSeg2(&seg);
+		p2->setSeg1(&seg);
 	    endpoints.push_back(*it);
 	}
 	p1 = *it;
-	p2 = *(points.begin());
-	Segment* seg;
-	if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
-		seg = new Segment(p1, p2);
-	else
-		seg = new Segment(p2, p1);
-	p1->setSeg2(seg);
-	p2->setSeg1(seg);
-	segments.push_back(seg);
+	p2 = points.front();
+	Segment seg;
+	if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY())) {
+		seg.setLeft(p1);
+        seg.setRight(p2);
+    }
+	else {
+		seg.setLeft(p2);
+        seg.setRight(p1);
+    }
+	p1->setSeg2(&seg);
+	p2->setSeg1(&seg);
 	endpoints.push_back(*it);
-	delete seg;
+}
+
+void Plane::lineSweep() {
+    Plane::createMedianLines(endpoints, 1);
+    sort(endpoints.rbegin(), endpoints.rend());
+    Point* p = endpoints.back();
+    endpoints.pop_back();
+    vector<Segment*> segments;
+    Segment* seg1 = p->getSeg1();
+    Segment* seg2 = p->getSeg2();
+    if (seg2 == 0) {
+        for(vector<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+            if ((*it)->getWeight() > seg1->getWeight()) {
+                Plane::createSteinerPoint(*it, seg1);
+                Point aux(p->getX(), (*it)->getRight()->getY());
+                (*it)->setLeft(&aux);
+                (*it)->setWeight(seg1->getWeight());
+            }
+        }
+    }
+    else if (seg1->getLeft() == p && seg2->getLeft() == p) {
+        
+    }
+    else if (seg1->getRight() == p && seg2->getRight() == p) {
+        
+    }
+    else {
+        
+    }
+    
 }
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
-vector<Segment*> Plane::createMedianLines(vector<Point*> points, int w) {
-	vector<Segment*> lines;
-	if (points.size() == 1)
-		return lines;
-	else {
+void Plane::createMedianLines(vector<Point*> points, int w) {
+	if (points.size() > 1) {
 		vector<Point*>::iterator middle = points.begin() + points.size()/2;
 		int x = (*middle)->getX();
-		Point* p1 = new Point(x, 2147483647);
-		Point* p2 = new Point(x, -2147483648);
-		Segment* l = new Segment(p1, p2, w);
+		Point p1(x, 2147483647);
+		Point p2(x, -2147483648);
+		Segment l(&p1, &p2, w);
+        p1.setSeg1(&l);
+        endpoints.push_back(&p1);
 		vector<Point*> aux1(points.begin(), middle - 1), aux2(middle + 1, points.end());
-		vector<Segment*> lines2;
-		vector<Segment*> lines3;
-		lines2 = Plane::createMedianLines(aux1, w+1);
-		lines3 = Plane::createMedianLines(aux2, w+1);
-		lines.push_back(l);
-		lines.insert(next(lines.end()), lines2.begin(), lines2.end());
-		lines.insert(next(lines.end()), lines3.begin(), lines3.end());
-		delete p1, p2, l;
-		return lines;
-	}
+		Plane::createMedianLines(aux1, w+1);
+		Plane::createMedianLines(aux2, w+1);
+    }
 }
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane

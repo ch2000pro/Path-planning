@@ -10,7 +10,7 @@
 
 #include "point.h"
 
-//Segment is a line between two points
+//Segment is a line segment between two points
 class Segment {
 public:
 	Segment() {
@@ -31,6 +31,10 @@ public:
 
 	Point* getLeft() {return left;}
 	Point* getRight() {return right;}
+    void setLeft(Point* a) {left = a;}
+    void setRight(Point* a) {right = a;}
+    int getWeight() {return weight;}
+    void setWeight(int w) {weight = w;}
 
 private:
 	Point* left; //left endpoint
