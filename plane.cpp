@@ -85,6 +85,27 @@ void Plane::lineSweep() {
     
 }
 
+//Given two segments, an obstacle edge and a projection, creates a steiner point from their intersection and the corresponding edge to it
+void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
+    //find intersection
+    float m1, m2, c1, c2, x, y;
+    Point* right1 = segment1 -> getRight();
+    Point* left1 = segment1 -> getLeft();
+    Point* right2 = segment2 -> getRight();
+    Point* left2 = segment2 -> getLeft();
+    Point* steiner;
+    
+    m1 = (left1 -> getY() - right1 -> getY())/(left1 -> getX() - right1 -> getX());
+    m2 = (left2 -> getY() - right2 -> getY())/(left2 -> getX() - right2 -> getX());
+    c1 = right1 -> getY() - (m1 * right1 -> getX());
+    c2 = right2 -> getY() - (m2 * right2 -> getX());
+    x = (c2 - c1)/(m1 - m2);
+    y = (m1 * x) + c1;
+    
+    steiner = new Point(x, y, right1 -> getZ());
+    
+}
+
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
 void Plane::createMedianLines(vector<Point*> points, int w) {
 	if (points.size() > 1) {
@@ -104,10 +125,17 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
 //Function that runs through all the obstacles to check if they are obstacles in that plane
 //For each one found, add that obstacle to the 2D Plane 
 void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
+<<<<<<< HEAD
     for(unsigned int i = 0; i < obstacles.size(); i++){
         Obstacle* obstacle_ = obstacles[i];
         if(obstacle_-> get_height() > z){
             addObstacle(obstacle_ -> get_vertices(z));
+=======
+    for(int i = 0; i < obstacles.size(); i++){
+        Obstacle* obstacle = obstacles[i];
+        if(obstacle-> get_height() > z){
+            addObstacle(obstacle -> get_vertices(z));
+>>>>>>> c1e303caed1a88c1a711f62f42937ec9928c3026
         }
         else{
             return;
