@@ -11,8 +11,10 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 #include "point.h"
 #include "segment.h"
+#include "obstacle.h"
 
 class Obstacle;
 class Point;

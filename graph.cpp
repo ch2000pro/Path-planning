@@ -1,7 +1,6 @@
 /*----------------------------------------------------------*/
 /*  graph.cpp                                               */
-/*  Class to manage the planes and to form the final graph  */
-/*  Laura Vieira                                            */
+/*  Class to manage the planes and to form the final graph  */                                          
 /*  Start: July 10th                                        */
 /*----------------------------------------------------------*/
 

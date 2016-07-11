@@ -72,7 +72,17 @@ vector<Segment*> Plane::createMedianLines(vector<Point*> points, int w) {
 	}
 }
 
-void Plane::findObstaclesInPlane(vector<Obstacle*> Map){
-    
+//Function that runs through all the obstacles to check if they are obstacles in that plane
+//For each one found, add that obstacle to the 2D Plane 
+void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
+    for(int i = 0; i < obstacles.size(); i++){
+        Obstacle* obstacle = obstacles[i];
+        if(obstacle-> get_height() > z){
+            addObstacle(obstacle -> get_vertices(z));
+        }
+        else{
+            return;
+        }
+    }
 }
 
