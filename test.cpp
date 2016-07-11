@@ -18,6 +18,8 @@ int main (){
     total_planes.push_back(0);
     vector<Obstacle*> obstacles;
     vector<Plane*> planes;
+    Point* source;
+    Point* target;
     
     do{ //Start menu
         //test
@@ -107,9 +109,20 @@ int main (){
             }
                 // =================== CASE 4 ===================
             case 4:{
-                cout << " What is the source point of the search?" << endl;
-                cout << " What is the target point of the search?" << endl;
-                //TO DO;
+                unsigned int x, y, z, x_, y_, z_;
+                cout << " What is the source point of the search? (x, y and z)" << endl;
+                cin >> x;
+                cin >> y;
+                cin >> z;
+                cout << " What is the target point of the search? (x, y and z)" << endl;
+                cin >> x_;
+                cin >> y_;
+                cin >> z_;
+                
+                source = new Point(x, y, z);
+                target = new Point(x_, y_, z_);
+                
+                //TO DO FIND SHORTEST PATH;
                 break;
             }
                 // ================== DEFAULT ===================

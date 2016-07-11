@@ -13,7 +13,7 @@ class Graph{
     public:
     Graph(vector<Obstacle*> obstacles_);
     ~Graph();
-    
+    void findShortestPath(Point* source, Point* target);
     
     private:
     vector<Obstacle*> obstacles;
