@@ -14,23 +14,27 @@ class Point
 {
  public:
  Point(){
-   x = 0; y = 0; seg1 = 0; seg2 = 0;
+     x = 0; y = 0; z = 0; seg1 = 0; seg2 = 0;
  }
  
  Point(int my_x, int my_y){ 
-   x = my_x; y = my_y; seg1 = 0; seg2 = 0;
+     x = my_x; y = my_y; z = 0; seg1 = 0; seg2 = 0;
  } 
- 
+ Point(int my_x, int my_y, int my_z){
+     x = my_x; y = my_y; z = my_z; seg1 = 0; seg2 = 0;
+ }
+    
+    
  int getX() {return x;}
  int getY() {return y;}
+ int getZ() {return z;}
  Segment* getSeg1() {return seg1;}
  Segment* getSeg2() {return seg2;}
  void setSeg1(Segment* s) {seg1 = s;}
  void setSeg2(Segment* s) {seg2 = s;}
 
  private:
- int x;
- int y;
+ int x, y, z;
  Segment* seg1;
  Segment* seg2;
  
