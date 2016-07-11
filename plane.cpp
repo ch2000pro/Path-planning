@@ -84,6 +84,10 @@ void Plane::lineSweep() {
     
 }
 
+void createSteinerPoint(Segment*, Segment*) {
+    
+}
+
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
 void Plane::createMedianLines(vector<Point*> points, int w) {
 	if (points.size() > 1) {
