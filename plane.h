@@ -16,16 +16,18 @@
 
 using namespace std;
 
+//Plane is a 2D plane
 class Plane {
 public:
 	Plane() {}
 
-	vector<Point*> endpoints;
-	vector<Segment*> segments;
-
-	void addObstacle(vector<Point*>);
-	void lineSweep();
-	vector<Segment*> createMedianLines(vector<Point*>, int);
+	void addObstacle(vector<Point*>); //adds the vertices and edges of an obstacle that are in this plane
+	void lineSweep(); //the 2D path planning algo; creates a graph for the plane
+	vector<Segment*> createMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
+    
+private:
+    vector<Point*> endpoints; //all the obstacle vertices in this plane
+	vector<Segment*> segments; //all the obstacle edges in this plane
 };
 
 #endif
