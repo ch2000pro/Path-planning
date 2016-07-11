@@ -8,7 +8,7 @@
 #ifndef SEGMENT_H_
 #define SEGMENT_H_
 
-#include "2D_point.h"
+#include "point.h"
 
 //Segment is a line between two points
 class Segment {

@@ -11,7 +11,7 @@
 #include <list>
 #include <vector>
 #include <algorithm>
-#include "2D_point.h"
+#include "point.h"
 #include "segment.h"
 
 using namespace std;
