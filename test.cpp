@@ -98,7 +98,7 @@ int main (){
             }
                 // =================== CASE 3 ===================
             case 3:{
-                //for each z coordinate where obstacles change, it creates a new plane and calls the method findObstaclesInPlane 
+                //for each z coordinate where obstacles change, it creates a new plane and calls the method findObstaclesInPlane
                 vector<int>::iterator it;
                 int z;
                 for (it = total_planes.begin() ; it != total_planes.end(); ++it) {
