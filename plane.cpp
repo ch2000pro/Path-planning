@@ -84,6 +84,7 @@ void Plane::lineSweep() {
     
 }
 
+//Given two segments, an obstacle edge and a projection, creates a steiner point from their intersection and the corresponding edge to it
 void Plane::createSteinerPoint(Segment*, Segment*) {
     
 }
