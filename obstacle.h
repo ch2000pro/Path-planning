@@ -14,7 +14,7 @@ class Obstacle{
     Obstacle(vector<Point*> vertices, unsigned int height);
     ~Obstacle();
     
-    void add_vertices(vector<Point*> vertices, unsigned int height);
+    unsigned int add_vertices(vector<Point*> vertices, unsigned int height);
     unsigned int get_num_vert(unsigned int height);
     Point* next_vertice(unsigned int height, int x, int y);
     Point* previous_vertice(unsigned int height, int x, int y);
