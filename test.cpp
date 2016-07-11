@@ -98,7 +98,10 @@ int main (){
             }
                 // =================== CASE 3 ===================
             case 3:{
+                //Case where there will not be more obstacles inputs, so the Graph can be created
                 //for each z coordinate where obstacles change, it creates a new plane and calls the method findObstaclesInPlane
+                //afterwards, it will be created the Steiner points and the final graph
+            
                 vector<int>::iterator it;
                 int z;
                 for (it = total_planes.begin() ; it != total_planes.end(); ++it) {
