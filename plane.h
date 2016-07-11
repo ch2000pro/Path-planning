@@ -10,6 +10,7 @@
 
 #include <list>
 #include <vector>
+#include <algorithm>
 #include "point.h"
 #include "segment.h"
 
@@ -25,8 +26,6 @@ public:
 	void addObstacle(vector<Point*>);
 	void lineSweep();
 	vector<Segment*> createMedianLines(vector<Point*>, int);
-	void split(vector<Point*>, int, int, vector<Point*>);
-	void merge(vector<Point*>, int, int, int, vector<Point*>);
 };
 
 #endif
