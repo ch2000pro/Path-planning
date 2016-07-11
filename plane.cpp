@@ -59,11 +59,11 @@ void Plane::lineSweep() {
     sort(endpoints.rbegin(), endpoints.rend());
     Point* p = endpoints.back();
     endpoints.pop_back();
-    vector<Segment*> segments;
+    list<Segment*> segments;
     Segment* s1 = p->getSeg1();
     Segment* s2 = p->getSeg2();
     if (s2 == 0) {
-        for(vector<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+        for(list<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
             if ((*it)->getWeight() > s1->getWeight()) {
                 Plane::createSteinerPoint(s1, *it);
                 Point aux(p->getX(), (*it)->getRight()->getY());
@@ -75,6 +75,27 @@ void Plane::lineSweep() {
     else if (s1->getLeft() == p && s2->getLeft() == p) {
         segments.push_back(s1);
         segments.push_back(s2);
+        for(list<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+            if ((*it)->getWeight() != 0) {
+                int ly1, ry1, ly2, ry2, ly, ry;
+                ly = (*it)->getLeft()->getY();
+                ry = (*it)->getRight()->getY();
+                ly1 = s1->getLeft()->getY();
+                ry1 = s1->getRight()->getY();
+                ly2 = s2->getLeft()->getY();
+                ry2 = s2->getRight()->getY();
+                if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
+                    Plane::createSteinerPoint(s1, *it);
+                    segments.erase(it);
+                }
+                else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
+                    Plane::createSteinerPoint(s2, *it);
+                    segments.erase(it);
+                }
+            }
+        }
+        if ("canproject")
+            "project";
     }
     else if (s1->getRight() == p && s2->getRight() == p) {
         
@@ -102,8 +123,7 @@ void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     y = (m1 * x) + c1;
     
     Point steiner(x, y, right1 -> getZ());
-    
-    
+    segment1->addSteinerPoint(&steiner);
 }
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
