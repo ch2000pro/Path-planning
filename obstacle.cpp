@@ -26,10 +26,11 @@
         return vertices_;
     }
 
-  void Obstacle::add_vertices(vector<Point*> vertices, unsigned int height){
+  unsigned int Obstacle::add_vertices(vector<Point*> vertices, unsigned int height){
     vertices_[height_] = vertices;
     height_ += height;
     planes_.push_back(height_);
+    return height_;
   }
 
 
@@ -98,7 +99,7 @@
     }
     return planes_[planes_.size()-1];
   }
-  
+
   //debugging
   void Obstacle::print_num_vertices(){
     vector<unsigned int>::iterator it;
