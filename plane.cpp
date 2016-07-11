@@ -8,6 +8,14 @@
 #include <vector>
 #include "plane.h"
 
+Plane::Plane(unsigned int z_){
+    z = z_;
+}
+
+Plane::~Plane(){
+    
+}
+
 void Plane::addObstacle(vector<Point*> points) {
 	vector<Point*>::iterator it;
 	Point* p1;
@@ -60,6 +68,10 @@ vector<Segment*> Plane::createMedianLines(vector<Point*> points, int w) {
 		delete p1, p2, l;
 		return lines;
 	}
+}
+
+void Plane::findObstaclesInPlane(vector<Obstacle*> Map){
+    
 }
 
 
