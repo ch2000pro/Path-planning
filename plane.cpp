@@ -45,7 +45,7 @@ vector<Segment*> Plane::createMedianLines(vector<Point*> points, int w) {
 		return lines;
 	else {
 		vector<Point*>::iterator middle = points.begin() + points.size()/2;
-		int x = (*middle).getX();
+		int x = (*middle)->getX();
 		Point* p1 = new Point(x, 2147483647);
 		Point* p2 = new Point(x, -2147483648);
 		Segment* l = new Segment(p1, p2, w);
@@ -55,8 +55,8 @@ vector<Segment*> Plane::createMedianLines(vector<Point*> points, int w) {
 		lines2 = Plane::createMedianLines(aux1, w+1);
 		lines3 = Plane::createMedianLines(aux2, w+1);
 		lines.push_back(l);
-		lines.insert(next(lines.end()), lines2, lines2 + lines2.size());
-		lines.insert(next(lines.end()), lines3, lines3 + lines3.size());
+		lines.insert(next(lines.end()), lines2.begin(), lines2.end());
+		lines.insert(next(lines.end()), lines3.begin(), lines3.end());
 		delete p1, p2, l;
 		return lines;
 	}
