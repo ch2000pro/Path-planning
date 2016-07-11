@@ -8,22 +8,25 @@
 
 #include "obstacle.h"
 #include "point.h"
+#include "plane.h"
 
 using namespace std;
 
 int main (){
-    unsigned int option = 0, vertices = 0, planes = 0, flag_planes = 0, height;
+    unsigned int option = 0, vertices = 0, planesInserted = 0, flag_planes = 0, height;
     vector<int> total_planes;
     total_planes.push_back(0);
-    vector<Obstacle*> Map;
+    vector<Obstacle*> obstacles;
+    vector<Plane*> planes;
     
     do{ //Start menu
         //test
         cout << endl;
         cout << "Select an option:" << endl;
-        cout << "1 - Create new obstacle" << endl;
+        cout << "1 - Create a new obstacle" << endl;
         cout << "2 - Number of obstacles" << endl;
-        cout << "3 - Find shortest path" << endl;
+        cout << "3 - I dont want to create more obstacles" << endl;
+        cout << "4 - Find shortest path" << endl;
         cout << "0 - Quit" << endl;
         cin >> option;
         
@@ -36,13 +39,13 @@ int main (){
             case 1:{
                 do{
                     cout << "How many planes does this object have? ";
-                    cin >> planes;
-                    if(planes<2) cout << "An object of are non-zero must "
+                    cin >> planesInserted;
+                    if(planesInserted<2) cout << "An object of are non-zero must "
                         << "have at least 2 plane." << endl;
-                }while(planes < 2);
+                }while(planesInserted < 2);
                 
                 flag_planes = 0;
-                while(planes > 1){
+                while(planesInserted > 1){
                     vector<Point*> vertices_input;
                     cout << endl << "Input for the new plane..." << endl;
                     do{
@@ -62,7 +65,7 @@ int main (){
                         vertices --;
                     }
                     if(flag_planes == 0){
-                        Map.push_back(new Obstacle(vertices_input,height));
+                        obstacles.push_back(new Obstacle(vertices_input,height));
                         if(std::find(total_planes.begin(), total_planes.end(), height) != total_planes.end()) {
                             //vector of all planes already contains this height
                         } else {
@@ -71,30 +74,39 @@ int main (){
                         flag_planes = 1;
                     }
                     else{
-                        unsigned int height_ = Map[Map.size()-1]->add_vertices(vertices_input, height);
+                        unsigned int height_ = obstacles[obstacles.size()-1]->add_vertices(vertices_input, height);
                         if(std::find(total_planes.begin(), total_planes.end(), height) != total_planes.end()) {
                             //vector of all planes already contains this height
                         } else {
                             total_planes.push_back(height_);
                         }
-                        flag_planes = 1;
                     }
-                    planes--;
+                    planesInserted--;
                     height = 0;
                 }
                 
-                cout << "Plane is " << Map[0]->find_plane(5) << endl;
-                Map[0]->print_num_vertices();
+                cout << "Plane is " << obstacles[0]->find_plane(5) << endl;
+                obstacles[0]->print_num_vertices();
                 break;
             }
                 // =================== CASE 2 ===================
             case 2:{
-                cout << Map.size() << " object(s)." << endl << endl;
-                
+                cout << obstacles.size() << " object(s)." << endl << endl;
                 break;
             }
                 // =================== CASE 3 ===================
             case 3:{
+                for(int i = 0; i < total_planes.size(); i++){
+                    planes.push_back(new Plane(total_planes[i]));
+                }
+                for(int i = 0; i < planes.size(); i++){
+                    Plane* plane = planes[i];
+                    plane -> findObstaclesInPlane(obstacles);
+                }
+                break;
+            }
+                // =================== CASE 4 ===================
+            case 4:{
                 cout << " What is the source point of the search?" << endl;
                 cout << " What is the target point of the search?" << endl;
                 //TO DO;
@@ -112,10 +124,10 @@ int main (){
     
     //------ Free memory ----------
     Obstacle *deleting;
-    while(Map.size() != 0){ //Delete items
-        deleting = Map[Map.size()-1];
+    while(obstacles.size() != 0){ //Delete items
+        deleting = obstacles[obstacles.size()-1];
         delete deleting;
-        Map.pop_back();
+        obstacles.pop_back();
     }
     //-----------------------------
     

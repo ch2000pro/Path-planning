@@ -13,7 +13,6 @@ Plane::Plane(unsigned int z_){
 }
 
 Plane::~Plane(){
-    
 }
 
 //Given a vector of points, adds those points (and the edges between them) to the plane
@@ -78,7 +77,7 @@ void Plane::lineSweep() {
         
     }
     else {
-        
+        return;
     }
     
 }
