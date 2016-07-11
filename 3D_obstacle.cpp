@@ -5,7 +5,7 @@
 /*  Start: June 15th                             */
 /*-----------------------------------------------*/
 
-#include "obstacle.h" 
+#include "3D_obstacle.h"
 
 
   Obstacle::Obstacle(vector<Point*>vertices, unsigned int height){

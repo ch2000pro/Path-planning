@@ -8,8 +8,9 @@
 #ifndef SEGMENT_H_
 #define SEGMENT_H_
 
-#include "point.h"
+#include "2D_point.h"
 
+//Segment is a line between two points
 class Segment {
 public:
 	Segment() {
@@ -32,8 +33,8 @@ public:
 	Point* getRight() {return right;}
 
 private:
-	Point* left;
-	Point* right;
+	Point* left; //left endpoint
+	Point* right; //right endpoint
 	int weight;
 };
 

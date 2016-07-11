@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
-#include "point.h"
+#include "2D_point.h"
 
 class Point;
 

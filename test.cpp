@@ -6,8 +6,8 @@
 /*-----------------------------------------------*/
 
 
-#include "obstacle.h"
-#include "point.h"
+#include "3D_obstacle.h"
+#include "2D_point.h"
 
 using namespace std;
 
