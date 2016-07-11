@@ -52,6 +52,7 @@ void Plane::addObstacle(vector<Point*> points) {
 	endpoints.push_back(*it);
 }
 
+//lineSweep will create a graph representing the plane, in order to find the shortest path on it
 void Plane::lineSweep() {
     Plane::createMedianLines(endpoints, 1);
     sort(endpoints.rbegin(), endpoints.rend());
