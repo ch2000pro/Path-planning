@@ -26,6 +26,10 @@ public:
         x = my_x; y = my_y; z = my_z; seg1 = 0; seg2 = 0;
     }
     
+    bool operator < (Point* p) const {
+        return (x < p->getX() || (x == p->getX() && y > p->getY()));
+    }
+    
     float getX() {return x;}
     float getY() {return y;}
     float getZ() {return z;}
