@@ -26,16 +26,16 @@ public:
         x = my_x; y = my_y; z = my_z; seg1 = 0; seg2 = 0;
     }
     
-    int getX() {return x;}
-    int getY() {return y;}
-    int getZ() {return z;}
+    float getX() {return x;}
+    float getY() {return y;}
+    float getZ() {return z;}
     Segment* getSeg1() {return seg1;}
     Segment* getSeg2() {return seg2;}
     void setSeg1(Segment* s) {seg1 = s;}
     void setSeg2(Segment* s) {seg2 = s;}
     
 private:
-    int x, y, z; //the points coordinates
+    float x, y, z; //the points coordinates
     Segment* seg1; //a segment that has this point as one of its endpoints
     Segment* seg2; //a segment that has this point as one of its endpoints
     
