@@ -21,9 +21,9 @@ void Plane::addObstacle(vector<Point*> points) {
 	vector<Point*>::iterator it;
 	Point* p1;
 	Point* p2;
-	for (it = points.begin() ; it != (points.end())-1; ++it) {
+	for (it = points.begin() ; it != prev(points.end()); ++it) {
 		p1 = *it;
-		p2 = *((it)+1);
+		p2 = *(next(it));
 		Segment seg;
 		if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY())) {
 			seg.setLeft(p1);

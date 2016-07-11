@@ -96,10 +96,10 @@ int main (){
             }
                 // =================== CASE 3 ===================
             case 3:{
-                for(int i = 0; i < total_planes.size(); i++){
+                for(unsigned int i = 0; i < total_planes.size(); i++){
                     planes.push_back(new Plane(total_planes[i]));
                 }
-                for(int i = 0; i < planes.size(); i++){
+                for(unsigned int i = 0; i < planes.size(); i++){
                     Plane* plane = planes[i];
                     plane -> findObstaclesInPlane(obstacles);
                 }
