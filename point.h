@@ -18,7 +18,7 @@ public:
         x = 0; y = 0; z = 0; seg1 = 0; seg2 = 0;
     }
     
-    Point(int my_x, int my_y){
+    Point(float my_x, float my_y){
         x = my_x; y = my_y; z = 0; seg1 = 0; seg2 = 0;
     }
     
