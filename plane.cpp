@@ -16,6 +16,7 @@ Plane::~Plane(){
     
 }
 
+//Given a vector of points, adds those points (and the edges between them) to the plane
 void Plane::addObstacle(vector<Point*> points) {
 	vector<Point*>::iterator it;
 	Point* p1;
@@ -47,6 +48,7 @@ void Plane::addObstacle(vector<Point*> points) {
 	delete seg;
 }
 
+//Recursive function that creates median lines (that will be used to make type 1 Steiner points)
 vector<Segment*> Plane::createMedianLines(vector<Point*> points, int w) {
 	vector<Segment*> lines;
 	if (points.size() == 1)
@@ -74,5 +76,3 @@ void Plane::findObstaclesInPlane(vector<Obstacle*> Map){
     
 }
 
-
-//teste
