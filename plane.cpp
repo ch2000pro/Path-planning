@@ -58,22 +58,23 @@ void Plane::lineSweep() {
     Point* p = endpoints.back();
     endpoints.pop_back();
     vector<Segment*> segments;
-    Segment* seg1 = p->getSeg1();
-    Segment* seg2 = p->getSeg2();
-    if (seg2 == 0) {
+    Segment* s1 = p->getSeg1();
+    Segment* s2 = p->getSeg2();
+    if (s2 == 0) {
         for(vector<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
-            if ((*it)->getWeight() > seg1->getWeight()) {
-                Plane::createSteinerPoint(*it, seg1);
+            if ((*it)->getWeight() > s1->getWeight()) {
+                Plane::createSteinerPoint(*it, s1);
                 Point aux(p->getX(), (*it)->getRight()->getY());
                 (*it)->setLeft(&aux);
-                (*it)->setWeight(seg1->getWeight());
+                (*it)->setWeight(s1->getWeight());
             }
         }
     }
-    else if (seg1->getLeft() == p && seg2->getLeft() == p) {
-        
+    else if (s1->getLeft() == p && s2->getLeft() == p) {
+        segments.push_back(s1);
+        segments.push_back(s2);
     }
-    else if (seg1->getRight() == p && seg2->getRight() == p) {
+    else if (s1->getRight() == p && s2->getRight() == p) {
         
     }
     else {
