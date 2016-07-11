@@ -65,7 +65,7 @@ void Plane::lineSweep() {
     if (s2 == 0) {
         for(vector<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
             if ((*it)->getWeight() > s1->getWeight()) {
-                Plane::createSteinerPoint(*it, s1);
+                Plane::createSteinerPoint(s1, *it);
                 Point aux(p->getX(), (*it)->getRight()->getY());
                 (*it)->setLeft(&aux);
                 (*it)->setWeight(s1->getWeight());
@@ -93,7 +93,6 @@ void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     Point* left1 = segment1 -> getLeft();
     Point* right2 = segment2 -> getRight();
     Point* left2 = segment2 -> getLeft();
-    Point* steiner;
     
     m1 = (left1 -> getY() - right1 -> getY())/(left1 -> getX() - right1 -> getX());
     m2 = (left2 -> getY() - right2 -> getY())/(left2 -> getX() - right2 -> getX());
@@ -102,7 +101,8 @@ void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     x = (c2 - c1)/(m1 - m2);
     y = (m1 * x) + c1;
     
-    steiner = new Point(x, y, right1 -> getZ());
+    Point steiner(x, y, right1 -> getZ());
+    
     
 }
 
