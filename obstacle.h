@@ -1,3 +1,6 @@
+#ifndef OBSTACLE_H_
+#define OBSTACLE_H_
+
 #include <vector>
 #include <iostream>
 #include <map>
@@ -11,6 +14,7 @@ using namespace std;
 class Obstacle{
 
   public:
+    Obstacle(){};
     Obstacle(vector<Point*> vertices, unsigned int height); //constructor initializes the obstacle
     ~Obstacle(); //destructor
     
@@ -30,3 +34,5 @@ class Obstacle{
     map<int,vector<Point*> > vertices_; //map of Z coordinates in which the obstacle changes and respective Vertices
     vector<unsigned int> planes_; //list of all Z coordinates
 };
+
+#endif
