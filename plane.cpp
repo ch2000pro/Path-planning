@@ -84,7 +84,7 @@ void Plane::lineSweep() {
     
 }
 
-void createSteinerPoint(Segment*, Segment*) {
+void Plane::createSteinerPoint(Segment*, Segment*) {
     
 }
 
