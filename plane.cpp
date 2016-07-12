@@ -8,6 +8,7 @@
 #include <vector>
 #include <iterator>
 #include "plane.h"
+#include <cmath>
 
 Plane::Plane(unsigned int z_){
     z = z_;
@@ -94,8 +95,9 @@ void Plane::lineSweep() {
                 }
             }
         }
-        if ("canproject")
-            "project";
+       // if(canProject){
+            //project;
+        //}
     }
     else if (s1->getRight() == p && s2->getRight() == p) {
         
@@ -140,6 +142,32 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
 		Plane::createMedianLines(aux1, w+1);
 		Plane::createMedianLines(aux2, w+1);
     }
+}
+
+bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
+    float highestX = 0;
+    float c0, b0, a0;
+    Point* p_;
+    //finding the highest X
+    if(p0 -> getX() >= p1 -> getX() && p0 -> getX() >= p2 -> getX()){
+        highestX = p0 -> getX();
+    }
+    if(p1 -> getX() >= p0 -> getX() && p1 -> getX() >= p2 -> getX()){
+        highestX = p1 -> getX();
+    }
+    if(p2 -> getX() >= p0 -> getX() && p2 -> getX() >= p1 -> getX()){
+        highestX = p2 -> getX();
+    }
+    p_ = new Point(highestX, p1->getY(), z);
+    if(p1 -> getX() == p_ -> getX()){
+        p_ -> setX(p_ -> getX()+1);
+    }
+    
+    return false;
+}
+
+float Plane::findDistance(Point* p0, Point* p1){
+    return sqrt(pow(p0 -> getX() - p1 -> getX(), 2) + pow(p0 -> getY() - p1 -> getY(), 2));
 }
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane

@@ -30,6 +30,18 @@ public:
         return (x < p->getX() || (x == p->getX() && y > p->getY()));
     }
     
+    void setX(float x_){
+        x = x_;
+    }
+    
+    void setY(float y_){
+        y = y_;
+    }
+    
+    void setZ(float z_){
+        z = z_;
+    }
+    
     float getX() {return x;}
     float getY() {return y;}
     float getZ() {return z;}
