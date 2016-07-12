@@ -36,7 +36,8 @@ private:
     bool canProject(Point* p1, Point* p2, Point* p3); 
     void createSteinerPoint(Segment*, Segment*); //creates a Steiner point and an edge associated to it
     void createMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
-    float findDistance(Point* p0, Point* p1);
+    double findDistance(Point* p0, Point* p1);
+    double findAngle(double a, double b, double c);
 };
 
 #endif

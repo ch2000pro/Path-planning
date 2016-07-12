@@ -9,6 +9,7 @@
 #include <iterator>
 #include "plane.h"
 #include <cmath>
+#define PI 3.14159265
 
 Plane::Plane(unsigned int z_){
     z = z_;
@@ -145,8 +146,9 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
 }
 
 bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
-    float highestX = 0;
-    float c0, b0, a0;
+    double highestX = 0;
+    double c0, b0, a0, angle0;
+    double c2, b2, a2, angle2;
     Point* p_;
     //finding the highest X
     if(p0 -> getX() >= p1 -> getX() && p0 -> getX() >= p2 -> getX()){
@@ -163,11 +165,41 @@ bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
         p_ -> setX(p_ -> getX()+1);
     }
     
-    return false;
+    //finding P0 angle
+    c0 = findDistance(p0, p_);
+    b0 = findDistance(p1, p_);
+    a0 = findDistance(p0, p1);
+    angle0 = findAngle(a0, b0, c0);
+    
+    if(p0 -> getY() > p1 -> getY()){
+        angle0 = 2 * PI - angle0;
+    }
+    
+    //finding P2 angle
+    c2 = findDistance(p2, p_);
+    b2 = findDistance(p1, p_);
+    a2 = findDistance(p2, p1);
+    angle2 = findAngle(a2, b2, c2);
+
+    if(p2 -> getY() > p1 -> getY()){
+        angle2 = 2 * PI - angle2;
+    }
+    
+    //comparing angles
+    if(angle2 == 0 || angle2 > angle0){
+        return false;
+    }
+    else{
+        return true;
+    }
 }
 
-float Plane::findDistance(Point* p0, Point* p1){
+double Plane::findDistance(Point* p0, Point* p1){
     return sqrt(pow(p0 -> getX() - p1 -> getX(), 2) + pow(p0 -> getY() - p1 -> getY(), 2));
+}
+
+double Plane::findAngle(double a, double b, double c){
+    return acos((pow(a, 2) + pow(b, 2) - pow(c, 2))/(2 * a * b));
 }
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane
