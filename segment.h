@@ -32,6 +32,14 @@ public:
 
 	Point* getLeft() {return left;}
 	Point* getRight() {return right;}
+    Point* getOther(Point* p){
+        if(p == left){
+            return right;
+        }
+        else{
+            return left;
+        }
+    }
     void setLeft(Point* a) {left = a;}
     void setRight(Point* a) {right = a;}
     int getWeight() {return weight;}

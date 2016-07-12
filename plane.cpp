@@ -9,6 +9,7 @@
 #include <iterator>
 #include "plane.h"
 #include <cmath>
+#define PI 3.14159265
 
 Plane::Plane(unsigned int z_){
     z = z_;
@@ -60,37 +61,37 @@ void Plane::lineSweep() {
     sort(endpoints.rbegin(), endpoints.rend());
     Point* p = endpoints.back();
     endpoints.pop_back();
-    list<Segment*> segments;
+    map<Segment*, int> segments;
     Segment* s1 = p->getSeg1();
     Segment* s2 = p->getSeg2();
     if (s2 == 0) {
-        for(list<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
-            if ((*it)->getWeight() > s1->getWeight()) {
-                Plane::createSteinerPoint(s1, *it);
-                Point aux(p->getX(), (*it)->getRight()->getY());
-                (*it)->setLeft(&aux);
-                (*it)->setWeight(s1->getWeight());
+        for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
+            if (it->first->getWeight() > s1->getWeight()) {
+                Plane::createSteinerPoint(s1, it->first);
+                Point aux(p->getX(), it->first->getRight()->getY());
+                it->first->setLeft(&aux);
+                it->first->setWeight(s1->getWeight());
             }
         }
     }
     else if (s1->getLeft() == p && s2->getLeft() == p) {
-        segments.push_back(s1);
-        segments.push_back(s2);
-        for(list<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
-            if ((*it)->getWeight() != 0) {
+        segments.insert(pair<Segment*, int>(s1,0));
+        segments.insert(pair<Segment*, int>(s2,0));
+        for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
+            if (it->first->getWeight() != 0) {
                 int ly1, ry1, ly2, ry2, ly, ry;
-                ly = (*it)->getLeft()->getY();
-                ry = (*it)->getRight()->getY();
+                ly = it->first->getLeft()->getY();
+                ry = it->first->getRight()->getY();
                 ly1 = s1->getLeft()->getY();
                 ry1 = s1->getRight()->getY();
                 ly2 = s2->getLeft()->getY();
                 ry2 = s2->getRight()->getY();
                 if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
-                    Plane::createSteinerPoint(s1, *it);
+                    Plane::createSteinerPoint(s1, it->first);
                     segments.erase(it);
                 }
                 else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
-                    Plane::createSteinerPoint(s2, *it);
+                    Plane::createSteinerPoint(s2, it->first);
                     segments.erase(it);
                 }
             }
@@ -100,7 +101,30 @@ void Plane::lineSweep() {
         //}
     }
     else if (s1->getRight() == p && s2->getRight() == p) {
-        
+        for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
+            if (it->first->getWeight() != 0) {
+                int ly1, ry1, ly2, ry2, ly, ry;
+                ly = it->first->getLeft()->getY();
+                ry = it->first->getRight()->getY();
+                ly1 = s1->getLeft()->getY();
+                ry1 = s1->getRight()->getY();
+                ly2 = s2->getLeft()->getY();
+                ry2 = s2->getRight()->getY();
+                if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
+                    Plane::createSteinerPoint(s1, it->first);
+                    segments.erase(it);
+                }
+                else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
+                    Plane::createSteinerPoint(s2, it->first);
+                    segments.erase(it);
+                }
+            }
+        }
+        // if(canProject){
+        //project;
+        //}
+        segments.erase(s1);
+        segments.erase(s2);
     }
     else {
         return;
@@ -145,8 +169,9 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
 }
 
 bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
-    float highestX = 0;
-    float c0, b0, a0;
+    double highestX = 0;
+    double c0, b0, a0, angle0;
+    double c2, b2, a2, angle2;
     Point* p_;
     //finding the highest X
     if(p0 -> getX() >= p1 -> getX() && p0 -> getX() >= p2 -> getX()){
@@ -163,11 +188,41 @@ bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
         p_ -> setX(p_ -> getX()+1);
     }
     
-    return false;
+    //finding P0 angle
+    c0 = findDistance(p0, p_);
+    b0 = findDistance(p1, p_);
+    a0 = findDistance(p0, p1);
+    angle0 = findAngle(a0, b0, c0);
+    
+    if(p0 -> getY() > p1 -> getY()){
+        angle0 = 2 * PI - angle0;
+    }
+    
+    //finding P2 angle
+    c2 = findDistance(p2, p_);
+    b2 = findDistance(p1, p_);
+    a2 = findDistance(p2, p1);
+    angle2 = findAngle(a2, b2, c2);
+
+    if(p2 -> getY() > p1 -> getY()){
+        angle2 = 2 * PI - angle2;
+    }
+    
+    //comparing angles
+    if(angle2 == 0 || angle2 > angle0){
+        return false;
+    }
+    else{
+        return true;
+    }
 }
 
-float Plane::findDistance(Point* p0, Point* p1){
+double Plane::findDistance(Point* p0, Point* p1){
     return sqrt(pow(p0 -> getX() - p1 -> getX(), 2) + pow(p0 -> getY() - p1 -> getY(), 2));
+}
+
+double Plane::findAngle(double a, double b, double c){
+    return acos((pow(a, 2) + pow(b, 2) - pow(c, 2))/(2 * a * b));
 }
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane
