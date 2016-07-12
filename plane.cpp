@@ -77,49 +77,13 @@ void Plane::lineSweep() {
     else if (s1->getLeft() == p && s2->getLeft() == p) {
         segments.insert(pair<Segment*, int>(s1,0));
         segments.insert(pair<Segment*, int>(s2,0));
-        for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
-            if (it->first->getWeight() != 0) {
-                int ly1, ry1, ly2, ry2, ly, ry;
-                ly = it->first->getLeft()->getY();
-                ry = it->first->getRight()->getY();
-                ly1 = s1->getLeft()->getY();
-                ry1 = s1->getRight()->getY();
-                ly2 = s2->getLeft()->getY();
-                ry2 = s2->getRight()->getY();
-                if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
-                    Plane::createSteinerPoint(s1, it->first);
-                    segments.erase(it);
-                }
-                else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
-                    Plane::createSteinerPoint(s2, it->first);
-                    segments.erase(it);
-                }
-            }
-        }
+        Plane::checkProjections(s1, s2, segments);
        // if(canProject){
             //project;
         //}
     }
     else if (s1->getRight() == p && s2->getRight() == p) {
-        for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
-            if (it->first->getWeight() != 0) {
-                int ly1, ry1, ly2, ry2, ly, ry;
-                ly = it->first->getLeft()->getY();
-                ry = it->first->getRight()->getY();
-                ly1 = s1->getLeft()->getY();
-                ry1 = s1->getRight()->getY();
-                ly2 = s2->getLeft()->getY();
-                ry2 = s2->getRight()->getY();
-                if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
-                    Plane::createSteinerPoint(s1, it->first);
-                    segments.erase(it);
-                }
-                else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
-                    Plane::createSteinerPoint(s2, it->first);
-                    segments.erase(it);
-                }
-            }
-        }
+        Plane::checkProjections(s1, s2, segments);
         // if(canProject){
         //project;
         //}
@@ -127,9 +91,47 @@ void Plane::lineSweep() {
         segments.erase(s2);
     }
     else {
-        return;
+        bool b;
+        if(segments.find(s1) == segments.end()) {
+            segments.insert(pair<Segment*, int>(s1, 0));
+            b = true;
+        }
+        else {
+            segments.insert(pair<Segment*, int>(s2, 0));
+            b = false;
+        }
+        Plane::checkProjections(s1, s2, segments);
+        // if(canProject){
+        //project;
+        //}
+        if (b)
+            segments.erase(s2);
+        else
+            segments.erase(s1);
     }
-    
+}
+
+//Given two object edges and a map of segments, that includes projections, checks if there are any intersections between those projections and the edges, in order to create Steiner points
+void Plane::checkProjections(Segment* s1, Segment* s2, map<Segment*, int> segments) {
+    for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
+        if (it->first->getWeight() != 0) {
+            int ly1, ry1, ly2, ry2, ly, ry;
+            ly = it->first->getLeft()->getY();
+            ry = it->first->getRight()->getY();
+            ly1 = s1->getLeft()->getY();
+            ry1 = s1->getRight()->getY();
+            ly2 = s2->getLeft()->getY();
+            ry2 = s2->getRight()->getY();
+            if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
+                Plane::createSteinerPoint(s1, it->first);
+                segments.erase(it);
+            }
+            else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
+                Plane::createSteinerPoint(s2, it->first);
+                segments.erase(it);
+            }
+        }
+    }
 }
 
 //Given two segments, an obstacle edge and a projection, creates a steiner point from their intersection and the corresponding edge to it

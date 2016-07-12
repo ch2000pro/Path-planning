@@ -33,8 +33,10 @@ public:
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane
     unsigned int z; //the z coordinate of this plane
+    
     //auxiliary functions
-    bool canProject(Point* p1, Point* p2, Point* p3); //function 
+    void checkProjections(Segment*, Segment*, map<Segment*, int>); //checks if there are any intersections between projections and objects, in order to create Steiner points
+    bool canProject(Point* p1, Point* p2, Point* p3); //function
     void createSteinerPoint(Segment*, Segment*); //creates a Steiner point and an edge associated to it
     void createMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
     double findDistance(Point* p0, Point* p1); //function to find the real distance between two points in the plane
