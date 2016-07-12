@@ -120,6 +120,11 @@ void Plane::lineSweep() {
                 }
             }
         }
+        // if(canProject){
+        //project;
+        //}
+        segments.erase(s1);
+        segments.erase(s2);
     }
     else {
         return;
