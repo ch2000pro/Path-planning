@@ -18,15 +18,93 @@ int main (){
     total_planes.push_back(0);
     vector<Obstacle*> obstacles;
     vector<Plane*> planes;
+    Point* source;
+    Point* target;
     
+    do{
+      cout << endl;
+      cout << "Select an option:" << endl;
+      cout << "1 - Create a new obstacle" << endl;
+      cout << "0 - Proceed" << endl;
+      cin >> option;
+      
+      switch(option){
+         case 0:{
+           vector<int>::iterator it;
+           int z;
+           for (it = total_planes.begin() ; it != total_planes.end(); ++it) {
+               z = *it;
+               Plane* plane = new Plane(z);
+               plane -> findObstaclesInPlane(obstacles);
+               planes.push_back(plane);
+           }
+           break;
+         }
+         
+         case 1:{
+           do{
+               cout << "How many planes does this object have? ";
+               cin >> planesInserted;
+               if(planesInserted<2) cout << "An object of are non-zero must "
+                   << "have at least 2 plane." << endl;
+           }while(planesInserted < 2);
+           flag_planes = 0;
+           while(planesInserted > 1){
+               vector<Point*> vertices_input;
+               cout << endl << "Input for the new plane..." << endl;
+               do{
+                   cout << "How many vertices does this plane have? ";
+                   cin >> vertices;
+                   if(vertices<3) cout << "An object of are non-zero must "
+                       << "have at least 3 vertices." << endl;
+              }while(vertices < 3);
+              cout << "What is the height of these segments? ";
+              cin >> height;
+              while(vertices > 0){
+                  int x, y;
+                  cout << "Enter x y: ";
+                  cin >> x;
+                  cin >> y;
+                  vertices_input.push_back(new Point(x,y));
+                  vertices --;
+               }
+               if(flag_planes == 0){
+                   obstacles.push_back(new Obstacle(vertices_input,height));
+                   if(std::find(total_planes.begin(), total_planes.end(), height) != total_planes.end()) {
+                      //vector of all planes already contains this height
+                   } else {
+                      total_planes.push_back(height);
+                   }
+                   flag_planes = 1;
+               }
+               else{
+                   unsigned int height_ = obstacles[obstacles.size()-1]->add_vertices(vertices_input, height);
+                   if(std::find(total_planes.begin(), total_planes.end(), height) != total_planes.end()) {
+                       //vector of all planes already contains this height
+                   } else {
+                       total_planes.push_back(height_);
+                   }
+               }
+               planesInserted--;
+               height = 0;
+           }
+           
+           cout << "Plane is " << obstacles[0]->find_plane(5) << endl;
+           obstacles[0]->print_num_vertices();
+           break;
+         }
+      }
+      
+    }while(option != 0);
+    
+    option = 0;
     do{ //Start menu
         //test
         cout << endl;
         cout << "Select an option:" << endl;
-        cout << "1 - Create a new obstacle" << endl;
-        cout << "2 - Number of obstacles" << endl;
-        cout << "3 - I dont want to create more obstacles" << endl;
-        cout << "4 - Find shortest path" << endl;
+        cout << "1 - Number of obstacles" << endl;
+        cout << "2 - I dont want to create more obstacles" << endl;
+        cout << "3 - Find shortest path" << endl;
         cout << "0 - Quit" << endl;
         cin >> option;
         
@@ -37,79 +115,34 @@ int main (){
             }
                 // =================== CASE 1 ===================
             case 1:{
-                do{
-                    cout << "How many planes does this object have? ";
-                    cin >> planesInserted;
-                    if(planesInserted<2) cout << "An object of are non-zero must "
-                        << "have at least 2 plane." << endl;
-                }while(planesInserted < 2);
-                
-                flag_planes = 0;
-                while(planesInserted > 1){
-                    vector<Point*> vertices_input;
-                    cout << endl << "Input for the new plane..." << endl;
-                    do{
-                        cout << "How many vertices does this plane have? ";
-                        cin >> vertices;
-                        if(vertices<3) cout << "An object of are non-zero must "
-                            << "have at least 3 vertices." << endl;
-                    }while(vertices < 3);
-                    cout << "What is the height of these segments? ";
-                    cin >> height;
-                    while(vertices > 0){
-                        int x, y;
-                        cout << "Enter x y: ";
-                        cin >> x;
-                        cin >> y;
-                        vertices_input.push_back(new Point(x,y));
-                        vertices --;
-                    }
-                    if(flag_planes == 0){
-                        obstacles.push_back(new Obstacle(vertices_input,height));
-                        if(std::find(total_planes.begin(), total_planes.end(), height) != total_planes.end()) {
-                            //vector of all planes already contains this height
-                        } else {
-                           total_planes.push_back(height);
-                        }
-                        flag_planes = 1;
-                    }
-                    else{
-                        unsigned int height_ = obstacles[obstacles.size()-1]->add_vertices(vertices_input, height);
-                        if(std::find(total_planes.begin(), total_planes.end(), height) != total_planes.end()) {
-                            //vector of all planes already contains this height
-                        } else {
-                            total_planes.push_back(height_);
-                        }
-                    }
-                    planesInserted--;
-                    height = 0;
-                }
-                
-                cout << "Plane is " << obstacles[0]->find_plane(5) << endl;
-                obstacles[0]->print_num_vertices();
+                cout << obstacles.size() << " object(s)." << endl << endl;
                 break;
             }
                 // =================== CASE 2 ===================
             case 2:{
-                cout << obstacles.size() << " object(s)." << endl << endl;
+                //Case where there will not be more obstacles inputs, so the Graph can be created
+                //for each z coordinate where obstacles change, it creates a new plane and calls the method findObstaclesInPlane
+                //afterwards, it will be created the Steiner points and the final graph
+            
+                
                 break;
             }
                 // =================== CASE 3 ===================
             case 3:{
-                for(int i = 0; i < total_planes.size(); i++){
-                    planes.push_back(new Plane(total_planes[i]));
-                }
-                for(int i = 0; i < planes.size(); i++){
-                    Plane* plane = planes[i];
-                    plane -> findObstaclesInPlane(obstacles);
-                }
-                break;
-            }
-                // =================== CASE 4 ===================
-            case 4:{
-                cout << " What is the source point of the search?" << endl;
-                cout << " What is the target point of the search?" << endl;
-                //TO DO;
+                unsigned int x, y, z, x_, y_, z_;
+                cout << " What is the source point of the search? (x, y and z)" << endl;
+                cin >> x;
+                cin >> y;
+                cin >> z;
+                cout << " What is the target point of the search? (x, y and z)" << endl;
+                cin >> x_;
+                cin >> y_;
+                cin >> z_;
+                
+                source = new Point(x, y, z);
+                target = new Point(x_, y_, z_);
+                
+                //TO DO FIND SHORTEST PATH;
                 break;
             }
                 // ================== DEFAULT ===================
