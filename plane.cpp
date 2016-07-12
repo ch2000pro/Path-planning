@@ -145,6 +145,7 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
     }
 }
 
+//auxiliary function to the Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points
 bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
     double highestX = 0;
     double c0, b0, a0, angle0;
@@ -194,10 +195,12 @@ bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
     }
 }
 
+//auxiliary function to the function canProject, it finds the euclidean distance between two points (so the angle between euclidean lines can be calculated)
 double Plane::findDistance(Point* p0, Point* p1){
     return sqrt(pow(p0 -> getX() - p1 -> getX(), 2) + pow(p0 -> getY() - p1 -> getY(), 2));
 }
 
+//auxiliary function to the function canProject, it finds the angle between euclidean points distance. This way, it can be checked if the angle is inside or outside an obstacle.
 double Plane::findAngle(double a, double b, double c){
     return acos((pow(a, 2) + pow(b, 2) - pow(c, 2))/(2 * a * b));
 }
