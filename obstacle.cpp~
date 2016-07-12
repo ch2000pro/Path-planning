@@ -7,7 +7,7 @@
 
 #include "obstacle.h" 
 
-
+//testando
   Obstacle::Obstacle(vector<Point*>vertices, int height){
     vertices_[0] = vertices;
     height_ = height;
@@ -76,6 +76,6 @@
   void Obstacle::print_num_vertices(){
     vector<int>::iterator it;
     for(it = planes_.begin(); it != planes_.end(); ++it){
-      cout << endl << "Plane " << *it << " has " << ((vertices_[*it]).second).size() << " vertices." << endl;
+      cout << endl << "Plane " << *it << " has " << (vertices_[*it]).size() << " vertices." << endl;
     }
   }
