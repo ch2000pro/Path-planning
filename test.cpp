@@ -98,12 +98,17 @@ int main (){
             }
                 // =================== CASE 3 ===================
             case 3:{
-                for(unsigned int i = 0; i < total_planes.size(); i++){
-                    planes.push_back(new Plane(total_planes[i]));
-                }
-                for(unsigned int i = 0; i < planes.size(); i++){
-                    Plane* plane = planes[i];
+                //Case where there will not be more obstacles inputs, so the Graph can be created
+                //for each z coordinate where obstacles change, it creates a new plane and calls the method findObstaclesInPlane
+                //afterwards, it will be created the Steiner points and the final graph
+            
+                vector<int>::iterator it;
+                int z;
+                for (it = total_planes.begin() ; it != total_planes.end(); ++it) {
+                    z = *it;
+                    Plane* plane = new Plane(z);
                     plane -> findObstaclesInPlane(obstacles);
+                    planes.push_back(plane);
                 }
                 break;
             }

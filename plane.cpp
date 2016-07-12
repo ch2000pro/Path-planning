@@ -8,6 +8,7 @@
 #include <vector>
 #include <iterator>
 #include "plane.h"
+#include <cmath>
 
 Plane::Plane(unsigned int z_){
     z = z_;
@@ -59,13 +60,13 @@ void Plane::lineSweep() {
     sort(endpoints.rbegin(), endpoints.rend());
     Point* p = endpoints.back();
     endpoints.pop_back();
-    vector<Segment*> segments;
+    list<Segment*> segments;
     Segment* s1 = p->getSeg1();
     Segment* s2 = p->getSeg2();
     if (s2 == 0) {
-        for(vector<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+        for(list<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
             if ((*it)->getWeight() > s1->getWeight()) {
-                Plane::createSteinerPoint(*it, s1);
+                Plane::createSteinerPoint(s1, *it);
                 Point aux(p->getX(), (*it)->getRight()->getY());
                 (*it)->setLeft(&aux);
                 (*it)->setWeight(s1->getWeight());
@@ -75,6 +76,28 @@ void Plane::lineSweep() {
     else if (s1->getLeft() == p && s2->getLeft() == p) {
         segments.push_back(s1);
         segments.push_back(s2);
+        for(list<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+            if ((*it)->getWeight() != 0) {
+                int ly1, ry1, ly2, ry2, ly, ry;
+                ly = (*it)->getLeft()->getY();
+                ry = (*it)->getRight()->getY();
+                ly1 = s1->getLeft()->getY();
+                ry1 = s1->getRight()->getY();
+                ly2 = s2->getLeft()->getY();
+                ry2 = s2->getRight()->getY();
+                if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
+                    Plane::createSteinerPoint(s1, *it);
+                    segments.erase(it);
+                }
+                else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
+                    Plane::createSteinerPoint(s2, *it);
+                    segments.erase(it);
+                }
+            }
+        }
+       // if(canProject){
+            //project;
+        //}
     }
     else if (s1->getRight() == p && s2->getRight() == p) {
         
@@ -93,7 +116,6 @@ void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     Point* left1 = segment1 -> getLeft();
     Point* right2 = segment2 -> getRight();
     Point* left2 = segment2 -> getLeft();
-    Point* steiner;
     
     m1 = (left1 -> getY() - right1 -> getY())/(left1 -> getX() - right1 -> getX());
     m2 = (left2 -> getY() - right2 -> getY())/(left2 -> getX() - right2 -> getX());
@@ -102,8 +124,8 @@ void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     x = (c2 - c1)/(m1 - m2);
     y = (m1 * x) + c1;
     
-    steiner = new Point(x, y, right1 -> getZ());
-    
+    Point steiner(x, y, right1 -> getZ());
+    segment1->addSteinerPoint(&steiner);
 }
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
@@ -122,15 +144,48 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
     }
 }
 
+bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
+    float highestX = 0;
+    float c0, b0, a0;
+    Point* p_;
+    //finding the highest X
+    if(p0 -> getX() >= p1 -> getX() && p0 -> getX() >= p2 -> getX()){
+        highestX = p0 -> getX();
+    }
+    if(p1 -> getX() >= p0 -> getX() && p1 -> getX() >= p2 -> getX()){
+        highestX = p1 -> getX();
+    }
+    if(p2 -> getX() >= p0 -> getX() && p2 -> getX() >= p1 -> getX()){
+        highestX = p2 -> getX();
+    }
+    p_ = new Point(highestX, p1->getY(), z);
+    if(p1 -> getX() == p_ -> getX()){
+        p_ -> setX(p_ -> getX()+1);
+    }
+    
+    return false;
+}
+
+float Plane::findDistance(Point* p0, Point* p1){
+    return sqrt(pow(p0 -> getX() - p1 -> getX(), 2) + pow(p0 -> getY() - p1 -> getY(), 2));
+}
+
 //Function that runs through all the obstacles to check if they are obstacles in that plane
 //For each one found, add that obstacle to the 2D Plane 
 void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
+<<<<<<< HEAD
     for(unsigned int i = 0; i < obstacles.size(); i++){
         Obstacle* obstacle_ = obstacles[i];
         if(obstacle_-> get_height() > z){
             addObstacle(obstacle_ -> get_vertices(z));
     for(int i = 0; i < obstacles.size(); i++){
         Obstacle* obstacle = obstacles[i];
+=======
+    vector<Obstacle*>::iterator it;
+    Obstacle* obstacle;
+    for (it = obstacles.begin() ; it != obstacles.end(); ++it) {
+        obstacle = *it;
+>>>>>>> e7458e780c9851cc3caacd2943274842865033a8
         if(obstacle-> get_height() > z){
             addObstacle(obstacle -> get_vertices(z));
         }

@@ -7,8 +7,13 @@
 
 #include "obstacle.h"
 
+<<<<<<< HEAD
+//testando
+  Obstacle::Obstacle(vector<Point*>vertices, int height){
+=======
 //constructor, it initializes the obstacle in the plane 0 (terrain ground)
 Obstacle::Obstacle(vector<Point*>vertices, unsigned int height){
+>>>>>>> d3ac1ba6fc41d572c627bdb828f0cd48d0f3a2e1
     vertices_[0] = vertices;
     height_ = height;
     planes_.push_back(0);
@@ -111,7 +116,11 @@ void Obstacle::print_num_vertices(){
     vector<unsigned int>::iterator it;
     cout << endl << "---DEBUG FUNCTION---";
     for(it = planes_.begin(); it != planes_.end(); ++it){
+<<<<<<< HEAD
+      cout << endl << "Plane " << *it << " has " << (vertices_[*it]).size() << " vertices." << endl;
+=======
         cout << endl <<"Plane " << *it << " has " << (vertices_[*it]).size() << " vertices.";
+>>>>>>> d3ac1ba6fc41d572c627bdb828f0cd48d0f3a2e1
     }
     cout << endl;
     cout << "--------END---------" << endl;

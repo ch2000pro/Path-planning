@@ -9,6 +9,7 @@
 #define SEGMENT_H_
 
 #include "point.h"
+using namespace std;
 
 //Segment is a line segment between two points
 class Segment {
@@ -35,11 +36,13 @@ public:
     void setRight(Point* a) {right = a;}
     int getWeight() {return weight;}
     void setWeight(int w) {weight = w;}
+    void addSteinerPoint(Point* p) {steinerPoints.push_back(p);}
 
 private:
 	Point* left; //left endpoint
 	Point* right; //right endpoint
 	int weight;
+    vector<Point*> steinerPoints; //steiner points created in this segment
 };
 
 

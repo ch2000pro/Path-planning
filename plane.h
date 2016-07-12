@@ -28,13 +28,15 @@ public:
      ~Plane(); //destructor
     void addObstacle(vector<Point*>); //adds the vertices and edges of an obstacle that are in this plane
     void lineSweep(); //the 2D path planning algo; creates a graph for the plane
-    void createMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
     void findObstaclesInPlane(vector<Obstacle*> Map); //finds the obstacles that are found in this plane
-    void createSteinerPoint(Segment*, Segment*); //creates a Steiner point and an edge associated to it
     
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane
     unsigned int z; //the z coordinate of this plane
+    bool canProject(Point* p1, Point* p2, Point* p3); 
+    void createSteinerPoint(Segment*, Segment*); //creates a Steiner point and an edge associated to it
+    void createMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
+    float findDistance(Point* p0, Point* p1);
 };
 
 #endif
