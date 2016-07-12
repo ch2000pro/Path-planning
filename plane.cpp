@@ -125,21 +125,20 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
 //Function that runs through all the obstacles to check if they are obstacles in that plane
 //For each one found, add that obstacle to the 2D Plane 
 void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
-<<<<<<< HEAD
     for(unsigned int i = 0; i < obstacles.size(); i++){
         Obstacle* obstacle_ = obstacles[i];
         if(obstacle_-> get_height() > z){
             addObstacle(obstacle_ -> get_vertices(z));
-=======
     for(int i = 0; i < obstacles.size(); i++){
         Obstacle* obstacle = obstacles[i];
         if(obstacle-> get_height() > z){
             addObstacle(obstacle -> get_vertices(z));
->>>>>>> c1e303caed1a88c1a711f62f42937ec9928c3026
         }
         else{
             return;
         }
     }
+}
+}
 }
 
