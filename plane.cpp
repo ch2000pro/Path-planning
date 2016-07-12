@@ -127,9 +127,42 @@ void Plane::lineSweep() {
         segments.erase(s2);
     }
     else {
-        return;
+        bool b;
+        if(segments.find(s1) == segments.end()) {
+            segments.insert(pair<Segment*, int>(s1, 0));
+            b = true;
+        }
+        else {
+            segments.insert(pair<Segment*, int>(s2, 0));
+            b = false;
+        }
+        for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
+            if (it->first->getWeight() != 0) {
+                int ly1, ry1, ly2, ry2, ly, ry;
+                ly = it->first->getLeft()->getY();
+                ry = it->first->getRight()->getY();
+                ly1 = s1->getLeft()->getY();
+                ry1 = s1->getRight()->getY();
+                ly2 = s2->getLeft()->getY();
+                ry2 = s2->getRight()->getY();
+                if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
+                    Plane::createSteinerPoint(s1, it->first);
+                    segments.erase(it);
+                }
+                else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
+                    Plane::createSteinerPoint(s2, it->first);
+                    segments.erase(it);
+                }
+            }
+        }
+        // if(canProject){
+        //project;
+        //}
+        if (b)
+            segments.erase(s2);
+        else
+            segments.erase(s1);
     }
-    
 }
 
 //Given two segments, an obstacle edge and a projection, creates a steiner point from their intersection and the corresponding edge to it
