@@ -59,55 +59,64 @@ void Plane::addObstacle(vector<Point*> points) {
 void Plane::lineSweep() {
     Plane::createMedianLines(endpoints, 1);
     sort(endpoints.rbegin(), endpoints.rend());
-    Point* p = endpoints.back();
-    endpoints.pop_back();
-    map<Segment*, int> segments;
-    Segment* s1 = p->getSeg1();
-    Segment* s2 = p->getSeg2();
-    if (s2 == 0) {
-        for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
-            if (it->first->getWeight() > s1->getWeight()) {
-                Plane::createSteinerPoint(s1, it->first);
-                Point aux(p->getX(), it->first->getRight()->getY());
-                it->first->setLeft(&aux);
-                it->first->setWeight(s1->getWeight());
+    Point* p;
+    while(endpoints.size() > 0) {
+        p = endpoints.back();
+        endpoints.pop_back();
+        map<Segment*, int> segments;
+        Segment* s1 = p->getSeg1();
+        Segment* s2 = p->getSeg2();
+        if (s2 == 0) {
+            for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
+                if (it->first->getWeight() > s1->getWeight()) {
+                    Plane::createSteinerPoint(s1, it->first);
+                    Point aux(p->getX(), it->first->getRight()->getY());
+                    it->first->setLeft(&aux);
+                    it->first->setWeight(s1->getWeight());
+                }
             }
         }
-    }
-    else if (s1->getLeft() == p && s2->getLeft() == p) {
-        segments.insert(pair<Segment*, int>(s1,0));
-        segments.insert(pair<Segment*, int>(s2,0));
-        Plane::checkProjections(s1, s2, segments);
-       // if(canProject){
-            //project;
-        //}
-    }
-    else if (s1->getRight() == p && s2->getRight() == p) {
-        Plane::checkProjections(s1, s2, segments);
-        // if(canProject){
-        //project;
-        //}
-        segments.erase(s1);
-        segments.erase(s2);
-    }
-    else {
-        bool b;
-        if(segments.find(s1) == segments.end()) {
-            segments.insert(pair<Segment*, int>(s1, 0));
-            b = true;
+        else if (s1->getLeft() == p && s2->getLeft() == p) {
+            segments.insert(pair<Segment*, int>(s1,0));
+            segments.insert(pair<Segment*, int>(s2,0));
+            Plane::checkProjections(s1, s2, segments);
+            if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
+                Point aux1(2147483647, p->getY());
+                Segment aux2(p, &aux1, 2147483647);
+                segments.insert(pair<Segment*, int>(&aux2, 0));
+            }
+        }
+        else if (s1->getRight() == p && s2->getRight() == p) {
+            Plane::checkProjections(s1, s2, segments);
+            if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
+                Point aux1(2147483647, p->getY());
+                Segment aux2(p, &aux1, 2147483647);
+                segments.insert(pair<Segment*, int>(&aux2, 0));
+            }
+            segments.erase(s1);
+            segments.erase(s2);
         }
         else {
-            segments.insert(pair<Segment*, int>(s2, 0));
-            b = false;
+            bool b;
+            if(segments.find(s1) == segments.end()) {
+                segments.insert(pair<Segment*, int>(s1, 0));
+                b = true;
+            }
+            else {
+                segments.insert(pair<Segment*, int>(s2, 0));
+                b = false;
+            }
+            Plane::checkProjections(s1, s2, segments);
+            if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
+                Point aux1(2147483647, p->getY());
+                Segment aux2(p, &aux1, 2147483647);
+                segments.insert(pair<Segment*, int>(&aux2, 0));
+            }
+            if (b)
+                segments.erase(s2);
+            else
+                segments.erase(s1);
         }
-        Plane::checkProjections(s1, s2, segments);
-        // if(canProject){
-        //project;
-        //}
-        if (b)
-            segments.erase(s2);
-        else
-            segments.erase(s1);
     }
 }
 
