@@ -173,19 +173,10 @@ float Plane::findDistance(Point* p0, Point* p1){
 //Function that runs through all the obstacles to check if they are obstacles in that plane
 //For each one found, add that obstacle to the 2D Plane 
 void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
-<<<<<<< HEAD
-    for(unsigned int i = 0; i < obstacles.size(); i++){
-        Obstacle* obstacle_ = obstacles[i];
-        if(obstacle_-> get_height() > z){
-            addObstacle(obstacle_ -> get_vertices(z));
-    for(int i = 0; i < obstacles.size(); i++){
-        Obstacle* obstacle = obstacles[i];
-=======
     vector<Obstacle*>::iterator it;
     Obstacle* obstacle;
     for (it = obstacles.begin() ; it != obstacles.end(); ++it) {
         obstacle = *it;
->>>>>>> e7458e780c9851cc3caacd2943274842865033a8
         if(obstacle-> get_height() > z){
             addObstacle(obstacle -> get_vertices(z));
         }
@@ -193,7 +184,5 @@ void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
             return;
         }
     }
-}
-}
 }
 
