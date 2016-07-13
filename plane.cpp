@@ -80,19 +80,15 @@ void Plane::lineSweep() {
             segments.insert(s1);
             segments.insert(s2);
             Plane::checkProjections(s1, s2, segments);
-            if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
-                Point aux1(2147483647, p->getY());
-                Segment aux2(p, &aux1, 2147483647);
-                segments.insert(&aux2);
-            }
+            Segment aux = Plane::project(p);
+            if (aux.getLeft() != 0)
+                segments.insert(&aux);
         }
         else if (s1->getRight() == p && s2->getRight() == p) {
             Plane::checkProjections(s1, s2, segments);
-            if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
-                Point aux1(2147483647, p->getY());
-                Segment aux2(p, &aux1, 2147483647);
-                segments.insert(&aux2);
-            }
+            Segment aux = Plane::project(p);
+            if (aux.getLeft() != 0)
+                segments.insert(&aux);
             segments.erase(s1);
             segments.erase(s2);
         }
@@ -107,11 +103,9 @@ void Plane::lineSweep() {
                 b = false;
             }
             Plane::checkProjections(s1, s2, segments);
-            if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
-                Point aux1(2147483647, p->getY());
-                Segment aux2(p, &aux1, 2147483647);
-                segments.insert(&aux2);
-            }
+            Segment aux = Plane::project(p);
+            if (aux.getLeft() != 0)
+                segments.insert(&aux);
             if (b)
                 segments.erase(s2);
             else
@@ -160,7 +154,10 @@ void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     y = (m1 * x) + c1;
     
     Point steiner(x, y, right1 -> getZ());
+    nodes.push_back(&steiner);
     segment1->addSteinerPoint(&steiner);
+    Segment s(segment2->getLeft(), &steiner);
+    edges.push_back(&s);
 }
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
@@ -179,8 +176,10 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
     }
 }
 
-//auxiliary function to the Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points
-bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
+//auxiliary function to the Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
+Segment Plane::project(Point* p1) {
+    Segment *s1 = p1->getSeg1(), *s2 = p1->getSeg2();
+    Point *p0 = s1->getOther(p1), *p2 = s2->getOther(p1);
     double highestX = 0;
     double c0, b0, a0, angle0;
     double c2, b2, a2, angle2;
@@ -222,10 +221,13 @@ bool Plane::canProject(Point* p0, Point* p1, Point* p2) {
     
     //comparing angles
     if(angle2 == 0 || angle2 > angle0){
-        return false;
+        Segment aux(0, 0);
+        return aux;
     }
     else{
-        return true;
+        Point aux1(2147483647, p1->getY());
+        Segment aux2(p1, &aux1, 2147483647);
+        return aux2;
     }
 }
 
