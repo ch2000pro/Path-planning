@@ -176,7 +176,7 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
     }
 }
 
-//auxiliary function to the Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
+//auxiliary function to the LEFT TO RIGHT Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
 Segment Plane::project(Point* p1) {
     Segment *s1 = p1->getSeg1(), *s2 = p1->getSeg2();
     Point *p0 = s1->getOther(p1), *p2 = s2->getOther(p1);
@@ -254,6 +254,61 @@ void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
         else{
             return;
         }
+    }
+}
+
+//auxiliary function to the RIGHT TO LEFT Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
+Segment Plane::projectRTL(Point* p1) {
+    Segment *s1 = p1->getSeg1(), *s2 = p1->getSeg2();
+    Point *p0 = s1->getOther(p1), *p2 = s2->getOther(p1);
+    double lowestX = 0;
+    double c0, b0, a0, angle0;
+    double c2, b2, a2, angle2;
+    Point* p_;
+    //finding the highest X
+    if(p0 -> getX() <= p1 -> getX() && p0 -> getX() <= p2 -> getX()){
+        lowestX = p0 -> getX();
+    }
+    if(p1 -> getX() <= p0 -> getX() && p1 -> getX() <= p2 -> getX()){
+        lowestX = p1 -> getX();
+    }
+    if(p2 -> getX() <= p0 -> getX() && p2 -> getX() <= p1 -> getX()){
+        lowestX = p2 -> getX();
+    }
+    p_ = new Point(lowestX, p1->getY(), z);
+    if(p1 -> getX() == p_ -> getX()){
+        p_ -> setX(p_ -> getX()-1);
+    }
+    
+    //finding P0 angle
+    c0 = findDistance(p0, p_);
+    b0 = findDistance(p1, p_);
+    a0 = findDistance(p0, p1);
+    angle0 = findAngle(a0, b0, c0);
+    
+    if(p0 -> getY() > p1 -> getY()){
+        angle0 = 2 * PI - angle0;
+    }
+    
+    //finding P2 angle
+    c2 = findDistance(p2, p_);
+    b2 = findDistance(p1, p_);
+    a2 = findDistance(p2, p1);
+    angle2 = findAngle(a2, b2, c2);
+
+    if(p2 -> getY() > p1 -> getY()){
+        angle2 = 2 * PI - angle2;
+    }
+    
+    //comparing angles
+    if(angle0 == 0 || angle0 > angle2){
+        Segment aux(0, 0);
+        return aux;
+    }
+    else{
+        Point aux1(-2147483647, p1->getY());
+        Segment aux2(&aux1, p1, 2147483647);
+        return aux2;
     }
 }
 

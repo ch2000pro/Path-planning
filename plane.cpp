@@ -258,7 +258,7 @@ void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
 }
 
 //auxiliary function to the RIGHT TO LEFT Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
-Segment Plane::project(Point* p1) {
+Segment Plane::projectRTL(Point* p1) {
     Segment *s1 = p1->getSeg1(), *s2 = p1->getSeg2();
     Point *p0 = s1->getOther(p1), *p2 = s2->getOther(p1);
     double lowestX = 0;
@@ -273,7 +273,7 @@ Segment Plane::project(Point* p1) {
         lowestX = p1 -> getX();
     }
     if(p2 -> getX() <= p0 -> getX() && p2 -> getX() <= p1 -> getX()){
-        lowesttX = p2 -> getX();
+        lowestX = p2 -> getX();
     }
     p_ = new Point(lowestX, p1->getY(), z);
     if(p1 -> getX() == p_ -> getX()){
