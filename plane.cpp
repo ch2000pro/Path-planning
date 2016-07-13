@@ -60,30 +60,30 @@ void Plane::lineSweep() {
     Plane::createMedianLines(endpoints, 1);
     sort(endpoints.rbegin(), endpoints.rend());
     Point* p;
+    set<Segment*> segments;
     while(endpoints.size() > 0) {
         p = endpoints.back();
         endpoints.pop_back();
-        map<Segment*, int> segments;
         Segment* s1 = p->getSeg1();
         Segment* s2 = p->getSeg2();
         if (s2 == 0) {
-            for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
-                if (it->first->getWeight() > s1->getWeight()) {
-                    Plane::createSteinerPoint(s1, it->first);
-                    Point aux(p->getX(), it->first->getRight()->getY());
-                    it->first->setLeft(&aux);
-                    it->first->setWeight(s1->getWeight());
+            for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+                if ((*it)->getWeight() > s1->getWeight()) {
+                    Plane::createSteinerPoint(s1, *it);
+                    Point aux(p->getX(), (*it)->getRight()->getY());
+                    (*it)->setLeft(&aux);
+                    (*it)->setWeight(s1->getWeight());
                 }
             }
         }
         else if (s1->getLeft() == p && s2->getLeft() == p) {
-            segments.insert(pair<Segment*, int>(s1,0));
-            segments.insert(pair<Segment*, int>(s2,0));
+            segments.insert(s1);
+            segments.insert(s2);
             Plane::checkProjections(s1, s2, segments);
             if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
                 Point aux1(2147483647, p->getY());
                 Segment aux2(p, &aux1, 2147483647);
-                segments.insert(pair<Segment*, int>(&aux2, 0));
+                segments.insert(&aux2);
             }
         }
         else if (s1->getRight() == p && s2->getRight() == p) {
@@ -91,7 +91,7 @@ void Plane::lineSweep() {
             if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
                 Point aux1(2147483647, p->getY());
                 Segment aux2(p, &aux1, 2147483647);
-                segments.insert(pair<Segment*, int>(&aux2, 0));
+                segments.insert(&aux2);
             }
             segments.erase(s1);
             segments.erase(s2);
@@ -99,18 +99,18 @@ void Plane::lineSweep() {
         else {
             bool b;
             if(segments.find(s1) == segments.end()) {
-                segments.insert(pair<Segment*, int>(s1, 0));
+                segments.insert(s1);
                 b = true;
             }
             else {
-                segments.insert(pair<Segment*, int>(s2, 0));
+                segments.insert(s2);
                 b = false;
             }
             Plane::checkProjections(s1, s2, segments);
             if(Plane::canProject(s1->getOther(p), p, s2->getOther(p))){
                 Point aux1(2147483647, p->getY());
                 Segment aux2(p, &aux1, 2147483647);
-                segments.insert(pair<Segment*, int>(&aux2, 0));
+                segments.insert(&aux2);
             }
             if (b)
                 segments.erase(s2);
@@ -121,22 +121,22 @@ void Plane::lineSweep() {
 }
 
 //Given two object edges and a map of segments, that includes projections, checks if there are any intersections between those projections and the edges, in order to create Steiner points
-void Plane::checkProjections(Segment* s1, Segment* s2, map<Segment*, int> segments) {
-    for(map<Segment*, int>::iterator it = segments.begin(); it != segments.end(); it++) {
-        if (it->first->getWeight() != 0) {
+void Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*> segments) {
+    for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+        if ((*it)->getWeight() != 0) {
             int ly1, ry1, ly2, ry2, ly, ry;
-            ly = it->first->getLeft()->getY();
-            ry = it->first->getRight()->getY();
+            ly = (*it)->getLeft()->getY();
+            ry = (*it)->getRight()->getY();
             ly1 = s1->getLeft()->getY();
             ry1 = s1->getRight()->getY();
             ly2 = s2->getLeft()->getY();
             ry2 = s2->getRight()->getY();
             if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
-                Plane::createSteinerPoint(s1, it->first);
+                Plane::createSteinerPoint(s1, *it);
                 segments.erase(it);
             }
             else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
-                Plane::createSteinerPoint(s2, it->first);
+                Plane::createSteinerPoint(s2, *it);
                 segments.erase(it);
             }
         }
