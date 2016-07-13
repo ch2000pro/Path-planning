@@ -80,13 +80,13 @@ void Plane::lineSweep() {
             segments.insert(s1);
             segments.insert(s2);
             Plane::checkProjections(s1, s2, segments);
-            Segment aux = Plane::project(p);
+            Segment aux = Plane::projectLTR(p);
             if (aux.getLeft() != 0)
                 segments.insert(&aux);
         }
         else if (s1->getRight() == p && s2->getRight() == p) {
             Plane::checkProjections(s1, s2, segments);
-            Segment aux = Plane::project(p);
+            Segment aux = Plane::projectLTR(p);
             if (aux.getLeft() != 0)
                 segments.insert(&aux);
             segments.erase(s1);
@@ -103,7 +103,7 @@ void Plane::lineSweep() {
                 b = false;
             }
             Plane::checkProjections(s1, s2, segments);
-            Segment aux = Plane::project(p);
+            Segment aux = Plane::projectLTR(p);
             if (aux.getLeft() != 0)
                 segments.insert(&aux);
             if (b)
@@ -177,7 +177,7 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
 }
 
 //auxiliary function to the LEFT TO RIGHT Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
-Segment Plane::project(Point* p1) {
+Segment Plane::projectLTR(Point* p1) {
     Segment *s1 = p1->getSeg1(), *s2 = p1->getSeg2();
     Point *p0 = s1->getOther(p1), *p2 = s2->getOther(p1);
     double highestX = 0;
