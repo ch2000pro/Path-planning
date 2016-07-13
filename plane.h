@@ -43,6 +43,7 @@ private:
     double findDistance(Point* p0, Point* p1); //function to find the real distance between two points in the plane
     double findAngle(double a, double b, double c); //function to find the angle between three points
     Segment project(Point*); //checks if a projection is possible and creates that projection if so
+    Segment projectRTL(Point*); //checks if a projection is possible and creates that projection if so
 };
 
 #endif
