@@ -5,20 +5,20 @@ CFLAGS=-g -Wall
 
 all: pathPlanning
 
-pathPlanning: obstacle.o graph.o plane.o test.o
-        $(CC) obstacle.o graph.o plane.o test.o -o test
-        
-obstacle.o: obstacle.cpp
-        $(CC) $(CFLAGS) obstacle.cpp
-
-graph.o: graph.cpp
-        $(CC) $(CFLAGS) graph.cpp
+pathPlanning: test.o plane.o obstacle.o graph.o  
+	$(CC) test.o plane.o obstacle.o graph.o -o test
 
 plane.o: plane.cpp
-        $(CC) $(CFLAGS) plane.cpp
+	$(CC) $(CFLAGS) plane.cpp
 
 test.o: test.cpp
-        $(CC) $(CFLAGS) test.cpp
+	$(CC) $(CFLAGS) test.cpp
+
+obstacle.o: obstacle.cpp
+	$(CC) $(CFLAGS) obstacle.cpp
+
+graph.o: graph.cpp
+	$(CC) $(CFLAGS) graph.cpp
 
 clean: 
-        rm *o test
+	rm *o test
