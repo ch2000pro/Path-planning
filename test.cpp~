@@ -4,7 +4,13 @@
 /*  Leonardo Castilho                            */
 /*  Start: June 15th                             */
 /*-----------------------------------------------*/
-
+/*
+#include "boost/config.hpp"
+#include "boost/graph/graph_traits.hpp"
+#include "boost/graph/adjacency_list.hpp"
+#include "boost/graph/dijkstra_shortest_paths.hpp"
+#include "boost/property_map/property_map.hpp"
+*/
 
 #include "obstacle.h"
 #include "point.h"
@@ -103,8 +109,7 @@ int main (){
         cout << endl;
         cout << "Select an option:" << endl;
         cout << "1 - Number of obstacles" << endl;
-        cout << "2 - I dont want to create more obstacles" << endl;
-        cout << "3 - Find shortest path" << endl;
+        cout << "2 - Find shortest path" << endl;
         cout << "0 - Quit" << endl;
         cin >> option;
         
@@ -120,15 +125,6 @@ int main (){
             }
                 // =================== CASE 2 ===================
             case 2:{
-                //Case where there will not be more obstacles inputs, so the Graph can be created
-                //for each z coordinate where obstacles change, it creates a new plane and calls the method findObstaclesInPlane
-                //afterwards, it will be created the Steiner points and the final graph
-            
-                
-                break;
-            }
-                // =================== CASE 3 ===================
-            case 3:{
                 unsigned int x, y, z, x_, y_, z_;
                 cout << " What is the source point of the search? (x, y and z)" << endl;
                 cin >> x;
