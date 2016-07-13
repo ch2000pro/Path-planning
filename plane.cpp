@@ -168,8 +168,8 @@ void Plane::createMedianLines(vector<Point*> points, int w) {
 		Point p1(x, 2147483647);
 		Point p2(x, -2147483648);
 		Segment l(&p1, &p2, w);
-        p1.setSeg1(&l);
-        endpoints.push_back(&p1);
+        p2.setSeg1(&l);
+        endpoints.push_back(&p2);
 		vector<Point*> aux1(points.begin(), middle - 1), aux2(middle + 1, points.end());
 		Plane::createMedianLines(aux1, w+1);
 		Plane::createMedianLines(aux2, w+1);
