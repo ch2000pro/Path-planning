@@ -42,8 +42,10 @@ private:
     void createMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
     double findDistance(Point* p0, Point* p1); //function to find the real distance between two points in the plane
     double findAngle(double a, double b, double c); //function to find the angle between three points
-    Segment project(Point*); //checks if a projection is possible and creates that projection if so
-    Segment projectRTL(Point*); //checks if a projection is possible and creates that projection if so
+    Segment project(Point*); //checks if a projection is possible and creates that projection if so for the left to right line sweep
+    Segment projectRTL(Point*); //checks if a projection is possible and creates that projection if so for the right to left line sweep
+    Segment projectDTU(Point*); //checks if a projection is possible and creates that projection if so for the down to up line sweep
+    Segment projectUTD(Point*); //checks if a projection is possible and creates that projection if so for the up to down line sweep
 };
 
 #endif
