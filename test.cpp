@@ -18,7 +18,8 @@
 using namespace std;
 
 int main (){
-    unsigned int option = 0, vertices = 0, planesInserted = 0, flag_planes = 0, height;
+    unsigned int option = 0, vertices = 0, planesInserted = 0, flag_planes = 0;
+    double height;
     vector<int> total_planes;
     total_planes.push_back(0);
     vector<Obstacle*> obstacles;
@@ -30,6 +31,7 @@ int main (){
       cout << endl;
       cout << "Select an option:" << endl;
       cout << "1 - Create a new obstacle" << endl;
+      cout << "2 - Use default map" << endl; //Default map is drawn
       cout << "0 - Proceed" << endl;
       cin >> option;
       
@@ -66,7 +68,7 @@ int main (){
               cout << "What is the height of these segments? ";
               cin >> height;
               while(vertices > 0){
-                  int x, y;
+                  double x, y;
                   cout << "Enter x y: ";
                   cin >> x;
                   cin >> y;
@@ -94,13 +96,60 @@ int main (){
                height = 0;
            }
            
-           cout << "Plane is " << obstacles[0]->find_plane(5) << endl;
+           //cout << "Plane is " << obstacles[0]->find_plane(5) << endl;
+           //obstacles[0]->print_num_vertices();
+           break;
+         }
+         
+         case 2:{
+           vector<Point*> vertices_input;
+           //First obstacle
+           vertices_input.push_back(new Point(0,0));
+           vertices_input.push_back(new Point(0,0));
+           vertices_input.push_back(new Point(15,9));
+           vertices_input.push_back(new Point(15,0));
+           obstacles.push_back(new Obstacle(vertices_input,8));
+           vertices_input.clear();
+           
+           vertices_input.push_back(new Point(3.2,2.2));
+           vertices_input.push_back(new Point(3.2,6.7));
+           vertices_input.push_back(new Point(11.2,6.7));
+           vertices_input.push_back(new Point(11.2,2.2));
+           obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+           vertices_input.clear();
+           
+           //Second obstacle
+           vertices_input.push_back(new Point(10,20));
+           vertices_input.push_back(new Point(10,32));
+           vertices_input.push_back(new Point(30,32));
+           vertices_input.push_back(new Point(30,20));
+           obstacles.push_back(new Obstacle(vertices_input,15));
+           vertices_input.clear();
+           
+           vertices_input.push_back(new Point(10,24));
+           vertices_input.push_back(new Point(10,32));
+           vertices_input.push_back(new Point(24,32));
+           vertices_input.push_back(new Point(24,24));
+           obstacles[obstacles.size()-1]->add_vertices(vertices_input, 3);
+           vertices_input.clear();
+           
+           total_planes.push_back(0);
+           total_planes.push_back(8);
+           total_planes.push_back(15);
+           total_planes.push_back(18);
+           total_planes.push_back(19);
+           
+           //---------DEBUG----REMOVE---------
+           cout << endl << "Obstacle 1...";
            obstacles[0]->print_num_vertices();
+           cout << endl << "Obstacle 2...";
+           obstacles[1]->print_num_vertices();
+           //---------------------------------
            break;
          }
       }
       
-    }while(option != 0);
+    }while(option != 0 && option != 2);
     
     option = 0;
     do{ //Start menu
