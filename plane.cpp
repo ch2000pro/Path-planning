@@ -146,15 +146,14 @@ void Plane::LineSweepLTR(vector<Point*> points) {
                         Point* steiner = Plane::createSteinerPoint(s1, *it);
                         Segment* s = new Segment((*it)->getLeft(), steiner);
                         edges_.push_back(s);
-                        Point* aux = new Point(p->getX(), (*it)->getRight()->getY());
-                        (*it)->setLeft(aux);
+                        (*it)->setLeft(steiner);
                     }
                     (*it)->setWeight(s1->getWeight());
                 }
                 else {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
-                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second)
+                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second && (*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY())
                         k = -2;
                     else
                         k = -1;
@@ -217,8 +216,7 @@ void Plane::LineSweepRTL(vector<Point*> points) {
                         Point* steiner = Plane::createSteinerPoint(s1, *it);
                         Segment* s = new Segment(steiner, (*it)->getRight());
                         edges_.push_back(s);
-                        Point* aux = new Point(p->getX(), (*it)->getLeft()->getY());
-                        (*it)->setRight(aux);
+                        (*it)->setRight(steiner);
                     }
                     (*it)->setWeight(s1->getWeight());
                 }
@@ -275,19 +273,18 @@ void Plane::LineSweepTTB(vector<Point*> points) {
         if (s2 == 0) {
             for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
                 if ((*it)->getWeight() > s1->getWeight()) {
-                    if ((*it)->getLeft()->getX() != p->getX()) {
+                    if ((*it)->getLeft()->getX() != p->getY()) {
                         Point* steiner = Plane::createSteinerPoint(s1, *it);
                         Segment* s = new Segment((*it)->getLeft(), steiner);
                         edges_.push_back(s);
-                        Point* aux = new Point(p->getX(), (*it)->getRight()->getY());
-                        (*it)->setLeft(aux);
+                        (*it)->setLeft(steiner);
                     }
                     (*it)->setWeight(s1->getWeight());
                 }
                 else {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
-                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second)
+                    if (((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second) || ((*it)->getRight()->getX() == point.first && (*it)->getRight()->getY() == point.second))
                         k = -2;
                     else
                         k = -1;
