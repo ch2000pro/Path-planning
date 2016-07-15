@@ -139,10 +139,12 @@ int main (){
            total_planes.push_back(18);
            total_planes.push_back(19);
            
+           //---------DEBUG----REMOVE---------
            cout << endl << "Obstacle 1...";
            obstacles[0]->print_num_vertices();
            cout << endl << "Obstacle 2...";
            obstacles[1]->print_num_vertices();
+           //---------------------------------
            break;
          }
       }
