@@ -78,8 +78,14 @@ void Plane::addObstacle(vector<Point*> points) {
 
 void Plane::lineSweep() {
     vector<Point*> points1 = endpoints, points2 = endpoints;
-    Plane::createVerticalMedianLines(&points1, 1);
-    Plane::createHorizontalMedianLines(&points2, 1);
+    Plane::createVerticalMedianLines(points1, 1);
+    Plane::createHorizontalMedianLines(points2, 1);
+    for(vector<Segment*>::iterator it = medianLines.begin(); it != medianLines.end(); it++) {
+        if((*it)->getRight()->getY() == -2147483648)
+            points1.push_back((*it)->getRight());
+        else
+            points2.push_back((*it)->getRight());
+    }
     Plane::LineSweepLTR(points1);
     Plane::LineSweepRTL(points1);
     Plane::LineSweepTTB(points2);
@@ -393,37 +399,35 @@ Point* Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
 }
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
-void Plane::createVerticalMedianLines(vector<Point*>* points, int w) {
-	if (points->size() > 1) {
-		vector<Point*>::iterator middle = points->begin() + points->size()/2;
+void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
+	if (points.size() > 1) {
+		vector<Point*>::iterator middle = points.begin() + points.size()/2;
 		int x = (*middle)->getX();
 		Point* p1 = new Point(x, 2147483647);
         Point* p2 = new Point(x, -2147483648);
 		Segment* l = new Segment(p1, p2, w);
         medianLines.push_back(l);
         p2->setSeg1(l);
-        endpoints.push_back(p2);
-        vector<Point*>* aux1 = new vector<Point*>(points->begin(), middle - 1);
-        vector<Point*>* aux2 = new vector<Point*>(middle + 1, points->end());
+        vector<Point*> aux1(points.begin(), middle - 1);
+        vector<Point*> aux2(middle + 1, points.end());
 		Plane::createVerticalMedianLines(aux1, w+1);
 		Plane::createVerticalMedianLines(aux2, w+1);
     }
 }
 
-void Plane::createHorizontalMedianLines(vector<Point*>* points, int w) {
-    if (points->size() > 1) {
-        vector<Point*>::iterator middle = points->begin() + points->size()/2;
+void Plane::createHorizontalMedianLines(vector<Point*> points, int w) {
+    if (points.size() > 1) {
+        vector<Point*>::iterator middle = points.begin() + points.size()/2;
         int y = (*middle)->getY();
         Point* p1 = new Point(2147483647, y);
         Point* p2 = new Point(-2147483648, y);
         Segment* l = new Segment(p1, p2, w);
         medianLines.push_back(l);
         p2->setSeg1(l);
-        points->push_back(p2);
-        vector<Point*>* aux1 = new vector<Point*>(points->begin(), middle - 1);
-        vector<Point*>* aux2 = new vector<Point*>(middle + 1, points->end());
-        Plane::createVerticalMedianLines(aux1, w+1);
-        Plane::createVerticalMedianLines(aux2, w+1);
+        vector<Point*> aux1(points.begin(), middle - 1);
+        vector<Point*> aux2(middle + 1, points.end());
+        Plane::createHorizontalMedianLines(aux1, w+1);
+        Plane::createHorizontalMedianLines(aux2, w+1);
     }
 }
 

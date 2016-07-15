@@ -61,8 +61,8 @@ private:
     void LineSweepTTB(vector<Point*>);
     void checkProjections(Segment*, Segment*, set<Segment*, cmp>*, bool); //checks if there are any intersections between projections and objects, in order to create Steiner points
     Point* createSteinerPoint(Segment*, Segment*); //creates a Steiner point and an edge associated to it
-    void createVerticalMedianLines(vector<Point*>*, int); //creates lines that will be used to make type 1 Steiner points
-    void createHorizontalMedianLines(vector<Point*>*, int);
+    void createVerticalMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
+    void createHorizontalMedianLines(vector<Point*>, int);
     double findDistance(Point* p0, Point* p1); //function to find the real distance between two points in the plane
     double findAngle(double a, double b, double c); //function to find the angle between three points
     Segment* projectLTR(Point*); //checks if a projection is possible and creates that projection if so for the left to right line sweep
