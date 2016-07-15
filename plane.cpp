@@ -8,7 +8,9 @@
 #include <vector>
 #include <iterator>
 #include "plane.h"
-#include <cmath>
+#include "segment.h"
+#include <cmath> 
+#include <typeinfo>
 #define PI 3.14159265
 
 Plane::Plane(unsigned int z_){
@@ -663,7 +665,7 @@ double Plane::findAngle(double a, double b, double c){
 
 void Plane::createGraph(){
     
-    typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS, Point > Graph;
+    typedef boost::adjacency_list<boost::vecS, boost::undirectedS, Point > Graph;
     typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
     typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
     Graph myGraph;
@@ -672,26 +674,38 @@ void Plane::createGraph(){
     cout << "edges list size: "<< edges_.size() <<endl;
     cout << "nodes list size: " << nodes.size() <<endl;
     
-    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-        Point right = *(*it)->getRight();
-        Point left = *(*it)->getLeft();
-        vertex_t u = boost::add_vertex(right, myGraph);
-        vertex_t v = boost::add_vertex(left, myGraph);
-        boost::add_edge(u, v, myGraph);
-        cout << "edge: from: " <<  right.getX() << " " << right.getY() << " " << right.getZ() << " to: " << left.getX()<< " " << left.getY()<< " " << left.getZ() << endl;
+    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+        
     }
     
-    fstream dot_file("graph_test.txt", fstream::out);
-    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
-    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
-        edge_t e = *ei;
-        boost::graph_traits < Graph >::vertex_descriptor
-        u = source(e, myGraph), v = target(e, myGraph);
-        //Point x = u;
-        dot_file << u << " -> " << v <<endl;
-    }
-    
-    dot_file.close();
+//    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+//        Point right = *(*it)->getRight();
+//        Point left = *(*it)->getLeft();
+//        if(right.getX() >= 0 && right.getY() >=0 && left.getX() >= 0){
+//            Point right = *(*it)->getRight();
+//            Point left = *(*it)->getLeft();
+//            vertex_t u = boost::add_vertex(right, myGraph);
+//            vertex_t v = boost::add_vertex(left, myGraph);
+//            
+//            boost::add_edge(u, v, myGraph);
+//            cout << "edge: from: " <<  right.getX() << " " << right.getY() << " " << right.getZ() << " to: " << left.getX()<< " " << left.getY()<< " " << left.getZ() << endl;
+//            cout << "u: " << u <<endl;
+//            cout << "v: " << v <<endl;
+//        }
+//    }
+//    
+//    fstream dot_file("graph.txt", fstream::out);
+//    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
+//    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
+//        edge_t e = *ei;
+//        boost::graph_traits < Graph >::vertex_descriptor
+//        u = source(e, myGraph), v = target(e, myGraph);
+//        //long x = u;
+//       // Point x = u;
+//       // dot_file << u << " -> " << v <<endl;
+//    }
+//    
+//    dot_file.close();
     
     
 }

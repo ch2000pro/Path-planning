@@ -200,7 +200,7 @@ int main (){
              Plane* plane = new Plane(0);
              plane -> findObstaclesInPlane(obstacles);
              plane -> lineSweep();
-             //plane -> createGraph();
+             plane -> createGraph();
 
            break;
          }
