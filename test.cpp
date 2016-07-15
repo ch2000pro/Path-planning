@@ -156,7 +156,7 @@ int main (){
            vector<Point*> vertices_input;
            //First obstacle
            vertices_input.push_back(new Point(0,0));
-           vertices_input.push_back(new Point(0,0));
+           vertices_input.push_back(new Point(0,9));
            vertices_input.push_back(new Point(15,9));
            vertices_input.push_back(new Point(15,0));
            obstacles.push_back(new Obstacle(vertices_input,8));
@@ -200,7 +200,7 @@ int main (){
              Plane* plane = new Plane(0);
              plane -> findObstaclesInPlane(obstacles);
              plane -> lineSweep();
-             //plane -> createGraph();
+             plane -> createGraph();
 
            break;
          }

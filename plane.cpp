@@ -26,6 +26,10 @@ struct function2 {
     bool operator() (Point* a, Point* b) { return (a->getY() > b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
 } sort2;
 
+struct function3 {
+    bool operator() (Point* a, Point* b) { return (a->getX() > b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
+} sort3;
+
 //Function that runs through all the obstacles to check if they are obstacles in that plane
 //For each one found, add that obstacle to the 2D Plane
 void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
@@ -78,8 +82,10 @@ void Plane::addObstacle(vector<Point*> points) {
 
 void Plane::lineSweep() {
     vector<Point*> points1 = endpoints, points2 = endpoints;
+    sort(points1.begin(), points1.end(), sort1);
     Plane::createVerticalMedianLines(points1, 1);
-    Plane::createHorizontalMedianLines(points2, 1);
+    //sort(points2.begin(), points2.end(), sort2);
+    //Plane::createHorizontalMedianLines(points2, 1);
     for(vector<Segment*>::iterator it = medianLines.begin(); it != medianLines.end(); it++) {
         if((*it)->getRight()->getY() == -2147483648)
             points1.push_back((*it)->getRight());
@@ -88,8 +94,8 @@ void Plane::lineSweep() {
     }
     Plane::LineSweepLTR(points1);
     Plane::LineSweepRTL(points1);
-    Plane::LineSweepTTB(points2);
-    Plane::LineSweepBTT(points2);
+    //Plane::LineSweepTTB(points2);
+    //Plane::LineSweepBTT(points2);
     for(vector<Segment*>::iterator l = medianLines.begin(); l != medianLines.end(); l++) {
         vector<Point*> steiners = (*l)->getSteinerPoints();
         sort(steiners.begin(), steiners.end());
@@ -150,7 +156,7 @@ void Plane::LineSweepLTR(vector<Point*> points) {
                     }
                     (*it)->setWeight(s1->getWeight());
                 }
-                else {
+                else if((*it)->getWeight() == 0) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
                     if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second && (*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY())
@@ -201,7 +207,7 @@ void Plane::LineSweepLTR(vector<Point*> points) {
 }
 
 void Plane::LineSweepRTL(vector<Point*> points) {
-    sort(points.begin(), points.end(), sort1);
+    sort(points.rbegin(), points.rend(), sort3);
     Point* p;
     set<Segment*, cmp> segments;
     while(points.size() > 0) {
@@ -398,14 +404,14 @@ Point* Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
 void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
 	if (points.size() > 1) {
-		vector<Point*>::iterator middle = points.begin() + points.size()/2;
+		vector<Point*>::iterator middle = points.begin() + (points.size()/2);
 		int x = (*middle)->getX();
 		Point* p1 = new Point(x, 2147483647);
         Point* p2 = new Point(x, -2147483648);
 		Segment* l = new Segment(p1, p2, w);
         medianLines.push_back(l);
         p2->setSeg1(l);
-        vector<Point*> aux1(points.begin(), middle - 1);
+        vector<Point*> aux1(points.begin(), middle);
         vector<Point*> aux2(middle + 1, points.end());
 		Plane::createVerticalMedianLines(aux1, w+1);
 		Plane::createVerticalMedianLines(aux2, w+1);
@@ -421,7 +427,7 @@ void Plane::createHorizontalMedianLines(vector<Point*> points, int w) {
         Segment* l = new Segment(p1, p2, w);
         medianLines.push_back(l);
         p2->setSeg1(l);
-        vector<Point*> aux1(points.begin(), middle - 1);
+        vector<Point*> aux1(points.begin(), middle);
         vector<Point*> aux2(middle + 1, points.end());
         Plane::createHorizontalMedianLines(aux1, w+1);
         Plane::createHorizontalMedianLines(aux2, w+1);
