@@ -45,6 +45,7 @@ public:
     int getWeight() {return weight;}
     void setWeight(int w) {weight = w;}
     void addSteinerPoint(Point* p) {steinerPoints.push_back(p);}
+    vector<Point*> getSteinerPoints() {return steinerPoints;}
 
 private:
 	Point* left; //left endpoint
