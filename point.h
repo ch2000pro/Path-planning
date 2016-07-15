@@ -49,6 +49,7 @@ public:
     Segment* getSeg2() {return seg2;}
     void setSeg1(Segment* s) {seg1 = s;}
     void setSeg2(Segment* s) {seg2 = s;}
+    Segment* getOther(Segment* s) {if (s == seg1) return seg2; else return seg1;}
     
 private:
     double x, y, z; //the points coordinates
