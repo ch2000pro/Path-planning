@@ -20,39 +20,39 @@ Plane::~Plane(){
 
 //Given a vector of points, adds those points (and the edges between them) to the plane
 void Plane::addObstacle(vector<Point*> points) {
-	vector<Point*>::iterator it;
-	Point* p1;
-	Point* p2;
-	for (it = points.begin() ; it != (points.end())-1; ++it) {
-		p1 = *it;
-		p2 = *((it)+1);
-		Segment seg;
-		if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY())) {
-			seg.setLeft(p1);
+    vector<Point*>::iterator it;
+    Point* p1;
+    Point* p2;
+    for (it = points.begin() ; it != (points.end())-1; ++it) {
+        p1 = *it;
+        p2 = *((it)+1);
+        Segment seg;
+        if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY())) {
+            seg.setLeft(p1);
             seg.setRight(p2);
         }
-		else {
-			seg.setLeft(p2);
+        else {
+            seg.setLeft(p2);
             seg.setRight(p1);
         }
-		p1->setSeg2(&seg);
-		p2->setSeg1(&seg);
-	    endpoints.push_back(*it);
-	}
-	p1 = *it;
-	p2 = points.front();
-	Segment seg;
-	if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY())) {
-		seg.setLeft(p1);
+        p1->setSeg2(&seg);
+        p2->setSeg1(&seg);
+        endpoints.push_back(*it);
+    }
+    p1 = *it;
+    p2 = points.front();
+    Segment seg;
+    if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY())) {
+        seg.setLeft(p1);
         seg.setRight(p2);
     }
-	else {
-		seg.setLeft(p2);
+    else {
+        seg.setLeft(p2);
         seg.setRight(p1);
     }
-	p1->setSeg2(&seg);
-	p2->setSeg1(&seg);
-	endpoints.push_back(*it);
+    p1->setSeg2(&seg);
+    p2->setSeg1(&seg);
+    endpoints.push_back(*it);
 }
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
@@ -157,22 +157,22 @@ void Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     nodes.push_back(&steiner);
     segment1->addSteinerPoint(&steiner);
     Segment s(segment2->getLeft(), &steiner);
-    edges.push_back(&s);
+    edges_.push_back(&s);
 }
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
 void Plane::createMedianLines(vector<Point*> points, int w) {
-	if (points.size() > 1) {
-		vector<Point*>::iterator middle = points.begin() + points.size()/2;
-		int x = (*middle)->getX();
-		Point p1(x, 2147483647);
-		Point p2(x, -2147483648);
-		Segment l(&p1, &p2, w);
+    if (points.size() > 1) {
+        vector<Point*>::iterator middle = points.begin() + points.size()/2;
+        int x = (*middle)->getX();
+        Point p1(x, 2147483647);
+        Point p2(x, -2147483648);
+        Segment l(&p1, &p2, w);
         p2.setSeg1(&l);
         endpoints.push_back(&p2);
-		vector<Point*> aux1(points.begin(), middle - 1), aux2(middle + 1, points.end());
-		Plane::createMedianLines(aux1, w+1);
-		Plane::createMedianLines(aux2, w+1);
+        vector<Point*> aux1(points.begin(), middle - 1), aux2(middle + 1, points.end());
+        Plane::createMedianLines(aux1, w+1);
+        Plane::createMedianLines(aux2, w+1);
     }
 }
 
@@ -214,7 +214,7 @@ Segment Plane::projectLTR(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getY() > p1 -> getY()){
         angle2 = 2 * PI - angle2;
     }
@@ -242,7 +242,7 @@ double Plane::findAngle(double a, double b, double c){
 }
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane
-//For each one found, add that obstacle to the 2D Plane 
+//For each one found, add that obstacle to the 2D Plane
 void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
     vector<Obstacle*>::iterator it;
     Obstacle* obstacle;
@@ -295,7 +295,7 @@ Segment Plane::projectRTL(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getY() > p1 -> getY()){
         angle2 = 2 * PI - angle2;
     }
@@ -350,7 +350,7 @@ Segment Plane::projectDTU(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getX() < p1 -> getX()){
         angle2 = 2 * PI - angle2;
     }
@@ -405,7 +405,7 @@ Segment Plane::projectUTD(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getX() < p1 -> getX()){
         angle2 = 2 * PI - angle2;
     }
@@ -423,5 +423,36 @@ Segment Plane::projectUTD(Point* p1) {
 }
 
 void Plane::createGraph(){
+    
+    typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS, Point > Graph;
+    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
+    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
+    Graph myGraph;
+    
+    cout << endl << "testing graph" <<endl;
+    cout << "edges list size: "<< edges_.size() <<endl;
+    cout << "nodes list size: " << nodes.size() <<endl;
+    
+    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        Point right = *(*it)->getRight();
+        Point left = *(*it)->getLeft();
+        vertex_t u = boost::add_vertex(right, myGraph);
+        vertex_t v = boost::add_vertex(left, myGraph);
+        boost::add_edge(u, v, myGraph);
+        cout << "edge: from: " <<  right.getX() << " " << right.getY() << " " << right.getZ() << " to: " << left.getX()<< " " << left.getY()<< " " << left.getZ() << endl;
+    }
+    
+    fstream dot_file("graph_test.txt", fstream::out);
+    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
+    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
+        edge_t e = *ei;
+        boost::graph_traits < Graph >::vertex_descriptor
+        u = source(e, myGraph), v = target(e, myGraph);
+        //Point x = u;
+        dot_file << u << " -> " << v <<endl;
+    }
+    
+    dot_file.close();
+    
     
 }
