@@ -29,6 +29,7 @@ public:
     void addObstacle(vector<Point*>); //adds the vertices and edges of an obstacle that are in this plane
     void lineSweep(); //the 2D path planning algo; creates a graph for the plane
     void findObstaclesInPlane(vector<Obstacle*> Map); //finds the obstacles that are found in this plane
+    void createGraph();
     
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane

@@ -11,6 +11,8 @@
 #include "boost/graph/dijkstra_shortest_paths.hpp"
 #include "boost/property_map/property_map.hpp"
 
+#include <fstream>
+#include <string>
 #include "obstacle.h"
 #include "point.h"
 #include "plane.h"
@@ -18,14 +20,14 @@
 using namespace std;
 
 int main (){
-    unsigned int option = 0, vertices = 0, planesInserted = 0, flag_planes = 0;
+    unsigned int option = 0, vertices_ = 0, planesInserted = 0, flag_planes = 0;
     double height;
     vector<int> total_planes;
     total_planes.push_back(0);
     vector<Obstacle*> obstacles;
     vector<Plane*> planes;
-    Point* source;
-    Point* target;
+    Point* source_;
+    Point* target_;
     
     do{
       cout << endl;
@@ -44,6 +46,52 @@ int main (){
                Plane* plane = new Plane(z);
                plane -> findObstaclesInPlane(obstacles);
                planes.push_back(plane);
+               
+               
+               //EXAMPLE GRAPH
+               typedef boost::adjacency_list < boost::listS, boost::vecS, boost::directedS,
+               boost::no_property, boost::property < boost::edge_weight_t, int > > graph_t;
+               typedef boost::graph_traits < graph_t >::vertex_descriptor vertex_descriptor;
+               typedef std::pair<int, int> Edge;
+               
+               const int num_nodes = 5;
+               enum nodes { A, B, C, D, E };
+               char name[] = "ABCDE";
+               Edge edge_array[] = { Edge(A, C), Edge(B, B), Edge(B, D), Edge(B, E),
+                   Edge(C, B), Edge(C, D), Edge(D, E), Edge(E, A), Edge(E, B)
+               };
+               int weights[] = { 1, 2, 1, 2, 7, 3, 1, 1, 1 };
+               int num_arcs = sizeof(edge_array) / sizeof(Edge);
+               graph_t g(edge_array, edge_array + num_arcs, weights, num_nodes);
+               boost::property_map<graph_t, boost::edge_weight_t>::type weightmap = get(boost::edge_weight, g);
+               std::vector<vertex_descriptor> p(num_vertices(g));
+               std::vector<int> d(num_vertices(g));
+               vertex_descriptor s = vertex(A, g);
+               
+               dijkstra_shortest_paths(g, s,
+                                       predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g))).
+                                       distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g))));
+               
+               std::cout << "distances and parents:" << std::endl;
+               boost::graph_traits < graph_t >::vertex_iterator vi, vend;
+               for (boost::tie(vi, vend) = vertices(g); vi != vend; ++vi) {
+                   std::cout << "distance(" << name[*vi] << ") = " << d[*vi] << ", ";
+                   std::cout << "parent(" << name[*vi] << ") = " << name[p[*vi]] << std::
+                   endl;
+               }
+               std::cout << std::endl;
+               
+               fstream dot_file("dijkstra-eg.txt", fstream::out);
+               
+               boost::graph_traits < graph_t >::edge_iterator ei, ei_end;
+               for (boost::tie(ei, ei_end) = edges(g); ei != ei_end; ++ei) {
+                   boost::graph_traits < graph_t >::edge_descriptor e = *ei;
+                   boost::graph_traits < graph_t >::vertex_descriptor
+                   u = source(e, g), v = target(e, g);
+                   dot_file << name[u] << " -> " << name[v] <<endl;
+               }
+               
+               dot_file.close();
            }
            break;
          }
@@ -61,19 +109,19 @@ int main (){
                cout << endl << "Input for the new plane..." << endl;
                do{
                    cout << "How many vertices does this plane have? ";
-                   cin >> vertices;
-                   if(vertices<3) cout << "An object of are non-zero must "
+                   cin >> vertices_;
+                   if(vertices_<3) cout << "An object of are non-zero must "
                        << "have at least 3 vertices." << endl;
-              }while(vertices < 3);
+              }while(vertices_ < 3);
               cout << "What is the height of these segments? ";
               cin >> height;
-              while(vertices > 0){
+              while(vertices_ > 0){
                   double x, y;
                   cout << "Enter x y: ";
                   cin >> x;
                   cin >> y;
                   vertices_input.push_back(new Point(x,y));
-                  vertices --;
+                  vertices_ --;
                }
                if(flag_planes == 0){
                    obstacles.push_back(new Obstacle(vertices_input,height));
@@ -183,8 +231,8 @@ int main (){
                 cin >> y_;
                 cin >> z_;
                 
-                source = new Point(x, y, z);
-                target = new Point(x_, y_, z_);
+                source_ = new Point(x, y, z);
+                target_ = new Point(x_, y_, z_);
                 
                 //TO DO FIND SHORTEST PATH;
                 break;

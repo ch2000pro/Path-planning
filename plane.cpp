@@ -421,3 +421,7 @@ Segment Plane::projectUTD(Point* p1) {
         return aux2;
     }
 }
+
+void Plane::createGraph(){
+    
+}
