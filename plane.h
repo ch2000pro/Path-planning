@@ -8,6 +8,14 @@
 #ifndef PLANE_H_
 #define PLANE_H_
 
+#include "boost/config.hpp"
+#include "boost/graph/graph_traits.hpp"
+#include "boost/graph/adjacency_list.hpp"
+#include "boost/graph/dijkstra_shortest_paths.hpp"
+#include "boost/property_map/property_map.hpp"
+
+#include <fstream>
+#include <string>
 #include <set>
 #include <vector>
 #include <algorithm>
@@ -36,15 +44,16 @@ public:
     void addObstacle(vector<Point*>); //adds the vertices and edges of an obstacle that are in this plane
     void lineSweep(); //the 2D path planning algo; creates a graph for the plane
     void findObstaclesInPlane(vector<Obstacle*> Map); //finds the obstacles that are found in this plane
+    void createGraph();
     
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane
     vector<Segment*> obstacleSegments;
     unsigned int z; //the z coordinate of this plane
     vector<Point*> nodes; //nodes of the graph created for this plane
-    vector<Segment*> edges; //edges of the graph created for this plane
     vector<Segment*> medianLines;
-    
+    vector<Segment*> edges_; //edges of the graph created for this plane
+
     //auxiliary functions
     void LineSweepLTR(vector<Point*>);
     void LineSweepRTL(vector<Point*>);

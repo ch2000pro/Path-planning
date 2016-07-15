@@ -363,6 +363,7 @@ pair<double, double> Plane::findIntersection(Segment* segment1, Segment* segment
     c2 = right2 -> getY() - (m2 * right2 -> getX());
     x = (c2 - c1)/(m1 - m2);
     y = (m1 * x) + c1;
+<<<<<<< HEAD
     return pair<double,double>(x,y);
 }
 
@@ -406,6 +407,29 @@ void Plane::createHorizontalMedianLines(vector<Point*>* points, int w) {
         vector<Point*>* aux2 = new vector<Point*>(middle + 1, points->end());
         Plane::createVerticalMedianLines(aux1, w+1);
         Plane::createVerticalMedianLines(aux2, w+1);
+=======
+    
+    Point steiner(x, y, right1 -> getZ());
+    nodes.push_back(&steiner);
+    segment1->addSteinerPoint(&steiner);
+    Segment s(segment2->getLeft(), &steiner);
+    edges_.push_back(&s);
+}
+
+//Recursive function that creates median lines (that will be used to make type 1 Steiner points)
+void Plane::createMedianLines(vector<Point*> points, int w) {
+    if (points.size() > 1) {
+        vector<Point*>::iterator middle = points.begin() + points.size()/2;
+        int x = (*middle)->getX();
+        Point p1(x, 2147483647);
+        Point p2(x, -2147483648);
+        Segment l(&p1, &p2, w);
+        p2.setSeg1(&l);
+        endpoints.push_back(&p2);
+        vector<Point*> aux1(points.begin(), middle - 1), aux2(middle + 1, points.end());
+        Plane::createMedianLines(aux1, w+1);
+        Plane::createMedianLines(aux2, w+1);
+>>>>>>> 0247c2345fa280454913bdb8bc6a3b30a675b403
     }
 }
 
@@ -447,7 +471,7 @@ Segment* Plane::projectLTR(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getY() > p1 -> getY()){
         angle2 = 2 * PI - angle2;
     }
@@ -465,7 +489,7 @@ Segment* Plane::projectLTR(Point* p1) {
 }
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane
-//For each one found, add that obstacle to the 2D Plane 
+//For each one found, add that obstacle to the 2D Plane
 void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
     vector<Obstacle*>::iterator it;
     Obstacle* obstacle;
@@ -518,7 +542,7 @@ Segment* Plane::projectRTL(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getY() > p1 -> getY()){
         angle2 = 2 * PI - angle2;
     }
@@ -573,7 +597,7 @@ Segment* Plane::projectBTT(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getX() < p1 -> getX()){
         angle2 = 2 * PI - angle2;
     }
@@ -628,7 +652,7 @@ Segment* Plane::projectTTB(Point* p1) {
     b2 = findDistance(p1, p_);
     a2 = findDistance(p2, p1);
     angle2 = findAngle(a2, b2, c2);
-
+    
     if(p2 -> getX() < p1 -> getX()){
         angle2 = 2 * PI - angle2;
     }
@@ -655,4 +679,37 @@ double Plane::findAngle(double a, double b, double c){
     return acos((pow(a, 2) + pow(b, 2) - pow(c, 2))/(2 * a * b));
 }
 
-
+void Plane::createGraph(){
+    
+    typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS, Point > Graph;
+    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
+    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
+    Graph myGraph;
+    
+    cout << endl << "testing graph" <<endl;
+    cout << "edges list size: "<< edges_.size() <<endl;
+    cout << "nodes list size: " << nodes.size() <<endl;
+    
+    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        Point right = *(*it)->getRight();
+        Point left = *(*it)->getLeft();
+        vertex_t u = boost::add_vertex(right, myGraph);
+        vertex_t v = boost::add_vertex(left, myGraph);
+        boost::add_edge(u, v, myGraph);
+        cout << "edge: from: " <<  right.getX() << " " << right.getY() << " " << right.getZ() << " to: " << left.getX()<< " " << left.getY()<< " " << left.getZ() << endl;
+    }
+    
+    fstream dot_file("graph_test.txt", fstream::out);
+    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
+    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
+        edge_t e = *ei;
+        boost::graph_traits < Graph >::vertex_descriptor
+        u = source(e, myGraph), v = target(e, myGraph);
+        //Point x = u;
+        dot_file << u << " -> " << v <<endl;
+    }
+    
+    dot_file.close();
+    
+    
+}
