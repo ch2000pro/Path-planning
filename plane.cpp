@@ -665,19 +665,19 @@ double Plane::findAngle(double a, double b, double c){
 
 void Plane::createGraph(){
     
-    typedef boost::adjacency_list<boost::vecS, boost::undirectedS, Point > Graph;
-    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
-    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
-    Graph myGraph;
-    
-    cout << endl << "testing graph" <<endl;
-    cout << "edges list size: "<< edges_.size() <<endl;
-    cout << "nodes list size: " << nodes.size() <<endl;
-    
-    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-        
-    }
-    
+//    typedef boost::adjacency_list<boost::vecS, boost::directedS, Point > Graph;
+//    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
+//    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
+//    Graph myGraph;
+//    
+//    cout << endl << "testing graph" <<endl;
+//    cout << "edges list size: "<< edges_.size() <<endl;
+//    cout << "nodes list size: " << nodes.size() <<endl;
+//    
+//    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+//        
+//    }
+//    
 //    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
 //        Point right = *(*it)->getRight();
 //        Point left = *(*it)->getLeft();
