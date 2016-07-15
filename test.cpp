@@ -26,8 +26,8 @@ int main (){
     total_planes.push_back(0);
     vector<Obstacle*> obstacles;
     vector<Plane*> planes;
-    Point* source_;
-    Point* target_;
+    //Point* source_;
+    //Point* target_;
     
     do{
       cout << endl;
@@ -240,8 +240,8 @@ int main (){
                 cin >> y_;
                 cin >> z_;
                 
-                source_ = new Point(x, y, z);
-                target_ = new Point(x_, y_, z_);
+                //source_ = new Point(x, y, z);
+                //target_ = new Point(x_, y_, z_);
                 
                 //TO DO FIND SHORTEST PATH;
                 break;
