@@ -22,15 +22,19 @@ Plane::~Plane(){
 
 struct function1 {
     bool operator() (Point* a, Point* b) { return (a->getX() < b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
-} sort1;
+} sortLTR;
 
 struct function2 {
     bool operator() (Point* a, Point* b) { return (a->getY() > b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
-} sort2;
+} sortTTB;
 
 struct function3 {
     bool operator() (Point* a, Point* b) { return (a->getX() > b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
-} sort3;
+} sortRTL;
+
+struct function4 {
+    bool operator() (Point* a, Point* b) { return (a->getY() < b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
+} sortBTT;
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane
 //For each one found, add that obstacle to the 2D Plane
@@ -84,10 +88,10 @@ void Plane::addObstacle(vector<Point*> points) {
 
 void Plane::lineSweep() {
     vector<Point*> points1 = endpoints, points2 = endpoints;
-    sort(points1.begin(), points1.end(), sort1);
+    sort(points1.begin(), points1.end(), sortLTR);
     Plane::createVerticalMedianLines(points1, 1);
-    //sort(points2.begin(), points2.end(), sort2);
-    //Plane::createHorizontalMedianLines(points2, 1);
+    sort(points2.begin(), points2.end(), sortTTB);
+    Plane::createHorizontalMedianLines(points2, 1);
     for(vector<Segment*>::iterator it = medianLines.begin(); it != medianLines.end(); it++) {
         if((*it)->getRight()->getY() == -2147483648)
             points1.push_back((*it)->getRight());
@@ -96,11 +100,11 @@ void Plane::lineSweep() {
     }
     Plane::LineSweepLTR(points1);
     Plane::LineSweepRTL(points1);
-    //Plane::LineSweepTTB(points2);
-    //Plane::LineSweepBTT(points2);
+    Plane::LineSweepTTB(points2);
+    Plane::LineSweepBTT(points2);
     for(vector<Segment*>::iterator l = medianLines.begin(); l != medianLines.end(); l++) {
         vector<Point*> steiners = (*l)->getSteinerPoints();
-        sort(steiners.begin(), steiners.end());
+        sort(steiners.begin(), steiners.end(), sortLTR);
         Point* prev = 0;
         for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); p++) {
             if((*p)->getZ() < 0) {
@@ -125,7 +129,7 @@ void Plane::lineSweep() {
     }
     for(vector<Segment*>::iterator l = obstacleSegments.begin(); l != obstacleSegments.end(); l++) {
         vector<Point*> steiners = (*l)->getSteinerPoints();
-        sort(steiners.begin(), steiners.end());
+        sort(steiners.begin(), steiners.end(), sortLTR);
         Point *prev = (*l)->getLeft();
         for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); p++) {
             Segment* s = new Segment(prev, *p);
@@ -139,9 +143,9 @@ void Plane::lineSweep() {
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
 void Plane::LineSweepLTR(vector<Point*> points) {
-    sort(points.rbegin(), points.rend(), sort1);
+    sort(points.rbegin(), points.rend(), sortLTR);
     Point* p;
-    set<Segment*, cmp> segments;
+    set<Segment*> segments;
     while(points.size() > 0) {
         p = points.back();
         points.pop_back();
@@ -161,7 +165,7 @@ void Plane::LineSweepLTR(vector<Point*> points) {
                 else if((*it)->getWeight() == 0) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
-                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second && (*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY())
+                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second && (*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX())
                         k = -2;
                     else
                         k = -1;
@@ -209,9 +213,9 @@ void Plane::LineSweepLTR(vector<Point*> points) {
 }
 
 void Plane::LineSweepRTL(vector<Point*> points) {
-    sort(points.rbegin(), points.rend(), sort3);
+    sort(points.rbegin(), points.rend(), sortRTL);
     Point* p;
-    set<Segment*, cmp> segments;
+    set<Segment*> segments;
     while(points.size() > 0) {
         p = points.back();
         points.pop_back();
@@ -266,22 +270,34 @@ void Plane::LineSweepRTL(vector<Point*> points) {
                 segments.erase(s1);
         }
     }
-    
 }
 
 void Plane::LineSweepTTB(vector<Point*> points) {
-    sort(points.rbegin(), points.rend(), sort2);
+    sort(points.rbegin(), points.rend(), sortTTB);
     Point* p;
-    set<Segment*, cmp> segments;
+    set<Segment*> segments;
     while(points.size() > 0) {
         p = points.back();
         points.pop_back();
         Segment* s1 = p->getSeg1();
         Segment* s2 = p->getSeg2();
+        bool b1 = false, b2 = false;
+        if (s1->case1()) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+            b1 = true;
+        }
+        if (s2 != 0 && s2->case1()) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+            b2 = true;
+        }
         if (s2 == 0) {
             for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
                 if ((*it)->getWeight() > s1->getWeight()) {
-                    if ((*it)->getLeft()->getX() != p->getY()) {
+                    if ((*it)->getLeft()->getY() != p->getY()) {
                         Point* steiner = Plane::createSteinerPoint(s1, *it);
                         Segment* s = new Segment((*it)->getLeft(), steiner);
                         edges_.push_back(s);
@@ -289,10 +305,10 @@ void Plane::LineSweepTTB(vector<Point*> points) {
                     }
                     (*it)->setWeight(s1->getWeight());
                 }
-                else {
+                else if((*it)->getWeight() == 0) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
-                    if (((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second) || ((*it)->getRight()->getX() == point.first && (*it)->getRight()->getY() == point.second))
+                    if (((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second && (*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY()) || ((*it)->getRight()->getX() == point.first && (*it)->getRight()->getY() == point.second && (*it)->getRight()->getOther(*it)->getOther((*it)->getRight())->getY() != (*it)->getLeft()->getY()))
                         k = -2;
                     else
                         k = -1;
@@ -305,13 +321,13 @@ void Plane::LineSweepTTB(vector<Point*> points) {
             segments.insert(s1);
             segments.insert(s2);
             Plane::checkProjections(s1, s2, &segments, true);
-            Segment* aux = Plane::projectLTR(p);
+            Segment* aux = Plane::projectTTB(p);
             if (aux->getLeft() != 0)
                 segments.insert(aux);
         }
         else if (s1->getRight() == p && s2->getRight() == p) {
             Plane::checkProjections(s1, s2, &segments, true);
-            Segment* aux = Plane::projectLTR(p);
+            Segment* aux = Plane::projectTTB(p);
             if (aux->getLeft() != 0)
                 segments.insert(aux);
             segments.erase(s1);
@@ -328,7 +344,7 @@ void Plane::LineSweepTTB(vector<Point*> points) {
                 b = false;
             }
             Plane::checkProjections(s1, s2, &segments, true);
-            Segment* aux = Plane::projectLTR(p);
+            Segment* aux = Plane::projectTTB(p);
             if (aux->getLeft() != 0)
                 segments.insert(aux);
             if (b)
@@ -336,15 +352,104 @@ void Plane::LineSweepTTB(vector<Point*> points) {
             else
                 segments.erase(s1);
         }
+        if (b1) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+        }
+        if (b2) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+        }
     }
 }
 
 void Plane::LineSweepBTT(vector<Point*> points) {
-    
+    sort(points.rbegin(), points.rend(), sortBTT);
+    Point* p;
+    set<Segment*> segments;
+    while(points.size() > 0) {
+        p = points.back();
+        points.pop_back();
+        Segment* s1 = p->getSeg1();
+        Segment* s2 = p->getSeg2();
+        bool b1 = false, b2 = false;
+        if (s1->case1()) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+            b1 = true;
+        }
+        if (s2 != 0 && s2->case1()) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+            b2 = true;
+        }
+        if (s2 == 0) {
+            for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+                if ((*it)->getWeight() > s1->getWeight()) {
+                    if ((*it)->getRight()->getY() != p->getY()) {
+                        Point* steiner = Plane::createSteinerPoint(s1, *it);
+                        Segment* s = new Segment(steiner, (*it)->getRight());
+                        edges_.push_back(s);
+                        (*it)->setRight(steiner);
+                    }
+                    (*it)->setWeight(s1->getWeight());
+                }
+            }
+        }
+        else if (s1->getRight() == p && s2->getRight() == p) {
+            segments.insert(s1);
+            segments.insert(s2);
+            Plane::checkProjections(s1, s2, &segments, false);
+            Segment* aux = Plane::projectBTT(p);
+            if (aux->getLeft() != 0)
+                segments.insert(aux);
+        }
+        else if (s1->getLeft() == p && s2->getLeft() == p) {
+            Plane::checkProjections(s1, s2, &segments, false);
+            Segment* aux = Plane::projectBTT(p);
+            if (aux->getLeft() != 0)
+                segments.insert(aux);
+            segments.erase(s1);
+            segments.erase(s2);
+        }
+        else {
+            bool b;
+            if(segments.find(s1) == segments.end()) {
+                segments.insert(s1);
+                b = true;
+            }
+            else {
+                segments.insert(s2);
+                b = false;
+            }
+            Plane::checkProjections(s1, s2, &segments, false);
+            Segment* aux = Plane::projectBTT(p);
+            if (aux->getLeft() != 0)
+                segments.insert(aux);
+            if (b)
+                segments.erase(s2);
+            else
+                segments.erase(s1);
+        }
+        if (b1) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+        }
+        if (b2) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+        }
+    }
 }
 
 //Given two object edges and a map of segments, that includes projections, checks if there are any intersections between those projections and the edges, in order to create Steiner points
-void Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*, cmp>* segments, bool b) {
+void Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*>* segments, bool b) {
     for(set<Segment*>::iterator it = segments->begin(); it != segments->end(); it++) {
         if ((*it)->getWeight() != 0) {
             int ly1, ry1, ly2, ry2, ly, ry;
