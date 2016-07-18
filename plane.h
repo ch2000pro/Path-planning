@@ -38,6 +38,7 @@ public:
     void lineSweep(); //the 2D path planning algo; creates a graph for the plane
     void findObstaclesInPlane(vector<Obstacle*> Map); //finds the obstacles that are found in this plane
     void createGraph();
+    vector<Segment*> getEdges();
     
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane
@@ -63,6 +64,7 @@ private:
     Segment* projectBTT(Point*); //checks if a projection is possible and creates that projection if so for the down to up line sweep
     Segment* projectTTB(Point*); //checks if a projection is possible and creates that projection if so for the up to down line sweep
     pair<double, double> findIntersection(Segment*, Segment*);
+    
 };
 
 #endif

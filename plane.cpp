@@ -20,6 +20,10 @@ Plane::Plane(unsigned int z_){
 Plane::~Plane(){
 }
 
+vector<Segment*> Plane::getEdges(){
+    return edges_;
+}
+
 struct function1 {
     bool operator() (Point* a, Point* b) { return (a->getX() < b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
 } sortLTR;
@@ -785,16 +789,4 @@ void Plane::createGraph(){
         vertex_t v = boost::add_vertex(left, myGraph);
         boost::add_edge(u, v, myGraph);
     }
-    
-    fstream dot_file("graph.txt", fstream::out);
-    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
-    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
-        edge_t e = *ei;
-        boost::graph_traits < Graph >::vertex_descriptor
-        u = source(e, myGraph), v = target(e, myGraph);
-        dot_file << "edge from: " << myGraph[u].getX() << " " << myGraph[u].getY() << " " << myGraph[u].getZ() << " to: " <<myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() << endl;
-    }
-    
-    
-    dot_file.close();
 }
