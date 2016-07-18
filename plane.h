@@ -52,7 +52,7 @@ private:
     void LineSweepRTL(vector<Point*>);
     void LineSweepBTT(vector<Point*>);
     void LineSweepTTB(vector<Point*>);
-    void checkProjections(Segment*, Segment*, set<Segment*>*, bool); //checks if there are any intersections between projections and objects, in order to create Steiner points
+    vector<Segment*> checkProjections(Segment*, Segment*, set<Segment*>, bool); //checks if there are any intersections between projections and objects, in order to create Steiner points
     Point* createSteinerPoint(Segment*, Segment*); //creates a Steiner point and an edge associated to it
     void createVerticalMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
     void createHorizontalMedianLines(vector<Point*>, int);
