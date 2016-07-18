@@ -9,7 +9,7 @@
 #include <iterator>
 #include "plane.h"
 #include "segment.h"
-#include <cmath> 
+#include <cmath>
 #include <typeinfo>
 #define PI 3.14159265
 
@@ -51,33 +51,33 @@ void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
 
 //Given a vector of points, adds those points (and the edges between them) to the plane
 void Plane::addObstacle(vector<Point*> points) {
-	vector<Point*>::iterator it;
-	Point* p1;
-	Point* p2;
-	for (it = points.begin() ; it != points.end() - 1; ++it) {
-		p1 = *it;
-		p2 = *(it + 1);
+    vector<Point*>::iterator it;
+    Point* p1;
+    Point* p2;
+    for (it = points.begin() ; it != points.end() - 1; ++it) {
+        p1 = *it;
+        p2 = *(it + 1);
         Segment* seg;
-		if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
+        if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
             seg = new Segment(p1, p2);
-		else
-			seg = new Segment(p2, p1);
-		p1->setSeg2(seg);
-		p2->setSeg1(seg);
-	    endpoints.push_back(*it);
+        else
+            seg = new Segment(p2, p1);
+        p1->setSeg2(seg);
+        p2->setSeg1(seg);
+        endpoints.push_back(*it);
         nodes.push_back(*it);
         obstacleSegments.push_back(seg);
-	}
-	p1 = *it;
-	p2 = points.front();
-	Segment* seg;
-	if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
-		seg = new Segment(p1, p2);
-	else
-		seg = new Segment(p2, p1);
-	p1->setSeg2(seg);
-	p2->setSeg1(seg);
-	endpoints.push_back(*it);
+    }
+    p1 = *it;
+    p2 = points.front();
+    Segment* seg;
+    if (p1->getX() < p2->getX() || (p1->getX() == p2->getX() && p1->getY() > p2->getY()))
+        seg = new Segment(p1, p2);
+    else
+        seg = new Segment(p2, p1);
+    p1->setSeg2(seg);
+    p2->setSeg1(seg);
+    endpoints.push_back(*it);
     nodes.push_back(*it);
     obstacleSegments.push_back(seg);
 }
@@ -266,7 +266,7 @@ void Plane::LineSweepRTL(vector<Point*> points) {
                 segments.erase(s1);
         }
     }
-
+    
 }
 
 void Plane::LineSweepTTB(vector<Point*> points) {
@@ -405,18 +405,18 @@ Point* Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
 void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
-	if (points.size() > 1) {
-		vector<Point*>::iterator middle = points.begin() + (points.size()/2);
-		int x = (*middle)->getX();
-		Point* p1 = new Point(x, 2147483647);
+    if (points.size() > 1) {
+        vector<Point*>::iterator middle = points.begin() + (points.size()/2);
+        int x = (*middle)->getX();
+        Point* p1 = new Point(x, 2147483647);
         Point* p2 = new Point(x, -2147483648);
-		Segment* l = new Segment(p1, p2, w);
+        Segment* l = new Segment(p1, p2, w);
         medianLines.push_back(l);
         p2->setSeg1(l);
         vector<Point*> aux1(points.begin(), middle);
         vector<Point*> aux2(middle + 1, points.end());
-		Plane::createVerticalMedianLines(aux1, w+1);
-		Plane::createVerticalMedianLines(aux2, w+1);
+        Plane::createVerticalMedianLines(aux1, w+1);
+        Plane::createVerticalMedianLines(aux2, w+1);
     }
 }
 
@@ -668,47 +668,28 @@ double Plane::findAngle(double a, double b, double c){
 
 void Plane::createGraph(){
     
-//    typedef boost::adjacency_list<boost::vecS, boost::directedS, Point > Graph;
-//    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
-//    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
-//    Graph myGraph;
-//    
-//    cout << endl << "testing graph" <<endl;
-//    cout << "edges list size: "<< edges_.size() <<endl;
-//    cout << "nodes list size: " << nodes.size() <<endl;
-//    
-//    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-//        
-//    }
-//    
-//    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-//        Point right = *(*it)->getRight();
-//        Point left = *(*it)->getLeft();
-//        if(right.getX() >= 0 && right.getY() >=0 && left.getX() >= 0){
-//            Point right = *(*it)->getRight();
-//            Point left = *(*it)->getLeft();
-//            vertex_t u = boost::add_vertex(right, myGraph);
-//            vertex_t v = boost::add_vertex(left, myGraph);
-//            
-//            boost::add_edge(u, v, myGraph);
-//            cout << "edge: from: " <<  right.getX() << " " << right.getY() << " " << right.getZ() << " to: " << left.getX()<< " " << left.getY()<< " " << left.getZ() << endl;
-//            cout << "u: " << u <<endl;
-//            cout << "v: " << v <<endl;
-//        }
-//    }
-//    
-//    fstream dot_file("graph.txt", fstream::out);
-//    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
-//    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
-//        edge_t e = *ei;
-//        boost::graph_traits < Graph >::vertex_descriptor
-//        u = source(e, myGraph), v = target(e, myGraph);
-//        //long x = u;
-//       // Point x = u;
-//       // dot_file << u << " -> " << v <<endl;
-//    }
-//    
-//    dot_file.close();
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point > Graph;
+    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
+    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
+    
+    Graph myGraph;
+    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        Point right = *(*it)->getRight();
+        Point left = *(*it)->getLeft();
+        vertex_t u = boost::add_vertex(right, myGraph);
+        vertex_t v = boost::add_vertex(left, myGraph);
+        boost::add_edge(u, v, myGraph);
+    }
+    
+    fstream dot_file("graph.txt", fstream::out);
+    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
+    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
+        edge_t e = *ei;
+        boost::graph_traits < Graph >::vertex_descriptor
+        u = source(e, myGraph), v = target(e, myGraph);
+        dot_file << "edge from: " << myGraph[u].getX() << " " << myGraph[u].getY() << " " << myGraph[u].getZ() << " to: " <<myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() << endl;
+    }
     
     
+    dot_file.close();
 }
