@@ -26,8 +26,6 @@ int main (){
     vector<double> total_planes;
     vector<Obstacle*> obstacles;
     map<double, Plane*> planes;
-    Point* source_;
-    Point* target_;
     
     typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point > Graph;
     typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
@@ -40,8 +38,10 @@ int main (){
         cout << "Select an option:" << endl;
         cout << "1 - Create a new obstacle" << endl;
         cout << "2 - Use default map" << endl; //Default map is drawn
+        cout << "3 - Use paper's map" << endl; //Professor's map
         cout << "0 - Proceed" << endl;
         cin >> option;
+        
         
         switch(option){
             case 0:{
@@ -70,11 +70,7 @@ int main (){
                 //                    }
                 //                    graphsZs.push_back(z);
                 //                    graphsMap[z] = myGraph;
-                //                    planes.push_back(plane);
-                
-                
-                
-                break;
+                //                    planes.push_back(plane);            break;
             }
                 
             case 1:{
@@ -175,16 +171,54 @@ int main (){
                 obstacles[1]->print_num_vertices();
                 //---------------------------------
                 
-                //TEST PLANE
-                //Plane* plane = new Plane(0);
-                //plane -> findObstaclesInPlane(obstacles);
-                //plane -> lineSweep();
+                Plane* plane = new Plane(0);
+                plane -> findObstaclesInPlane(obstacles);
+                plane -> lineSweep();
+                plane -> createGraph();
+                
+                break;
+            }
+            case 3:{
+                vector<Point*> vertices_input;
+                //First obstacle
+                vertices_input.push_back(new Point(26.5,1.8));
+                vertices_input.push_back(new Point(21.6,13));
+                vertices_input.push_back(new Point(30.5,17));
+                vertices_input.push_back(new Point(35.5,5.8));
+                obstacles.push_back(new Obstacle(vertices_input,12));
+                vertices_input.clear();
+                
+                //Second obstacle
+                vertices_input.push_back(new Point(11.3,18.9));
+                vertices_input.push_back(new Point(13.7,32.7));
+                vertices_input.push_back(new Point(24.4,23.8));
+                obstacles.push_back(new Obstacle(vertices_input,12));
+                vertices_input.clear();
+                
+                //First obstacle
+                vertices_input.push_back(new Point(34.1,22));
+                vertices_input.push_back(new Point(39.2,27.9));
+                vertices_input.push_back(new Point(41.8,20.5));
+                obstacles.push_back(new Obstacle(vertices_input,12));
+                vertices_input.clear();
+                
+                total_planes.push_back(0);
+                total_planes.push_back(12);
+                
+                //---------DEBUG----REMOVE---------
+                cout << endl << "Obstacle 1...";
+                obstacles[0]->print_num_vertices();
+                cout << endl << "Obstacle 2...";
+                obstacles[1]->print_num_vertices();
+                cout << endl << "Obstacle 3...";
+                obstacles[2]->print_num_vertices();
+                //---------------------------------
                 
                 break;
             }
         }
         
-    }while(option != 0 && option != 2);
+    }while(option != 0 && option != 2 && option !=3);
     
     option = 0;
     do{ //Start menu
@@ -255,7 +289,7 @@ int main (){
                             Plane* plane = planes[sourceZ];
                             //plane -> addSourceAndTarget(source_, targetProjection);
                             planesToGraph.push_back(plane);
-                             //add edge connecting target and target projection to the graph
+                            //add edge connecting target and target projection to the graph
                         }//case 3
                         else {
                             //if it is not, a plane in that Z coordinate must be created
@@ -274,7 +308,7 @@ int main (){
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), targetZ) != total_planes.end()) {
                             //if it is, just adds the point to the plane
-                             Plane* plane = planes[sourceZ];
+                            Plane* plane = planes[sourceZ];
                             //plane -> addSourceAndTarget(sourceProjection, target_);
                             planesToGraph.push_back(plane);
                             //add edge connecting source and source projection to the graph
