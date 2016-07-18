@@ -29,13 +29,6 @@ class Point;
 
 using namespace std;
 
-struct cmp {
-    bool operator() (Segment* a, Segment* b){
-        Point *p1 = a->getLeft(), *p2 = b->getLeft();
-        return (p1->getY() > p2->getY()) || (p1->getY() == p2->getY() && p1->getX() < p2->getX()) || (p1->getX() == p2->getX() && p1->getY() == p2->getY() && (a->getRight()->getY() != b->getRight()->getY() || a->getRight()->getX() != b->getRight()->getX()));
-    }
-};
-
 //Plane is a 2D plane
 class Plane {
 public:
@@ -59,7 +52,7 @@ private:
     void LineSweepRTL(vector<Point*>);
     void LineSweepBTT(vector<Point*>);
     void LineSweepTTB(vector<Point*>);
-    void checkProjections(Segment*, Segment*, set<Segment*, cmp>*, bool); //checks if there are any intersections between projections and objects, in order to create Steiner points
+    void checkProjections(Segment*, Segment*, set<Segment*>*, bool); //checks if there are any intersections between projections and objects, in order to create Steiner points
     Point* createSteinerPoint(Segment*, Segment*); //creates a Steiner point and an edge associated to it
     void createVerticalMedianLines(vector<Point*>, int); //creates lines that will be used to make type 1 Steiner points
     void createHorizontalMedianLines(vector<Point*>, int);
@@ -73,4 +66,3 @@ private:
 };
 
 #endif
-
