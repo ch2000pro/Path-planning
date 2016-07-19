@@ -818,18 +818,67 @@ double Plane::findAngle(double a, double b, double c){
     return acos((pow(a, 2) + pow(b, 2) - pow(c, 2))/(2 * a * b));
 }
 
+void Plane::addSourceAndTarget(Point* source, Point* target){
+    nodes.push_back(source);
+    nodes.push_back(target);
+}
+
 void Plane::createGraph(){
-    
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point > Graph;
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point, Segment > Graph;
+    Graph myGraph;
     typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
     typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
-    
-    Graph myGraph;
+    vertex_t s_;
+    int flag1 = 0;
+    cout <<endl<< "TESTING FUNCTION CREATE GRAPH"<< endl;
     for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        Segment edge = *(*it);
         Point right = *(*it)->getRight();
         Point left = *(*it)->getLeft();
-        vertex_t u = boost::add_vertex(right, myGraph);
-        vertex_t v = boost::add_vertex(left, myGraph);
-        boost::add_edge(u, v, myGraph);
+        if(right.getX() >= 0 && right.getY() >=0 && right.getZ()>= 0 && left.getX() >= 0 && left.getY() >= 0 && left.getZ() >= 0){
+            cout << "Edge from: " << right.getX() << " "<< right.getY() << " "<< right.getZ() << " to: "<< left.getX() << " "<< left.getY()<< " "<< left.getZ() << endl;
+            vertex_t u = boost::add_vertex(right, myGraph);
+            vertex_t v = boost::add_vertex(left, myGraph);
+            edge_t e; bool b;
+            boost::tie(e,b) =  boost::add_edge(u, v, myGraph);
+            if(right.getX() == 0 && right.getY() ==0 && right.getZ()== 0){
+                s_ = u;
+            }
+        }
     }
+    
+    using weight_map_t = boost::property_map<Graph, int Segment::*>::type;
+    weight_map_t weightMap = boost::get(&Segment::weight, myGraph);
+    std::vector<vertex_t> p(num_vertices(myGraph));
+    std::vector<int> d(num_vertices(myGraph));
+    
+    dijkstra_shortest_paths(myGraph,s_,
+                            boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, myGraph))).
+                            distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, myGraph))).
+                            weight_map(get(&Segment::weight, myGraph)));
+    
+    
+    std::cout << "distances and parents: (distance of that point to the point 0, 0, 0" << std::endl;
+    boost::graph_traits <Graph>::vertex_iterator vi, vend;
+    for (boost::tie(vi, vend) = vertices(myGraph); vi != vend; ++vi) {
+        vertex_t v = *vi;
+        vertex_t parent = p[*vi];
+       // cout << "vertice: " << myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ()<< endl;
+        
+        cout << "distance(" << myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() << ") = " << d[*vi] << ", ";
+        cout << "parent(" << myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() <<  ") = " << myGraph[parent].getX() << " " << myGraph[parent].getY() << " " << myGraph[parent].getZ()<<endl;
+    }
+    std::cout << std::endl;
+    
+    fstream dot_file("graphTest.txt", fstream::out);
+    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
+    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
+        edge_t e = *ei;
+        boost::graph_traits < Graph >::vertex_descriptor u = source(e, myGraph), v = target(e, myGraph);
+        dot_file << "edge from: " << myGraph[u].getX() << " " << myGraph[u].getY() << " " << myGraph[u].getZ() << " to: " <<myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() << endl;
+    }
+    
+    
+    dot_file.close();
 }
+

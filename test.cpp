@@ -45,32 +45,14 @@ int main (){
         
         switch(option){
             case 0:{
-                vector<double>::iterator it;
                 int z;
-                for (it = total_planes.begin() ; it != total_planes.end(); ++it) {
-                    cout << "NEW PLANE" << endl;
+                for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
                     z = *it;
                     Plane* plane = new Plane(z);
                     planes[z] = plane;
                     plane -> findObstaclesInPlane(obstacles);
                     plane -> lineSweep();
                 }
-                //                    plane -> findObstaclesInPlane(obstacles);
-                //                    plane -> lineSweep();
-                //                    vector<Segment*> edges_ = plane -> getEdges();
-                //                    Graph myGraph;
-                //
-                //                    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-                //                        Point right = *(*it)->getRight();
-                //                        Point left = *(*it)->getLeft();
-                //                        vertex_t u = boost::add_vertex(right, myGraph);
-                //                        vertex_t v = boost::add_vertex(left, myGraph);
-                //                        boost::add_edge(u, v, myGraph);
-                //                        cout << "Edge from: " << right.getX() << " "<< right.getY() << " "<< right.getZ() << " to: "<< left.getX() << " "<< left.getY()<< " "<< left.getZ() << endl;
-                //                    }
-                //                    graphsZs.push_back(z);
-                //                    graphsMap[z] = myGraph;
-                //                    planes.push_back(plane);            break;
             }
                 
             case 1:{
@@ -174,6 +156,7 @@ int main (){
                 Plane* plane = new Plane(0);
                 plane -> findObstaclesInPlane(obstacles);
                 plane -> lineSweep();
+                cout << "testing" << endl;
                 plane -> createGraph();
                 
                 break;
@@ -243,9 +226,8 @@ int main (){
                 // =================== CASE 2 ===================
             case 2:{
                 double sourceX, sourceY, sourceZ, targetX, targetY, targetZ;
-                double highestZ;
+                double highestZ = 0;
                 Graph myGraph;
-                vector<Plane*> planesToGraph; //planes above that will be added to the graph
                 
                 cout << " What is the source point of the search? (x, y and z)" << endl;
                 cin >> sourceX;
@@ -258,48 +240,66 @@ int main (){
                 
                 Point* source_ = new Point(sourceX, sourceY, sourceZ);
                 Point* target_ = new Point(targetX, targetY, targetZ);
+                Point* sourceBelow = source_;
+                Point* targetBelow = target_;
                 
                 //case 1
                 if(sourceZ == targetZ){
+                    highestZ = sourceZ;
+                    Plane* plane;
                     //check if there is a plane in that z already
                     if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
                         //if it is, just adds the point to the plane
-                        Plane* plane = planes[sourceZ];
-                        //plane -> addSourceAndTarget(source_, target_); //function to insert S and T to nodes and project the edges
-                        planesToGraph.push_back(plane);
+                        plane = planes[sourceZ];
+                        plane -> addSourceAndTarget(source_, target_); //function to insert S and T to nodes and project the edges
                     } else {
                         //if it is not, a plane in that Z coordinate must be created
-                        Plane* plane = new Plane(sourceZ);
+                        plane = new Plane(sourceZ);
                         plane -> findObstaclesInPlane(obstacles);
                         plane -> lineSweep();
-                        //plane -> addSourceAndTarget(source_, target_);
-                        planesToGraph.push_back(plane);
+                        plane -> addSourceAndTarget(source_, target_);
                     }
-                    highestZ = sourceZ;
+                    
+                    sourceBelow = source_;
+                    targetBelow = target_;
+                    
+                    vector<Segment*> edges_ = plane -> getEdges();
+                    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+                        Point right = *(*it)->getRight();
+                        Point left = *(*it)->getLeft();
+                        vertex_t u = boost::add_vertex(right, myGraph);
+                        vertex_t v = boost::add_vertex(left, myGraph);
+                        boost::add_edge(u, v, myGraph);
+                    }
                 }
                 else{
+                    Plane* plane;
                     //case 2
                     if(sourceZ > targetZ){
                         highestZ = sourceZ;
+                        
                         Point* targetProjection = new Point(targetX, targetY, sourceZ);
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
                             //if it is, just adds the point to the plane
-                            
-                            Plane* plane = planes[sourceZ];
-                            //plane -> addSourceAndTarget(source_, targetProjection);
-                            planesToGraph.push_back(plane);
-                            //add edge connecting target and target projection to the graph
+                            plane = planes[sourceZ];
+                            plane -> addSourceAndTarget(source_, targetProjection);
                         }//case 3
                         else {
                             //if it is not, a plane in that Z coordinate must be created
-                            Plane* plane = new Plane(sourceZ);
+                            plane = new Plane(sourceZ);
                             plane -> findObstaclesInPlane(obstacles);
                             plane -> lineSweep();
-                            //plane -> addSourceAndTarget(source_, targetProjection);
-                            planesToGraph.push_back(plane);
-                            //add edge connecting target and target projection to the graph
+                            plane -> addSourceAndTarget(source_, targetProjection);
                         }
+                        
+                        //add edge connecting target and target projection to the graph
+                        vertex_t u = boost::add_vertex(*target_, myGraph);
+                        vertex_t v = boost::add_vertex(*targetProjection, myGraph);
+                        boost::add_edge(u, v, myGraph);
+                        
+                        sourceBelow = source_;
+                        targetBelow = targetProjection;
                     }
                     //case 4
                     else if(targetZ > sourceZ){
@@ -308,24 +308,66 @@ int main (){
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), targetZ) != total_planes.end()) {
                             //if it is, just adds the point to the plane
-                            Plane* plane = planes[sourceZ];
-                            //plane -> addSourceAndTarget(sourceProjection, target_);
-                            planesToGraph.push_back(plane);
-                            //add edge connecting source and source projection to the graph
+                            plane = planes[sourceZ];
+                            plane -> addSourceAndTarget(sourceProjection, target_);
                         }//case 5
                         else {
                             //if it is not, a plane in that Z coordinate must be created
-                            Plane* plane = new Plane(targetZ);
+                            plane = new Plane(targetZ);
                             plane -> findObstaclesInPlane(obstacles);
                             plane -> lineSweep();
-                            //plane -> addSourceAndTarget(sourceProjection, target_);
-                            planesToGraph.push_back(plane);
-                            //add edge connecting source and source projection to the graph
+                            plane -> addSourceAndTarget(sourceProjection, target_);
                         }
+                        
+                        //add edge connecting source and source projection to the graph
+                        vertex_t u = boost::add_vertex(*source_, myGraph);
+                        vertex_t v = boost::add_vertex(*sourceProjection, myGraph);
+                        boost::add_edge(u, v, myGraph);
+                        
+                        sourceBelow = sourceProjection;
+                        targetBelow = target_;
+                        
+                    }
+                    
+                    vector<Segment*> edges_ = plane -> getEdges();
+                    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+                        Point right = *(*it)->getRight();
+                        Point left = *(*it)->getLeft();
+                        vertex_t u = boost::add_vertex(right, myGraph);
+                        vertex_t v = boost::add_vertex(left, myGraph);
+                        boost::add_edge(u, v, myGraph);
                     }
                 }
                 
-                
+                sort(total_planes.begin(), total_planes.end());
+                for(vector<double>::iterator it = total_planes.begin(); it != total_planes.end(); it++) {
+                    double z = *it;
+                    if(z>highestZ){
+                        Plane* plane = planes[z];
+                        Point* targetProjection = new Point(targetX, targetY, z);
+                        Point* sourceProjection = new Point(sourceX, sourceY, z);
+                        plane -> addSourceAndTarget(sourceProjection, targetProjection);
+                        
+                        //add edge connecting the source in the plane below with the projection of the source in the plane above
+                        vertex_t u = boost::add_vertex(*sourceBelow, myGraph);
+                        vertex_t v = boost::add_vertex(*sourceProjection, myGraph);
+                        boost::add_edge(u, v, myGraph);
+                        
+                        //add edge connecting the target in the plane below with the projection of the target in the plane above
+                        vertex_t r = boost::add_vertex(*targetBelow, myGraph);
+                        vertex_t s = boost::add_vertex(*targetProjection, myGraph);
+                        boost::add_edge(r, s, myGraph);
+                        
+                        vector<Segment*> edges_ = plane -> getEdges();
+                        for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+                            Point right = *(*it)->getRight();
+                            Point left = *(*it)->getLeft();
+                            vertex_t u = boost::add_vertex(right, myGraph);
+                            vertex_t v = boost::add_vertex(left, myGraph);
+                            boost::add_edge(u, v, myGraph);
+                        }
+                    }
+                }
                 //TO DO FIND SHORTEST PATH;
                 break;
             }
