@@ -103,8 +103,6 @@ void Plane::lineSweep() {
     cout << "edges after RTL: " << edges_.size() << endl;
     Plane::LineSweepTTB(points2);
     cout << "edges after TTB: " << edges_.size() << endl;
-    cout << edges_[0]->getLeft()->getX() << " " << edges_[0]->getLeft()->getY() << " " << edges_[0]->getRight()->getX() << " " << edges_[0]->getRight()->getY() << endl;
-    cout << edges_[1]->getLeft()->getX() << " " << edges_[1]->getLeft()->getY() << " " << edges_[1]->getRight()->getX() << " " << edges_[1]->getRight()->getY() << endl;
     Plane::LineSweepBTT(points2);
     cout << "edges after BTT: " << edges_.size() << endl;
     for(vector<Segment*>::iterator l = medianLines.begin(); l != medianLines.end(); l++) {
@@ -113,12 +111,17 @@ void Plane::lineSweep() {
         Point* prev = 0;
         for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); p++) {
             if((*p)->getZ() < 0) {
-                if ((*p)->getZ() == -2) {
+                if ((*p)->getZ() == -2 || (*p)->getZ() == -3) {
                     if (prev != 0) {
                         Segment* s = new Segment(prev, *p);
                         edges_.push_back(s);
                     }
-                    prev = *p;
+                    if ((*p)->getZ() == -2)
+                        prev = *p;
+                    else {
+                        p++;
+                        prev = *p;
+                    }
                 }
                 else
                     prev = 0;
@@ -143,6 +146,10 @@ void Plane::lineSweep() {
         }
         Segment* s = new Segment(prev, (*l)->getRight());
         edges_.push_back(s);
+    }
+    cout << "total number of edges: " << edges_.size() << endl;
+    for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        cout << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
     }
 }
 
@@ -171,8 +178,16 @@ void Plane::LineSweepLTR(vector<Point*> points) {
                 else if((*it)->getWeight() == 0) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
-                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second && (*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX())
-                        k = -2;
+                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second) {
+                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX()) {
+                            k = -2;
+                        }
+                        else{
+                            if ((*it)->getLeft()->getX() == 0 && (*it)->getLeft()->getY() == 9)
+                                cout << "AQUI" << endl;
+                            k = -3;
+                        }
+                    }
                     else
                         k = -1;
                     Point* aux = new Point(point.first, point.second, k);
@@ -328,8 +343,18 @@ void Plane::LineSweepTTB(vector<Point*> points) {
                 else if((*it)->getWeight() == 0) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
-                    if (((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second && (*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY()) || ((*it)->getRight()->getX() == point.first && (*it)->getRight()->getY() == point.second && (*it)->getRight()->getOther(*it)->getOther((*it)->getRight())->getY() != (*it)->getLeft()->getY()))
-                        k = -2;
+                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second) {
+                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY())
+                            k = -2;
+                        else
+                            k = -3;
+                    }
+                    else if (((*it)->getRight()->getX() == point.first && (*it)->getRight()->getY() == point.second)) {
+                        if ((*it)->getRight()->getOther(*it)->getOther((*it)->getRight())->getY() != (*it)->getLeft()->getY())
+                            k = -2;
+                        else
+                            k = -3;
+                    }
                     else
                         k = -1;
                     Point* aux = new Point(point.first, point.second, k);
@@ -486,14 +511,20 @@ vector<Segment*> Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*>
     vector<Segment*> needErase;
     for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
         if ((*it)->getWeight() != 0) {
-            int ly1, ry1, ly2, ry2, ly, ry;
+            int lx1, ly1, rx1, ry1, lx2, ly2, rx2, ry2, lx, ly, rx, ry;
+            lx = (*it)->getLeft()->getX();
             ly = (*it)->getLeft()->getY();
+            rx = (*it)->getRight()->getX();
             ry = (*it)->getRight()->getY();
+            lx1 = s1->getLeft()->getX();
             ly1 = s1->getLeft()->getY();
+            rx1 = s1->getRight()->getX();
             ry1 = s1->getRight()->getY();
+            lx2 = s2->getLeft()->getX();
             ly2 = s2->getLeft()->getY();
+            rx2 = s2->getRight()->getX();
             ry2 = s2->getRight()->getY();
-            if ((ly > ly1 && ry < ry1) || (ly < ly1 && ry > ry1)) {
+            if ((ly > ly1 && ry < ry1 && ((rx1 > lx && rx > lx1) || (rx1 < lx && rx < lx1))) || (ly < ly1 && ry > ry1 && ((rx1 > lx && rx > lx1) || (rx1 < lx && rx < lx1)))) {
                 Point* steiner = Plane::createSteinerPoint(s1, *it);
                 Segment* s;
                 if(b)
@@ -503,7 +534,7 @@ vector<Segment*> Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*>
                 edges_.push_back(s);
                 needErase.push_back(*it);
             }
-            else if ((ly > ly2 && ry < ry2) || (ly < ly2 && ry > ry2)) {
+            else if ((ly > ly2 && ry < ry2 && ((rx2 > lx && rx > lx2) || (rx2 < lx && rx < lx2))) || (ly < ly2 && ry > ry2 && ((rx2 > lx && rx > lx2) || (rx2 < lx && rx < lx2)))) {
                 Point* steiner = Plane::createSteinerPoint(s2, *it);
                 Segment* s;
                 if (b)
@@ -519,26 +550,27 @@ vector<Segment*> Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*>
 }
 
 pair<double, double> Plane::findIntersection(Segment* segment1, Segment* segment2) {
-    double m1, m2, c1, c2, x, y, aux1, aux2;
-    Point* right1 = segment1->getRight();
-    Point* left1 = segment1->getLeft();
-    Point* right2 = segment2->getRight();
-    Point* left2 = segment2->getLeft();
-    //cout << "First Segment: " << left1->getX() << " " << left1->getY() << " " << right1->getX() << " " << right1->getY() << endl;
-    //cout << "Second Segment: " << left2->getX() << " " << left2->getY() << " " << right2->getX() << " " << right2->getY() << endl;
-    aux1 = right1->getY() - left1->getY();
-    aux2 = right1->getX() - left1->getX();
-    m1 = aux1 / aux2;
-    //cout << "m1: " << aux1 << " " << aux2 << " " << m2 << endl;
-    aux1 = right2->getY() - left2->getY();
-    aux2 = right2->getX() - left2->getX();
-    m2 = aux1 / aux2;
-    //cout << "m2: " << aux1 << " " << aux2 << " " << m2 << endl;
-    c1 = left1->getY() - (m1 * left1->getX());
-    c2 = left2->getY() - (m2 * left2->getX());
-    x = (c2 - c1)/(m1 - m2);
-    y = (m1 * x) + c1;
-    cout << x << " " << y << endl;
+    double x, y, aux1, aux2, x1, y1, x2, y2, x3, y3, x4, y4;
+    x1 = segment1->getLeft()->getX();
+    y1 = segment1->getLeft()->getY();
+    x2 = segment1->getRight()->getX();
+    y2 = segment1->getRight()->getY();
+    x3 = segment2->getLeft()->getX();
+    y3 = segment2->getLeft()->getY();
+    x4 = segment2->getRight()->getX();
+    y4 = segment2->getRight()->getY();
+    aux1 = ((x1*y2 - y1*x2) * (x3 - x4)) - ((x1 - x2) * (x3*y4 - y3*x4));
+    aux2 = ((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4));
+    x = aux1 / aux2;
+    aux1 = ((x1*y2 - y1*x2) * (y3 - y4)) - ((y1 - y2) * (x3*y4 - y3*x4));
+    y = aux1 / aux2;
+    if (x == -0)
+        x = 0;
+    if (y == -0)
+        y = 0;
+    //cout << "s1= " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+    //cout << "s2= " << x3 << " " << y3 << " " << x4 << " " << y4 << endl;
+    //cout << x << " " << y << endl;
     return pair<double,double>(x,y);
 }
 
@@ -744,7 +776,7 @@ Segment* Plane::projectBTT(Point* p1) {
     }
     else{
         Point* aux1 = new Point(p1->getX(), INT_MAX);
-        Segment* aux2 = new Segment(p1, aux1, INT_MAX);
+        Segment* aux2 = new Segment(aux1, p1, INT_MAX);
         return aux2;
     }
 }

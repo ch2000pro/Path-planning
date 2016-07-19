@@ -198,10 +198,10 @@ int main (){
            obstacles[1]->print_num_vertices();
            //---------------------------------
              
-             Plane* plane = new Plane(0);
+             /*Plane* plane = new Plane(0);
              plane -> findObstaclesInPlane(obstacles);
              plane -> lineSweep();
-             plane -> createGraph();
+             plane -> createGraph();*/
 
            break;
          }
@@ -254,6 +254,7 @@ int main (){
         cout << "Select an option:" << endl;
         cout << "1 - Number of obstacles" << endl;
         cout << "2 - Find shortest path" << endl;
+        cout << "3 - Create edges" << endl;
         cout << "0 - Quit" << endl;
         cin >> option;
         
@@ -284,6 +285,13 @@ int main (){
                 
                 //TO DO FIND SHORTEST PATH;
                 break;
+            }
+            
+            case 3: {
+                Plane* plane = new Plane(0);
+                plane -> findObstaclesInPlane(obstacles);
+                plane -> lineSweep();
+                plane -> createGraph();
             }
                 // ================== DEFAULT ===================
             default:{
