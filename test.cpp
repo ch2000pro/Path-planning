@@ -376,8 +376,8 @@ int main (){
                 Plane* plane = new Plane(0);
                 plane -> findObstaclesInPlane(obstacles);
                 plane -> lineSweep();
-                cout << "testing" << endl;
-                plane -> createGraph();
+                //cout << "testing" << endl;
+                //plane -> createGraph();
             }
                 // ================== DEFAULT ===================
             default:{
