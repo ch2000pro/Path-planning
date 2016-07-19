@@ -153,6 +153,12 @@ void Plane::lineSweep() {
     }
     cout << "total number of edges: " << edges_.size() << endl;
     for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        double x1 = (*it)->getLeft()->getX(), y1 = (*it)->getLeft()->getY(), x2 = (*it)->getRight()->getX(), y2 = (*it)->getRight()->getY(), w;
+        w = y2 - y1;
+        if (w < 0)
+            w *= -1;
+        w += (x2 - x1);
+        (*it)->setWeight(w);
         cout << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
     }
 }
@@ -591,7 +597,7 @@ Point* Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
 void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + (points.size()/2);
-        int x = (*middle)->getX();
+        double x = (*middle)->getX();
         Point* p1 = new Point(x, INT_MAX);
         Point* p2 = new Point(x, INT_MIN);
         Segment* l = new Segment(p1, p2, w);
@@ -607,7 +613,7 @@ void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
 void Plane::createHorizontalMedianLines(vector<Point*> points, int w) {
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + points.size()/2;
-        int y = (*middle)->getY();
+        double y = (*middle)->getY();
         Point* p1 = new Point(INT_MAX, y);
         Point* p2 = new Point(INT_MIN, y);
         Segment* l = new Segment(p1, p2, w);
