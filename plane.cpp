@@ -861,176 +861,95 @@ void Plane::addSourceAndTarget(Point* source, Point* target){
     nodes.push_back(target);
 }
 
-void Plane::createGraph(){
-    cout << "CREATE GRAPH"<< endl;
-    #define INF INT_MAX //inf
-    const int sz=10001; //max possible number of vertices. preallocating
-    double dis[sz]; //Stores shortest distance
-    Point* prev[sz];
-    int id=0;
-    vector<Point*> Q = nodes;
-    Point* source; //source will be 0,0,0
-    
-    for(vector<Point*>::iterator it = Q.begin(); it != Q.end(); it++) {
-        Point* v = *it;
-        v->setId(id);
-        id++;
-        if(v->getX() >= 0 && v->getY() >=0 && v->getZ() >= 0){
-            dis[v->getId()] = INF;
-            if(v->getX() == 0 && v->getY() ==0 && v->getZ()== 0){
-                source = v;
-            }
-        }
-    }
-    dis[source->getId()] = 0;
-    while(!Q.empty()){
-        Point* u = getSmaller(dis, Q);
-        for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-            
-            Segment* edge = *it;
-            Point* right = edge->getRight();
-            Point* left = edge->getLeft();
-            if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
-                cout << "edge from: "<< right->getX() << " " << right->getY() << " "<< right->getZ()<< " to: " << left->getX() << " " << left->getY() << " "<< left->getZ()<<endl;
-                if(right == u){
-                    cout<<"right = u"<<endl;
-                    if(std::find(Q.begin(), Q.end(), left) != Q.end()) {
-                        double alt = dis[u->getId()] + edge->getWeight();
-                        if(alt < dis[left->getId()]){
-                            dis[left->getId()] = alt;
-                            prev[left->getId()] = u;
-                        }
-                    }
-                }
-                else if(left == u){
-                    cout<<"left = u"<<endl;
-                    if(std::find(Q.begin(), Q.end(), right) != Q.end()) {
-                        double alt = dis[u->getId()] + edge->getWeight();
-                        if(alt < dis[right->getId()]){
-                            dis[right->getId()] = alt;
-                            prev[right->getId()] = u;
-                        }
-                    }
-                }
-            }
-        }
-        Q.erase(std::remove(Q.begin(), Q.end(), u), Q.end());
-    }
-    cout << "Distance from vertex to 0,0,0"<<endl;
+Point* Plane::getPointFromId(vector<Point*> nodes, int id){
     for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
         Point* v = *it;
-        if(v->getX() >= 0 && v->getY() >=0){
-            cout << "vertex: " << v->getX() << " " << v->getY() << " "<< v->getZ()<< " ";
-            cout << "distance: " << dis[v->getId()] << endl;
+        if(v->getId() == id){
+            return v;
         }
     }
+    return NULL;
 }
 
-Point* Plane::getSmaller(double dis[], vector<Point*> Q){
-#define INF INT_MAX
-    Point* smallerDistance = Q.front();
-    for(vector<Point*>::iterator it = Q.begin(); it != Q.end(); it++) {
+void Plane::createGraph(){
+    typedef boost::property<boost::edge_weight_t, double> EdgeWeightProperty;
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point*, EdgeWeightProperty> Graph;
+    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
+    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
+    Graph myGraph;
+    vertex_t s_;
+    vertex_t t_;
+    vector<vertex_t> nodes_;
+    vector<Point*> finalPath;
+    vector<double> distances;
+    int id=0;
+    cout <<endl<< "Creating graph and running dijkstra"<< endl;
+    map <int, vertex_t> verts;
+
+    //adding nodes to graph
+    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
         Point* v = *it;
-        if(dis[v->getId()]<dis[smallerDistance->getId()]){
-            smallerDistance = v;
+        if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
+            v->setId(id);
+            vertex_t u = boost::add_vertex(v, myGraph);
+            verts[id] = u;
+            id++;
+            if(v->getX() == 0 && v->getY() ==0 && v->getZ()== 0){
+                s_ = u;
+            }
+            if(v->getX() == 10 && v->getY() ==20 && v->getZ()== 0){
+                t_ = u;
+            }
         }
     }
-    return smallerDistance;
+    
+    //adding edges between nodes
+    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        Segment* edge = *it;
+        Point* right = edge->getRight();
+        Point* left =  edge->getLeft();
+        if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
+            vertex_t u = verts[right->getId()];
+            vertex_t v = verts[left->getId()];
+            edge_t e; bool b;
+            boost::tie(e,b) = boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
+        }
+    }
+    
+    // The property map associated with the weights.
+    boost::property_map < Graph,
+    boost::edge_weight_t >::type EdgeWeightMap = get(boost::edge_weight, myGraph);
+    std::vector<vertex_t> p(num_vertices(myGraph));
+    std::vector<int> d(num_vertices(myGraph));
+
+    dijkstra_shortest_paths(myGraph,s_,
+                            boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, myGraph))).
+                            distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, myGraph))).
+                            weight_map(EdgeWeightMap));
+
+    cout << "distances and parents: (distance of that point to the point (0, 0, 0)" << endl;
+    boost::graph_traits <Graph>::vertex_iterator vi, vend;
+    for (boost::tie(vi, vend) = vertices(myGraph); vi != vend; ++vi) {
+        vertex_t v = *vi;
+        vertex_t parent = p[*vi];
+        cout << "vertice: " << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ()<< endl;
+        cout << "distance(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << ") = " << d[*vi] << ", ";
+        cout << "parent(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() <<  ") = " << myGraph[parent]->getX() << " " << myGraph[parent]->getY() << " " << myGraph[parent]->getZ()<<endl;
+    }
+    cout << endl;
+
+    //backtracking path from target to source
+    do{
+        nodes_.push_back(t_);
+        finalPath.push_back(getPointFromId(nodes, myGraph[t_]->getId()));
+        distances.push_back(d[t_]);
+        t_ = p[t_];
+    }while(t_ != s_);
+    
+    for(int i = 0; i<nodes_.size(); i++){
+    Point* p = finalPath[i];
+        vertex_t v = nodes_[i];
+        cout << "distance(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << ") = " << distances[i] << endl;
+    }
 }
 
-//void Plane::createGraph(){
-//    struct VEdge{
-//        Point s;
-//        Point t;
-//        double weight;
-//    };
-//
-//    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point, VEdge> Graph;
-//    Graph testG;
-//    Graph myGraph;
-//    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
-//    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
-//    vertex_t s_;
-//    vertex_t t_;
-//    int id=0;
-//    cout <<endl<< "TESTING FUNCTION CREATE GRAPH"<< endl;
-//    map <int, vertex_t> verts;
-//
-//    vector<VEdge> vedges;
-//
-//    //adding nodes to graph
-//    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-//        Point* v_ = *it;
-//        v_->setId(id);
-//        id++;
-//        Point v = *(*it);
-//        if(v.getX() >= 0 && v.getY() >=0 && v.getZ()>= 0){
-//            vertex_t u = boost::add_vertex(v, myGraph);
-//            verts[id] = u;
-//            if(v.getX() == 0 && v.getY() ==0 && v.getZ()== 0){
-//                s_ = u;
-//            }
-//            if(v.getX() == 10 && v.getY() ==32 && v.getZ()== 0){
-//                t_ = u;
-//            }
-//        }
-//    }
-//
-//    //adding edges between nodes
-//    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-//        Segment edge = *(*it);
-//        Point right = *(*it)->getRight();
-//        Point left = *(*it)->getLeft();
-//        if(right.getX() >= 0 && right.getY() >=0 && right.getZ()>= 0 && left.getX() >= 0 && left.getY() >= 0 && left.getZ() >= 0){
-//            cout << "Edge from: " << right.getX() << " "<< right.getY() << " "<< right.getZ() << " to: "<< left.getX() << " "<< left.getY()<< " "<< left.getZ() << endl;
-//            vertex_t u = verts[right.getId()];
-//            vertex_t v = verts[left.getId()];
-//            edge_t e; bool b;
-//            boost::tie(e,b) =  boost::add_edge(u,v , myGraph);
-//            cout << "weight: "<<edge.getWeight()<<endl;
-//            VEdge myedge = {right,left,edge.getWeight()};
-//            vedges.push_back(myedge);
-//        }
-//    }
-//
-//   // auto kWeightMap = boost::make_transform_value_property_map(
-//                                                         //      [](VEdge* ve) { return ve->weight; },
-//                                                          //     boost::get(boost::edge_bundle, myGraph)
-//                                                   //            );
-//
-//
-//    using weight_map_t = boost::property_map<Graph, double VEdge::*>::type;
-//    weight_map_t weightMap = boost::get(&VEdge::weight, myGraph);
-//    std::vector<vertex_t> p(num_vertices(myGraph));
-//    std::vector<int> d(num_vertices(myGraph));
-//
-//    dijkstra_shortest_paths(myGraph,s_,
-//                            boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, myGraph))).
-//                            distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, myGraph))).
-//                            //weight_map(get(&Segment::weight, myGraph)));
-//                            weight_map(weightMap));
-//
-//    std::cout << "distances and parents: (distance of that point to the point 0, 0, 0" << std::endl;
-//    boost::graph_traits <Graph>::vertex_iterator vi, vend;
-//    for (boost::tie(vi, vend) = vertices(myGraph); vi != vend; ++vi) {
-//        vertex_t v = *vi;
-//        vertex_t parent = p[*vi];
-//        cout << "vertice: " << myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ()<< endl;
-//
-//        cout << "distance(" << myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() << ") = " << d[*vi] << ", ";
-//        cout << "parent(" << myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() <<  ") = " << myGraph[parent].getX() << " " << myGraph[parent].getY() << " " << myGraph[parent].getZ()<<endl;
-//    }
-//    std::cout << std::endl;
-//
-//    fstream dot_file("graphTest.txt", fstream::out);
-//    boost::graph_traits < Graph >::edge_iterator ei, ei_end;
-//    for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
-//        edge_t e = *ei;
-//        boost::graph_traits < Graph >::vertex_descriptor u = source(e, myGraph), v = target(e, myGraph);
-//        dot_file << "edge from: " << myGraph[u].getX() << " " << myGraph[u].getY() << " " << myGraph[u].getZ() << " to: " <<myGraph[v].getX() << " " << myGraph[v].getY() << " " << myGraph[v].getZ() << endl;
-//    }
-//
-//    dot_file.close();
-//
-//}
-//

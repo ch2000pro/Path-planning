@@ -45,7 +45,7 @@ public:
     void createGraph();
     vector<Segment*> getEdges();
     void addSourceAndTarget(Point* source, Point* target);
-    Point* getSmaller(double dis[], vector<Point*> Q);
+    Point* getPointFromId(vector<Point*> nodes, int id);
     
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane
