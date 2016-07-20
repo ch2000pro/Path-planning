@@ -38,7 +38,8 @@ int main (){
         cout << "Select an option:" << endl;
         cout << "1 - Create a new obstacle" << endl;
         cout << "2 - Use default map" << endl; //Default map is drawn
-        cout << "3 - Use paper's map" << endl; //Professor's map
+        cout << "3 - Use map1" << endl; //Professor's map
+        cout << "4 - Use map2" << endl; //Big map
         cout << "0 - Proceed" << endl;
         cin >> option;
         
@@ -199,9 +200,106 @@ int main (){
                 
                 break;
             }
+            case 4:{
+              vector<Point*> vertices_input;
+               
+              //First obstacle
+              vertices_input.push_back(new Point(10,35));
+              vertices_input.push_back(new Point(50,35));
+              vertices_input.push_back(new Point(50,10));
+              vertices_input.push_back(new Point(10,10));
+              obstacles.push_back(new Obstacle(vertices_input,85));
+              vertices_input.clear();
+              
+              //Second obstacle
+              vertices_input.push_back(new Point(222,57));
+              vertices_input.push_back(new Point(222,15));
+              vertices_input.push_back(new Point(180,15));
+              obstacles.push_back(new Obstacle(vertices_input,50));
+              vertices_input.clear();
+              
+              //Third obstacle
+              vertices_input.push_back(new Point(250,263));
+              vertices_input.push_back(new Point(350,263));
+              vertices_input.push_back(new Point(350,13));
+              vertices_input.push_back(new Point(250,13));
+              obstacles.push_back(new Obstacle(vertices_input,75));
+              vertices_input.clear();
+              
+              //Fourth obstacle
+              vertices_input.push_back(new Point(20,250));
+              vertices_input.push_back(new Point(100,170));
+              vertices_input.push_back(new Point(20,170));
+              obstacles.push_back(new Obstacle(vertices_input,50));
+              vertices_input.clear();
+              
+              //Fifth obstacle
+              vertices_input.push_back(new Point(76,260));
+              vertices_input.push_back(new Point(126,260));
+              vertices_input.push_back(new Point(126,210));
+              vertices_input.push_back(new Point(76,110));
+              obstacles.push_back(new Obstacle(vertices_input,38));
+              vertices_input.clear();
+              
+              //Sixth obstacle
+              vertices_input.push_back(new Point(132,223));
+              vertices_input.push_back(new Point(212,223));
+              vertices_input.push_back(new Point(212,143));
+              obstacles.push_back(new Obstacle(vertices_input,90));
+              vertices_input.clear();
+              
+              //Seventh obstacle
+              vertices_input.push_back(new Point(35,130));
+              vertices_input.push_back(new Point(195,130));
+              vertices_input.push_back(new Point(195,50));
+              vertices_input.push_back(new Point(35,50));
+              obstacles.push_back(new Obstacle(vertices_input,40));
+              vertices_input.clear();
+              
+              vertices_input.push_back(new Point(65,115));
+              vertices_input.push_back(new Point(165,115));
+              vertices_input.push_back(new Point(165,65));
+              vertices_input.push_back(new Point(65,65));
+              obstacles[obstacles.size()-1]->add_vertices(vertices_input, 23);
+              vertices_input.clear();
+              
+              vertices_input.push_back(new Point(102,115));
+              vertices_input.push_back(new Point(165,115));
+              vertices_input.push_back(new Point(165,83));
+              vertices_input.push_back(new Point(102,83));
+              obstacles[obstacles.size()-1]->add_vertices(vertices_input, 19);
+              vertices_input.clear();
+              
+              total_planes.push_back(38);
+              total_planes.push_back(40);
+              total_planes.push_back(50);
+              total_planes.push_back(63);
+              total_planes.push_back(75);
+              total_planes.push_back(82);
+              total_planes.push_back(85);
+              total_planes.push_back(90);
+              
+              //---------DEBUG----REMOVE---------
+              cout << endl << "Obstacle 1...";
+              obstacles[0]->print_num_vertices();
+              cout << endl << "Obstacle 2...";
+              obstacles[1]->print_num_vertices();
+              cout << endl << "Obstacle 3...";
+              obstacles[2]->print_num_vertices();
+              cout << endl << "Obstacle 4...";
+              obstacles[3]->print_num_vertices();
+              cout << endl << "Obstacle 5...";
+              obstacles[4]->print_num_vertices();
+              cout << endl << "Obstacle 6...";
+              obstacles[5]->print_num_vertices();
+              cout << endl << "Obstacle 7...";
+              obstacles[6]->print_num_vertices();
+              //---------------------------------
+              break;
+            }
         }
         
-    }while(option != 0 && option != 2 && option !=3);
+    }while(option == 1);
     
     option = 0;
     do{ //Start menu
