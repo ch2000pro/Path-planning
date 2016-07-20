@@ -153,11 +153,11 @@ int main (){
                 obstacles[1]->print_num_vertices();
                 //---------------------------------
                 
-                /*Plane* plane = new Plane(0);
+                Plane* plane = new Plane(0);
                 plane -> findObstaclesInPlane(obstacles);
                 plane -> lineSweep();
                 cout << "testing" << endl;
-                plane -> createGraph();*/
+                plane -> createGraph();
                 
                 break;
             }

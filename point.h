@@ -42,6 +42,12 @@ public:
         z = z_;
     }
     
+    int getId(){
+        return id_;
+    }
+    void setId(int x){
+        id_ = x;
+    }
     double getX() {return x;}
     double getY() {return y;}
     double getZ() {return z;}
@@ -52,6 +58,7 @@ public:
     Segment* getOther(Segment* s) {if (s == seg1) return seg2; else return seg1;}
     
 private:
+    int id_;
     double x, y, z; //the points coordinates
     Segment* seg1; //a segment that has this point as one of its endpoints
     Segment* seg2; //a segment that has this point as one of its endpoints

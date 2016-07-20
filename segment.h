@@ -40,6 +40,7 @@ public:
             return left;
         }
     }
+    double weight;
     void setLeft(Point* a) {left = a;}
     void setRight(Point* a) {right = a;}
     double getWeight() {return weight;}
@@ -51,7 +52,7 @@ public:
 private:
 	Point* left; //left endpoint
 	Point* right; //right endpoint
-	double weight;
+	
     vector<Point*> steinerPoints; //steiner points created in this segment
 };
 

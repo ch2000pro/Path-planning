@@ -13,6 +13,11 @@
 #include "boost/graph/adjacency_list.hpp"
 #include "boost/graph/dijkstra_shortest_paths.hpp"
 #include "boost/property_map/property_map.hpp"
+#include "boost/property_map/transform_value_property_map.hpp"
+#include "boost/bind.hpp"
+
+#include <queue>
+#include <climits>
 
 #include <fstream>
 #include <string>
@@ -40,6 +45,7 @@ public:
     void createGraph();
     vector<Segment*> getEdges();
     void addSourceAndTarget(Point* source, Point* target);
+    Point* getSmaller(double dis[], vector<Point*> Q);
     
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane
