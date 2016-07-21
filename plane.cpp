@@ -107,22 +107,10 @@ void Plane::lineSweep() {
     Plane::LineSweepBTT(points2);
     for(vector<Segment*>::iterator l = medianLines.begin(); l != medianLines.end(); ++l) {
         vector<Point*> steiners = (*l)->getSteinerPoints();
-        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
-            if ((*l)->getLeft()->getX() == 13.7)
-                cout << (*p)->getX() << " " << (*p)->getY() << endl;
-        }
-        if ((*l)->getLeft()->getX() == 13.7)
-            cout << endl;
         sort(steiners.begin(), steiners.end(), sortLTR());
-        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
-            if ((*l)->getLeft()->getX() == 13.7)
-                cout << (*p)->getX() << " " << (*p)->getY() << endl;
-        }
-        if ((*l)->getLeft()->getX() == 13.7)
-            cout << endl;
         //fixing sorting
         //----------------------------------
-        if ((*l)->getLeft()->getX() == 13.7) {
+        if (steiners.size() >= 2) {
             Point* p1 = steiners.back();
             steiners.pop_back();
             Point* p2 = steiners.back();
@@ -135,10 +123,6 @@ void Plane::lineSweep() {
                 steiners.push_back(p2);
                 steiners.push_back(p1);
             }
-        }
-        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
-            if ((*l)->getLeft()->getX() == 13.7)
-                cout << (*p)->getX() << " " << (*p)->getY() << endl;
         }
         //------------------------------------
         Point* prev = 0;
@@ -188,6 +172,8 @@ void Plane::lineSweep() {
         w += (x2 - x1);
         (*it)->setWeight(w);
     }
+    cout << "total edges: " << edges_.size() << endl;
+    cout << "total nodes: " << nodes.size() << endl;
 }
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
