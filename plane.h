@@ -44,8 +44,11 @@ public:
     void findObstaclesInPlane(vector<Obstacle*> Map); //finds the obstacles that are found in this plane
     void createGraph();
     vector<Segment*> getEdges();
-    void addSourceAndTarget(Point* source, Point* target);
+    void projectPoint(Point* p);
     Point* getPointFromId(vector<Point*> nodes, int id);
+    vector<Point*> getNodes();
+    bool nodeExistsInPlane(Point* p);
+    Point* getPointByCoordinates(double x, double y, double z);
     
 private:
     vector<Point*> endpoints; //all the obstacle vertices in this plane

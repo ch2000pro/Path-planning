@@ -24,6 +24,10 @@ vector<Segment*> Plane::getEdges(){
     return edges_;
 }
 
+vector<Point*> Plane::getNodes(){
+    return nodes;
+}
+
 struct function1 {
     bool operator() (Point* a, Point* b) { return (a->getX() < b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
 } sortLTR;
@@ -856,9 +860,31 @@ double Plane::findAngle(double a, double b, double c){
     return acos((pow(a, 2) + pow(b, 2) - pow(c, 2))/(2 * a * b));
 }
 
-void Plane::addSourceAndTarget(Point* source, Point* target){
-    nodes.push_back(source);
-    nodes.push_back(target);
+bool Plane::nodeExistsInPlane(Point* p){
+     for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+         Point* v = *it;
+         if(p->getX() == v->getX() && p->getY() == v->getY() && p->getZ() == v->getZ()){
+             return true;
+         }
+     }
+    return false;
+}
+
+Point* Plane::getPointByCoordinates(double x, double y, double z){
+    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+        Point* v = *it;
+        if(v->getX() == x && v->getY() == y && v->getZ() == z){
+            return v;
+        }
+    }
+    return NULL;
+}
+
+void Plane::projectPoint(Point* p){
+    if(!nodeExistsInPlane(p)){
+        nodes.push_back(p);
+    }
+    return;
 }
 
 Point* Plane::getPointFromId(vector<Point*> nodes, int id){
@@ -946,10 +972,23 @@ void Plane::createGraph(){
         t_ = p[t_];
     }while(t_ != s_);
     
-    for(int i = 0; i<nodes_.size(); i++){
-    Point* p = finalPath[i];
-        vertex_t v = nodes_[i];
-        cout << "distance(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << ") = " << distances[i] << endl;
+    finalPath.push_back(getPointFromId(nodes, myGraph[s_]->getId()));
+    distances.push_back(d[s_]);
+    
+    for(int i = 0; i<finalPath.size(); i++){
+        Point* p = finalPath[i];
+        cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
     }
+    
+    fstream dot_file("path.scr", fstream::out);
+    dot_file << "_-COLOR" << endl;
+    dot_file << "green" << endl;
+    dot_file << "3DPOLY" << endl;
+    for(int i = 0; i<finalPath.size(); i++){
+        Point* p = finalPath[i];
+        dot_file << p->getX() << "," << p->getY() << "," << p->getZ()<< endl;
+    }
+    dot_file << "CLOSE" << endl;
+    dot_file.close();
 }
 

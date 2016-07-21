@@ -27,9 +27,6 @@ int main (){
     vector<Obstacle*> obstacles;
     map<double, Plane*> planes;
     
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point > Graph;
-    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
-    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
     //vector<double> graphsZs;
     //map<double, Graph> graphsMap;
     
@@ -154,11 +151,19 @@ int main (){
                 obstacles[1]->print_num_vertices();
                 //---------------------------------
                 
-                Plane* plane = new Plane(0);
-                plane -> findObstaclesInPlane(obstacles);
-                plane -> lineSweep();
-                cout << "testing" << endl;
-                plane -> createGraph();
+                //Plane* plane = new Plane(0);
+                //plane -> findObstaclesInPlane(obstacles);
+                //plane -> lineSweep();
+                //plane -> createGraph();
+                
+                int z;
+                for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
+                    z = *it;
+                    Plane* plane = new Plane(z);
+                    planes[z] = plane;
+                    plane -> findObstaclesInPlane(obstacles);
+                    plane -> lineSweep();
+                }
                 
                 break;
             }
@@ -324,6 +329,10 @@ int main (){
             }
                 // =================== CASE 2 ===================
             case 2:{
+                typedef boost::property<boost::edge_weight_t, double> EdgeWeightProperty;
+                typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point*, EdgeWeightProperty> Graph;
+                typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
+                typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
                 double sourceX, sourceY, sourceZ, targetX, targetY, targetZ;
                 double highestZ = 0;
                 Graph myGraph;
@@ -341,61 +350,170 @@ int main (){
                 Point* target_ = new Point(targetX, targetY, targetZ);
                 Point* sourceBelow = source_;
                 Point* targetBelow = target_;
+                vertex_t s_;
+                vertex_t t_;
+                unsigned int id=0;
+                vector<vertex_t> nodes_;
+                map<unsigned int, Point*> totalNodes;
+                vector<Point*> finalPath;
+                vector<double> distances;
+                
+           
                 
                 //case 1
                 if(sourceZ == targetZ){
+                    cout << "soure == target"<<endl;
                     highestZ = sourceZ;
                     Plane* plane;
+                    map <unsigned int, vertex_t> verts;
                     //check if there is a plane in that z already
                     if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
                         //if it is, just adds the point to the plane
                         plane = planes[sourceZ];
-                        plane -> addSourceAndTarget(source_, target_); //function to insert S and T to nodes and project the edges
+                        if(!plane->nodeExistsInPlane(source_)){
+                            plane -> projectPoint(source_);
+                        }
+                        if(!plane->nodeExistsInPlane(target_)){
+                            plane -> projectPoint(target_);
+                        }
                     } else {
                         //if it is not, a plane in that Z coordinate must be created
                         plane = new Plane(sourceZ);
+                        planes[sourceZ] = plane;
                         plane -> findObstaclesInPlane(obstacles);
                         plane -> lineSweep();
-                        plane -> addSourceAndTarget(source_, target_);
+                        if(!plane->nodeExistsInPlane(source_)){
+                            plane -> projectPoint(source_);
+                        }
+                        if(!plane->nodeExistsInPlane(target_)){
+                            plane -> projectPoint(target_);
+                        }
                     }
                     
-                    sourceBelow = source_;
-                    targetBelow = target_;
-                    
+                    vector<Point*> nodes = plane->getNodes();
                     vector<Segment*> edges_ = plane -> getEdges();
+                    //adding nodes to graph
+                    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+                        Point* v = *it;
+                        cout << "vertice of plane " << v-> getX() << " " <<  v->getY() << " "<< v->getZ()<<endl;
+                        if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
+                            v->setId(id);
+                            vertex_t u = boost::add_vertex(v, myGraph);
+                            verts[id] = u;
+                            totalNodes[id] = v;
+                            id++;
+                            if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
+                                s_ = u;
+                            }
+                            if(v->getX() == target_->getX() && v->getY() == target_->getY() && v->getZ() == target_->getZ()){
+                                t_ = u;
+                            }
+                        }
+                    }
+                    
+                    //adding edges between nodes
                     for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-                        Point right = *(*it)->getRight();
-                        Point left = *(*it)->getLeft();
-                        vertex_t u = boost::add_vertex(right, myGraph);
-                        vertex_t v = boost::add_vertex(left, myGraph);
-                        boost::add_edge(u, v, myGraph);
+                        Segment* edge = *it;
+                        Point* right = edge->getRight();
+                        Point* left =  edge->getLeft();
+                        if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
+                            vertex_t u = verts[right->getId()];
+                            vertex_t v = verts[left->getId()];
+                            boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
+                        }
                     }
                 }
                 else{
+                    //If Source and Target Zs are different
                     Plane* plane;
+                    map <unsigned int, vertex_t> verts;
                     //case 2
                     if(sourceZ > targetZ){
                         highestZ = sourceZ;
-                        
-                        Point* targetProjection = new Point(targetX, targetY, sourceZ);
+                        vertex_t targetProjectionVertex;
+                        bool projectionExists = false;
+                        Point* targetProjection = new Point(target_->getX(), target_->getY(), source_->getZ());
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
                             //if it is, just adds the point to the plane
                             plane = planes[sourceZ];
-                            plane -> addSourceAndTarget(source_, targetProjection);
-                        }//case 3
+                            if(plane->nodeExistsInPlane(targetProjection)){
+                                projectionExists = true;
+                            }
+                            else{
+                                plane -> projectPoint(targetProjection);
+                            }
+                            if(!plane->nodeExistsInPlane(source_)){
+                                plane -> projectPoint(source_);
+                            }
+                        }
+                        //case 3
                         else {
                             //if it is not, a plane in that Z coordinate must be created
-                            plane = new Plane(sourceZ);
+                            plane = new Plane(source_->getZ());
+                            planes[source_->getZ()] = plane;
                             plane -> findObstaclesInPlane(obstacles);
                             plane -> lineSweep();
-                            plane -> addSourceAndTarget(source_, targetProjection);
+                            if(plane->nodeExistsInPlane(targetProjection)){
+                                projectionExists = true;
+                            }
+                            else{
+                                plane -> projectPoint(targetProjection);
+                            }
+                            if(!plane->nodeExistsInPlane(source_)){
+                                plane -> projectPoint(source_);
+                            }
+                        }
+                        
+                        vector<Point*> nodes = plane->getNodes();
+                        vector<Segment*> edges_ = plane -> getEdges();
+                        
+                        //adding nodes to graph
+                        for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+                            Point* v = *it;
+                            if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
+                                v->setId(id);
+                                vertex_t u = boost::add_vertex(v, myGraph);
+                                verts[id] = u;
+                                totalNodes[id] = v;
+                                id++;
+                                if(projectionExists){
+                                    if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
+                                        targetProjectionVertex = u;
+                                    }
+                                }
+                                if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
+                                    s_ = u;
+                                }
+                                if(v->getX() == target_->getX() && v->getY() == target_->getY() && v->getZ() == target_->getZ()){
+                                    t_ = u;
+                                }
+                            }
+                        }
+                        
+                        //adding edges between nodes
+                        for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+                            Segment* edge = *it;
+                            Point* right = edge->getRight();
+                            Point* left =  edge->getLeft();
+                            if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
+                                vertex_t u = verts[right->getId()];
+                                vertex_t v = verts[left->getId()];
+                                boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
+                            }
                         }
                         
                         //add edge connecting target and target projection to the graph
-                        vertex_t u = boost::add_vertex(*target_, myGraph);
-                        vertex_t v = boost::add_vertex(*targetProjection, myGraph);
-                        boost::add_edge(u, v, myGraph);
+                        double edgeDistance = targetProjection->getZ() - target_->getZ();
+                        vertex_t u = boost::add_vertex(target_, myGraph);
+
+                        if(projectionExists){
+                            boost::add_edge(u, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
+                        }
+                        else{
+                            vertex_t v = boost::add_vertex(targetProjection, myGraph);
+                            boost::add_edge(u, v,EdgeWeightProperty(edgeDistance), myGraph);
+                        }
                         
                         sourceBelow = source_;
                         targetBelow = targetProjection;
@@ -403,71 +521,249 @@ int main (){
                     //case 4
                     else if(targetZ > sourceZ){
                         highestZ = targetZ;
-                        Point* sourceProjection = new Point(sourceX, sourceY, targetZ);
+                        vertex_t sourceProjectionVertex;
+                        bool projectionExists = false;
+                        Point* sourceProjection = new Point(source_->getX(), source_->getY(), target_->getZ());
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), targetZ) != total_planes.end()) {
                             //if it is, just adds the point to the plane
-                            plane = planes[sourceZ];
-                            plane -> addSourceAndTarget(sourceProjection, target_);
+                            plane = planes[targetZ];
+                            if(plane->nodeExistsInPlane(sourceProjection)){
+                                projectionExists = true;
+                            }
+                            else{
+                                plane -> projectPoint(sourceProjection);
+                            }
+                            if(!plane->nodeExistsInPlane(target_)){
+                                plane -> projectPoint(target_);
+                            }
                         }//case 5
                         else {
                             //if it is not, a plane in that Z coordinate must be created
-                            plane = new Plane(targetZ);
+                            plane = new Plane(target_->getZ());
+                            planes[target_->getZ()] = plane;
                             plane -> findObstaclesInPlane(obstacles);
                             plane -> lineSweep();
-                            plane -> addSourceAndTarget(sourceProjection, target_);
+                            if(plane->nodeExistsInPlane(sourceProjection)){
+                                projectionExists = true;
+                            }
+                            else{
+                                plane -> projectPoint(sourceProjection);
+                            }
+                            if(!plane->nodeExistsInPlane(target_)){
+                                plane -> projectPoint(target_);
+                            }
+                        }
+                        vector<Point*> nodes = plane->getNodes();
+                        vector<Segment*> edges_ = plane -> getEdges();
+                        
+                        //adding nodes to graph
+                        for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+                            Point* v = *it;
+                            if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
+                                v->setId(id);
+                                vertex_t u = boost::add_vertex(v, myGraph);
+                                verts[id] = u;
+                                totalNodes[id] = v;
+                                id++;
+                                if(projectionExists){
+                                    if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
+                                        sourceProjectionVertex = u;
+                                    }
+                                }
+                                if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
+                                    s_ = u;
+                                }
+                                if(v->getX() == target_->getX() && v->getY() == target_->getY() && v->getZ() == target_->getZ()){
+                                    t_ = u;
+                                }
+                            }
+                        }
+                        
+                        //adding edges between nodes
+                        for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+                            Segment* edge = *it;
+                            Point* right = edge->getRight();
+                            Point* left =  edge->getLeft();
+                            if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
+                                vertex_t u = verts[right->getId()];
+                                vertex_t v = verts[left->getId()];
+                                boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
+                            }
                         }
                         
                         //add edge connecting source and source projection to the graph
-                        vertex_t u = boost::add_vertex(*source_, myGraph);
-                        vertex_t v = boost::add_vertex(*sourceProjection, myGraph);
-                        boost::add_edge(u, v, myGraph);
+                        double edgeDistance = sourceProjection->getZ() - source_->getZ();
+                        vertex_t u = boost::add_vertex(source_, myGraph);
                         
+                        if(projectionExists){
+                            boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
+                        }
+                        else{
+                            vertex_t v = boost::add_vertex(sourceProjection, myGraph);
+                            boost::add_edge(u, v,EdgeWeightProperty(edgeDistance), myGraph);
+                        }
+   
                         sourceBelow = sourceProjection;
                         targetBelow = target_;
-                        
-                    }
-                    
-                    vector<Segment*> edges_ = plane -> getEdges();
-                    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-                        Point right = *(*it)->getRight();
-                        Point left = *(*it)->getLeft();
-                        vertex_t u = boost::add_vertex(right, myGraph);
-                        vertex_t v = boost::add_vertex(left, myGraph);
-                        boost::add_edge(u, v, myGraph);
                     }
                 }
-                
+
                 sort(total_planes.begin(), total_planes.end());
+                
+                //after the plane of the highest is created and added to the graph, it creates the projection in all planes above and adds that planes to the graph
                 for(vector<double>::iterator it = total_planes.begin(); it != total_planes.end(); it++) {
                     double z = *it;
                     if(z>highestZ){
+                        map <unsigned int, vertex_t> verts;
+                        bool projectionExistsT = false;
+                        bool projectionExistsS = false;
+                        vertex_t targetProjectionVertex;
+                        vertex_t sourceProjectionVertex;
                         Plane* plane = planes[z];
-                        Point* targetProjection = new Point(targetX, targetY, z);
-                        Point* sourceProjection = new Point(sourceX, sourceY, z);
-                        plane -> addSourceAndTarget(sourceProjection, targetProjection);
+                        Point* targetProjection = new Point(target_->getX(), target_->getY(), z);
+                        Point* sourceProjection = new Point(source_->getX(), source_->getY(), z);
+                        if(plane->nodeExistsInPlane(targetProjection)){
+                            projectionExistsT = true;
+                        }
+                        else{
+                            plane -> projectPoint(targetProjection);
+                        }
+                        if(plane->nodeExistsInPlane(sourceProjection)){
+                            projectionExistsS = true;
+                        }
+                        else{
+                            plane -> projectPoint(sourceProjection);
+                        }
+                        
+                        vector<Point*> nodes = plane->getNodes();
+                        vector<Segment*> edges_ = plane -> getEdges();
+                        
+                        //adding nodes to graph
+                        for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+                            Point* v = *it;
+                            if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
+                                v->setId(id);
+                                vertex_t u = boost::add_vertex(v, myGraph);
+                                verts[id] = u;
+                                totalNodes[id] = v;
+                                id++;
+                                if(projectionExistsT){
+                                    if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
+                                        targetProjectionVertex = u;
+                                    }
+                                }
+                                if(projectionExistsS){
+                                    if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
+                                        sourceProjectionVertex = u;
+                                    }
+                                }
+                                if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
+                                    s_ = u;
+                                }
+                                if(v->getX() == target_->getX() && v->getY() == target_->getY() && v->getZ() == target_->getZ()){
+                                    t_ = u;
+                                }
+                            }
+                        }
+
+                        //adding edges between nodes
+                        for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+                            Segment* edge = *it;
+                            Point* right = edge->getRight();
+                            Point* left =  edge->getLeft();
+                            if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
+                                vertex_t u = verts[right->getId()];
+                                vertex_t v = verts[left->getId()];
+                                boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
+                            }
+                        }
                         
                         //add edge connecting the source in the plane below with the projection of the source in the plane above
-                        vertex_t u = boost::add_vertex(*sourceBelow, myGraph);
-                        vertex_t v = boost::add_vertex(*sourceProjection, myGraph);
-                        boost::add_edge(u, v, myGraph);
+                        double edgeDistance = sourceProjection->getZ() - sourceBelow->getZ();
+                        vertex_t u = boost::add_vertex(sourceBelow, myGraph);
                         
-                        //add edge connecting the target in the plane below with the projection of the target in the plane above
-                        vertex_t r = boost::add_vertex(*targetBelow, myGraph);
-                        vertex_t s = boost::add_vertex(*targetProjection, myGraph);
-                        boost::add_edge(r, s, myGraph);
-                        
-                        vector<Segment*> edges_ = plane -> getEdges();
-                        for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-                            Point right = *(*it)->getRight();
-                            Point left = *(*it)->getLeft();
-                            vertex_t u = boost::add_vertex(right, myGraph);
-                            vertex_t v = boost::add_vertex(left, myGraph);
-                            boost::add_edge(u, v, myGraph);
+                        if(projectionExistsS){
+                            boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
                         }
-                    }
+                        else{
+                            vertex_t v = boost::add_vertex(sourceProjection, myGraph);
+                            boost::add_edge(u, v,EdgeWeightProperty(edgeDistance), myGraph);
+                        }
+
+                        //add edge connecting target and target projection to the graph
+                        double edgeDistance2 = targetProjection->getZ() - targetBelow->getZ();
+                        vertex_t r = boost::add_vertex(targetBelow, myGraph);
+                        
+                        if(projectionExistsT){
+                            boost::add_edge(u, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
+                        }
+                        else{
+                            vertex_t s = boost::add_vertex(targetProjection, myGraph);
+                            boost::add_edge(r, s, EdgeWeightProperty(edgeDistance2), myGraph);
+                        }
+
+                        sourceBelow = sourceProjection;
+                        targetBelow = targetProjection;
+                        
+                        }
                 }
-                //TO DO FIND SHORTEST PATH;
+                
+                
+                // The property map associated with the weights.
+                boost::property_map < Graph,
+                boost::edge_weight_t >::type EdgeWeightMap = get(boost::edge_weight, myGraph);
+                std::vector<vertex_t> p(num_vertices(myGraph));
+                std::vector<int> d(num_vertices(myGraph));
+                
+                //running dijkstra
+                dijkstra_shortest_paths(myGraph,s_,
+                                        boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, myGraph))).
+                                        distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, myGraph))).
+                                        weight_map(EdgeWeightMap));
+                
+                
+                cout << "distances and parents: (distance of that point to the point (0, 0, 0)" << endl;
+                boost::graph_traits <Graph>::vertex_iterator vi, vend;
+                for (boost::tie(vi, vend) = vertices(myGraph); vi != vend; ++vi) {
+                    vertex_t v = *vi;
+                    vertex_t parent = p[*vi];
+                    cout << "vertice: " << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ()<< endl;
+                    cout << "distance(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << ") = " << d[*vi] << ", ";
+                    cout << "parent(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() <<  ") = " << myGraph[parent]->getX() << " " << myGraph[parent]->getY() << " " << myGraph[parent]->getZ()<<endl;
+                }
+                cout << endl;
+                
+                
+//                //backtracking path from target to source
+//                do{
+//                    nodes_.push_back(t_);
+//                    finalPath.push_back(totalNodes[myGraph[t_]->getId()]);
+//                    distances.push_back(d[t_]);
+//                    t_ = p[t_];
+//                }while(t_ != s_);
+//                
+//                finalPath.push_back(totalNodes[myGraph[s_]->getId()]);
+//                distances.push_back(d[s_]);
+//                
+//
+//                //printing results
+//                for(int i = 0; i<finalPath.size(); i++){
+//                    Point* p = finalPath[i];
+//                    cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
+//                }
+//                
+//                fstream dot_file("path.scr", fstream::out);
+//                dot_file << "_-COLOR" << endl;
+//                dot_file << "green" << endl;
+//                dot_file << "3DPOLY" << endl;
+//                for(int i = 0; i<finalPath.size(); i++){
+//                    Point* p = finalPath[i];
+//                    dot_file << p->getX() << "," << p->getY() << "," << p->getZ()<< endl;
+//                }
+//                dot_file << "CLOSE" << endl;
+//                dot_file.close();
+
                 break;
             }
             case 3: {
