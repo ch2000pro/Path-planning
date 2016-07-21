@@ -47,12 +47,12 @@ public:
     void setWeight(double w) {weight = w;}
     void addSteinerPoint(Point* p) {steinerPoints.push_back(p);}
     vector<Point*> getSteinerPoints() {return steinerPoints;}
-    bool case1() {return ((left->getX() < right->getX() && left->getY() > right->getY()) || (left->getY() == right->getY() && left->getX() < right->getX()));}
+    bool case1() {return ((left->getY() < right->getY()) || (left->getY() == right->getY() && left->getX() < right->getX()));}
 
 private:
 	Point* left; //left endpoint
 	Point* right; //right endpoint
-	
+
     vector<Point*> steinerPoints; //steiner points created in this segment
 };
 
