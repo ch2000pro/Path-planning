@@ -52,7 +52,7 @@ public:
 private:
 	Point* left; //left endpoint
 	Point* right; //right endpoint
-	
+
     vector<Point*> steinerPoints; //steiner points created in this segment
 };
 

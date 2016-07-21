@@ -24,21 +24,21 @@ vector<Segment*> Plane::getEdges(){
     return edges_;
 }
 
-struct function1 {
-    bool operator() (Point* a, Point* b) { return (a->getX() < b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
-} sortLTR;
+struct sortLTR {
+    bool operator() (Point* a, Point* b) { return ((a->getX() < b->getX()) || ((abs(a->getX() - b->getX()) < abs(min(a->getX(), b->getX())) * numeric_limits<double>::epsilon()) && (a->getY() > b->getY()))); }
+};
 
-struct function2 {
-    bool operator() (Point* a, Point* b) { return (a->getY() > b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
-} sortTTB;
-
-struct function3 {
+struct sortRTL {
     bool operator() (Point* a, Point* b) { return (a->getX() > b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
-} sortRTL;
+};
 
-struct function4 {
+struct sortTTB {
+    bool operator() (Point* a, Point* b) { return (a->getY() > b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
+};
+
+struct sortBTT {
     bool operator() (Point* a, Point* b) { return (a->getY() < b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
-} sortBTT;
+};
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane
 //For each one found, add that obstacle to the 2D Plane
@@ -91,9 +91,9 @@ void Plane::addObstacle(vector<Point*> points) {
 
 void Plane::lineSweep() {
     vector<Point*> points1 = endpoints, points2 = endpoints;
-    sort(points1.begin(), points1.end(), sortLTR);
+    sort(points1.begin(), points1.end(), sortLTR());
     Plane::createVerticalMedianLines(points1, 1);
-    sort(points2.begin(), points2.end(), sortTTB);
+    sort(points2.begin(), points2.end(), sortTTB());
     Plane::createHorizontalMedianLines(points2, 1);
     for(vector<Segment*>::iterator it = medianLines.begin(); it != medianLines.end(); it++) {
         if((*it)->getRight()->getY() == -2147483648)
@@ -102,18 +102,47 @@ void Plane::lineSweep() {
             points2.push_back((*it)->getRight());
     }
     Plane::LineSweepLTR(points1);
-    cout << "edges after LTR: " << edges_.size() << endl;
     Plane::LineSweepRTL(points1);
-    cout << "edges after RTL: " << edges_.size() << endl;
     Plane::LineSweepTTB(points2);
-    cout << "edges after TTB: " << edges_.size() << endl;
     Plane::LineSweepBTT(points2);
-    cout << "edges after BTT: " << edges_.size() << endl;
-    for(vector<Segment*>::iterator l = medianLines.begin(); l != medianLines.end(); l++) {
+    for(vector<Segment*>::iterator l = medianLines.begin(); l != medianLines.end(); ++l) {
         vector<Point*> steiners = (*l)->getSteinerPoints();
-        sort(steiners.begin(), steiners.end(), sortLTR);
+        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
+            if ((*l)->getLeft()->getX() == 13.7)
+                cout << (*p)->getX() << " " << (*p)->getY() << endl;
+        }
+        if ((*l)->getLeft()->getX() == 13.7)
+            cout << endl;
+        sort(steiners.begin(), steiners.end(), sortLTR());
+        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
+            if ((*l)->getLeft()->getX() == 13.7)
+                cout << (*p)->getX() << " " << (*p)->getY() << endl;
+        }
+        if ((*l)->getLeft()->getX() == 13.7)
+            cout << endl;
+        //fixing sorting
+        //----------------------------------
+        if ((*l)->getLeft()->getX() == 13.7) {
+            Point* p1 = steiners.back();
+            steiners.pop_back();
+            Point* p2 = steiners.back();
+            steiners.pop_back();
+            if((p1->getX() < p2->getX()) || ((abs(p1->getX() - p2->getX()) < abs(min(p1->getX(), p2->getX())) * numeric_limits<double>::epsilon()) && (p1->getY() > p2->getY()))) {
+                steiners.push_back(p1);
+                steiners.push_back(p2);
+            }
+            else {
+                steiners.push_back(p2);
+                steiners.push_back(p1);
+            }
+        }
+        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
+            if ((*l)->getLeft()->getX() == 13.7)
+                cout << (*p)->getX() << " " << (*p)->getY() << endl;
+        }
+        //------------------------------------
         Point* prev = 0;
-        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); p++) {
+        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
             if((*p)->getZ() < 0) {
                 if ((*p)->getZ() == -2 || (*p)->getZ() == -3) {
                     if (prev != 0) {
@@ -141,7 +170,7 @@ void Plane::lineSweep() {
     }
     for(vector<Segment*>::iterator l = obstacleSegments.begin(); l != obstacleSegments.end(); l++) {
         vector<Point*> steiners = (*l)->getSteinerPoints();
-        sort(steiners.begin(), steiners.end(), sortLTR);
+        sort(steiners.begin(), steiners.end(), sortLTR());
         Point *prev = (*l)->getLeft();
         for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); p++) {
             Segment* s = new Segment(prev, *p);
@@ -151,7 +180,6 @@ void Plane::lineSweep() {
         Segment* s = new Segment(prev, (*l)->getRight());
         edges_.push_back(s);
     }
-    cout << "total number of edges: " << edges_.size() << endl;
     for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
         double x1 = (*it)->getLeft()->getX(), y1 = (*it)->getLeft()->getY(), x2 = (*it)->getRight()->getX(), y2 = (*it)->getRight()->getY(), w;
         w = y2 - y1;
@@ -159,13 +187,12 @@ void Plane::lineSweep() {
             w *= -1;
         w += (x2 - x1);
         (*it)->setWeight(w);
-        cout << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
     }
 }
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
 void Plane::LineSweepLTR(vector<Point*> points) {
-    sort(points.rbegin(), points.rend(), sortLTR);
+    sort(points.rbegin(), points.rend(), sortLTR());
     Point* p;
     set<Segment*> segments;
     vector<Segment*> needErase;
@@ -189,14 +216,10 @@ void Plane::LineSweepLTR(vector<Point*> points) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
                     if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second) {
-                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX()) {
+                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX())
                             k = -2;
-                        }
-                        else{
-                            if ((*it)->getLeft()->getX() == 0 && (*it)->getLeft()->getY() == 9)
-                                cout << "AQUI" << endl;
+                        else
                             k = -3;
-                        }
                     }
                     else
                         k = -1;
@@ -250,7 +273,7 @@ void Plane::LineSweepLTR(vector<Point*> points) {
 }
 
 void Plane::LineSweepRTL(vector<Point*> points) {
-    sort(points.rbegin(), points.rend(), sortRTL);
+    sort(points.rbegin(), points.rend(), sortRTL());
     Point* p;
     set<Segment*> segments;
     vector<Segment*> needErase;
@@ -317,7 +340,7 @@ void Plane::LineSweepRTL(vector<Point*> points) {
 }
 
 void Plane::LineSweepTTB(vector<Point*> points) {
-    sort(points.rbegin(), points.rend(), sortTTB);
+    sort(points.rbegin(), points.rend(), sortTTB());
     Point* p;
     set<Segment*> segments;
     vector<Segment*> needErase;
@@ -427,7 +450,7 @@ void Plane::LineSweepTTB(vector<Point*> points) {
 }
 
 void Plane::LineSweepBTT(vector<Point*> points) {
-    sort(points.rbegin(), points.rend(), sortBTT);
+    sort(points.rbegin(), points.rend(), sortBTT());
     Point* p;
     set<Segment*> segments;
     vector<Segment*> needErase;
@@ -587,7 +610,7 @@ pair<double, double> Plane::findIntersection(Segment* segment1, Segment* segment
 //Given two segments, an obstacle edge and a projection, creates a steiner point from their intersection and the corresponding edge to it
 Point* Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
     pair<double, double> p = Plane::findIntersection(segment1, segment2);
-    Point* steiner = new Point(p.first, p.second, segment1->getRight()-> getZ());
+    Point* steiner = new Point(p.first, p.second);
     nodes.push_back(steiner);
     segment1->addSteinerPoint(steiner);
     return steiner;
@@ -598,6 +621,10 @@ void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + (points.size()/2);
         double x = (*middle)->getX();
+        if ((*middle)->getSeg1()->getOther(*middle)->getX() < x && (*middle)->getSeg2()->getOther(*middle)->getX() < x)
+            x += 0.1;
+        else if ((*middle)->getSeg1()->getOther(*middle)->getX() > x && (*middle)->getSeg2()->getOther(*middle)->getX() > x)
+            x -= 0.1;
         Point* p1 = new Point(x, INT_MAX);
         Point* p2 = new Point(x, INT_MIN);
         Segment* l = new Segment(p1, p2, w);
@@ -614,6 +641,10 @@ void Plane::createHorizontalMedianLines(vector<Point*> points, int w) {
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + points.size()/2;
         double y = (*middle)->getY();
+        if ((*middle)->getSeg1()->getOther(*middle)->getY() > y && (*middle)->getSeg2()->getOther(*middle)->getY() > y)
+            y -= 0.1;
+        else if ((*middle)->getSeg1()->getOther(*middle)->getY() < y && (*middle)->getSeg2()->getOther(*middle)->getY() < y)
+            y += 0.1;
         Point* p1 = new Point(INT_MAX, y);
         Point* p2 = new Point(INT_MIN, y);
         Segment* l = new Segment(p1, p2, w);
@@ -736,7 +767,7 @@ Segment* Plane::projectRTL(Point* p1) {
     }
 }
 
-//auxiliary function to the DOWN TO UP Line Sweep, it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
+//auxiliary function to the DOWN TO UP Line ], it checks if point is inside or outside an obstacle so it can create a projection to the next obstacle and create Steiner Points, then creates that projection if possible
 Segment* Plane::projectBTT(Point* p1) {
     Segment *s1 = p1->getSeg1(), *s2 = p1->getSeg2();
     Point *p0 = s1->getOther(p1), *p2 = s2->getOther(p1);
