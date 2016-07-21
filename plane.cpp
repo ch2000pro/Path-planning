@@ -25,7 +25,7 @@ vector<Segment*> Plane::getEdges(){
 }
 
 struct sortLTR {
-    bool operator() (Point* a, Point* b) { return ((a->getX() < b->getX()) || ((abs(a->getX() - b->getX()) < abs(min(a->getX(), b->getX())) * numeric_limits<double>::epsilon()) && (a->getY() > b->getY()))); }
+    bool operator() (Point* a, Point* b) { return (((abs(a->getX() - b->getX()) > abs(min(a->getX(), b->getX())) * numeric_limits<double>::epsilon()) && (a->getX() < b->getX())) || ((abs(a->getX() - b->getX()) < abs(min(a->getX(), b->getX())) * numeric_limits<double>::epsilon()) && (a->getY() > b->getY()))); }
 };
 
 struct sortRTL {
@@ -108,23 +108,6 @@ void Plane::lineSweep() {
     for(vector<Segment*>::iterator l = medianLines.begin(); l != medianLines.end(); ++l) {
         vector<Point*> steiners = (*l)->getSteinerPoints();
         sort(steiners.begin(), steiners.end(), sortLTR());
-        //fixing sorting
-        //----------------------------------
-        if (steiners.size() >= 2) {
-            Point* p1 = steiners.back();
-            steiners.pop_back();
-            Point* p2 = steiners.back();
-            steiners.pop_back();
-            if((p1->getX() < p2->getX()) || ((abs(p1->getX() - p2->getX()) < abs(min(p1->getX(), p2->getX())) * numeric_limits<double>::epsilon()) && (p1->getY() > p2->getY()))) {
-                steiners.push_back(p1);
-                steiners.push_back(p2);
-            }
-            else {
-                steiners.push_back(p2);
-                steiners.push_back(p1);
-            }
-        }
-        //------------------------------------
         Point* prev = 0;
         for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
             if((*p)->getZ() < 0) {
@@ -174,6 +157,9 @@ void Plane::lineSweep() {
     }
     cout << "total edges: " << edges_.size() << endl;
     cout << "total nodes: " << nodes.size() << endl;
+    for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+        cout << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
+    }
 }
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
@@ -362,15 +348,16 @@ void Plane::LineSweepTTB(vector<Point*> points) {
                 else if((*it)->getWeight() == 0) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
-                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second) {
+                    if (abs((*it)->getLeft()->getX() - point.first) < 0.0000001 && abs((*it)->getLeft()->getY() - point.second) < 0.00000001) {
                         if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY())
                             k = -2;
                         else
                             k = -3;
                     }
-                    else if (((*it)->getRight()->getX() == point.first && (*it)->getRight()->getY() == point.second)) {
-                        if ((*it)->getRight()->getOther(*it)->getOther((*it)->getRight())->getY() != (*it)->getLeft()->getY())
+                    else if (abs((*it)->getRight()->getX() - point.first) < 0.0000001 && abs((*it)->getRight()->getY() - point.second) < 0.00000001) {
+                        if ((*it)->getRight()->getOther(*it)->getOther((*it)->getRight())->getY() != (*it)->getLeft()->getY()) {
                             k = -2;
+                        }
                         else
                             k = -3;
                     }
@@ -530,7 +517,7 @@ vector<Segment*> Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*>
     vector<Segment*> needErase;
     for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
         if ((*it)->getWeight() != 0) {
-            int lx1, ly1, rx1, ry1, lx2, ly2, rx2, ry2, lx, ly, rx, ry;
+            double lx1, ly1, rx1, ry1, lx2, ly2, rx2, ry2, lx, ly, rx, ry;
             lx = (*it)->getLeft()->getX();
             ly = (*it)->getLeft()->getY();
             rx = (*it)->getRight()->getX();
