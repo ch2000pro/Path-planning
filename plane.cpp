@@ -159,11 +159,6 @@ void Plane::lineSweep() {
         w += (x2 - x1);
         (*it)->setWeight(w);
     }
-    cout << "total edges: " << edges_.size() << endl;
-    cout << "total nodes: " << nodes.size() << endl;
-    for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-        cout << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
-    }
 }
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
@@ -536,22 +531,30 @@ vector<Segment*> Plane::checkProjections(Segment* s1, Segment* s2, set<Segment*>
             ry2 = s2->getRight()->getY();
             if ((ly > ly1 && ry < ry1 && ((rx1 > lx && rx > lx1) || (rx1 < lx && rx < lx1))) || (ly < ly1 && ry > ry1 && ((rx1 > lx && rx > lx1) || (rx1 < lx && rx < lx1)))) {
                 Point* steiner = Plane::createSteinerPoint(s1, *it);
-                Segment* s;
-                if(b)
-                    s = new Segment((*it)->getLeft(), steiner);
-                else
-                    s = new Segment(steiner, (*it)->getRight());
-                edges_.push_back(s);
+                if (((*it)->getLeft()->getX() == steiner->getX() && (*it)->getLeft()->getY() != steiner->getY()) && ((*it)->getRight()->getX() == steiner->getX() && (*it)->getRight()->getY() != steiner->getY())) {
+                    Segment* s;
+                    if(b)
+                        s = new Segment((*it)->getLeft(), steiner);
+                    else
+                        s = new Segment(steiner, (*it)->getRight());
+                    edges_.push_back(s);
+                }
+                (*it)->setLeft(steiner);
+                (*it)->setAux(s1);
                 needErase.push_back(*it);
             }
             else if ((ly > ly2 && ry < ry2 && ((rx2 > lx && rx > lx2) || (rx2 < lx && rx < lx2))) || (ly < ly2 && ry > ry2 && ((rx2 > lx && rx > lx2) || (rx2 < lx && rx < lx2)))) {
                 Point* steiner = Plane::createSteinerPoint(s2, *it);
-                Segment* s;
-                if (b)
-                    s = new Segment((*it)->getLeft(), steiner);
-                else
-                    s = new Segment(steiner, (*it)->getRight());
-                edges_.push_back(s);
+                if (((*it)->getLeft()->getX() == steiner->getX() && (*it)->getLeft()->getY() != steiner->getY()) && ((*it)->getRight()->getX() == steiner->getX() && (*it)->getRight()->getY() != steiner->getY())) {
+                    Segment* s;
+                    if (b)
+                        s = new Segment((*it)->getLeft(), steiner);
+                    else
+                        s = new Segment(steiner, (*it)->getRight());
+                    edges_.push_back(s);
+                }
+                (*it)->setLeft(steiner);
+                (*it)->setAux(s2);
                 needErase.push_back(*it);
             }
         }
@@ -884,11 +887,456 @@ Point* Plane::getPointByCoordinates(double x, double y, double z){
     return NULL;
 }
 
-void Plane::projectPoint(Point* p){
-    if(!nodeExistsInPlane(p)){
-        nodes.push_back(p);
+void Plane::projectPoints(Point* s, Point* t){
+    vector<Point*> points1 = endpoints, points2 = endpoints;
+    Point *p1, *p2;
+    Segment* aux;
+    vector<Segment*> sourceSinkLines;
+    if (s->getY() != t ->getY()) {
+        p1 = new Point(INT_MAX, s->getY());
+        p2 = new Point(INT_MIN, s->getY());
+        aux = new Segment(p1, p2);
+        p2->setSeg1(aux);
+        points2.push_back(p2);
+        sourceSinkLines.push_back(aux);
     }
-    return;
+    p1 = new Point(INT_MAX, t->getY());
+    p2 = new Point(INT_MIN, t->getY());
+    aux = new Segment(p1, p2);
+    p2->setSeg1(aux);
+    points2.push_back(p2);
+    sourceSinkLines.push_back(aux);
+    if (s->getX() != t ->getX()) {
+        p1 = new Point(s->getX(), INT_MAX);
+        p2 = new Point(s->getX(), INT_MIN);
+        aux = new Segment(p1, p2);
+        p2->setSeg1(aux);
+        points1.push_back(p2);
+        sourceSinkLines.push_back(aux);
+    }
+    p1 = new Point(t->getX(), INT_MAX);
+    p2 = new Point(t->getX(), INT_MIN);
+    aux = new Segment(p1, p2);
+    p2->setSeg1(aux);
+    points1.push_back(p2);
+    sourceSinkLines.push_back(aux);
+    points1.push_back(s);
+    points1.push_back(t);
+    points2.push_back(s);
+    points2.push_back(t);
+    sort(points1.rbegin(), points1.rend(), sortLTR());
+    Point* p;
+    vector<Point*> createdSteiners;
+    vector<Segment*> segmentsWithSteiners;
+    set<Segment*> segments;
+    if (!nodeExistsInPlane(s)) {
+        Point* ps1 = new Point(INT_MAX, s->getY());
+        Segment* s1 = new Segment(s, ps1, 1);
+        segments.insert(s1);
+    }
+    if (!nodeExistsInPlane(t)) {
+        Point* pt1 = new Point(INT_MAX, t->getY());
+        Segment* t1 = new Segment(t, pt1, 1);
+        segments.insert(t1);
+    }
+    vector<Segment*> needErase;
+    while(points1.size() > 0) {
+        p = points1.back();
+        points1.pop_back();
+        Segment* s1 = p->getSeg1();
+        Segment* s2 = p->getSeg2();
+        if (s2 == 0) {
+            for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+                if ((*it)->getWeight() != 0) {
+                    if ((*it)->getLeft()->getX() != p->getX()) {
+                        Point* steiner = Plane::createSteinerPoint(s1, *it);
+                        Segment* s = new Segment((*it)->getLeft(), steiner);
+                        edges_.push_back(s);
+                        (*it)->setLeft(steiner);
+                    }
+                }
+                else {
+                    pair<double, double> point = Plane::findIntersection(s1, *it);
+                    int k;
+                    if ((*it)->getLeft()->getX() == point.first && (*it)->getLeft()->getY() == point.second) {
+                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX())
+                            k = -2;
+                        else
+                            k = -3;
+                    }
+                    else
+                        k = -1;
+                    Point* aux = new Point(point.first, point.second, k);
+                    s1->addSteinerPoint(aux);
+                    if (k == -1){
+                        createdSteiners.push_back(aux);
+                        segmentsWithSteiners.push_back(s1);
+                    }
+                }
+            }
+        }
+        else if (s1->getLeft() == p && s2->getLeft() == p) {
+            segments.insert(s1);
+            segments.insert(s2);
+            needErase = Plane::checkProjections(s1, s2, segments, true);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++) {
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+        }
+        else if (s1->getRight() == p && s2->getRight() == p) {
+            needErase = Plane::checkProjections(s1, s2, segments, true);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++) {
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            segments.erase(s1);
+            segments.erase(s2);
+        }
+        else {
+            bool b;
+            if(segments.find(s1) == segments.end()) {
+                segments.insert(s1);
+                b = true;
+            }
+            else {
+                segments.insert(s2);
+                b = false;
+            }
+            needErase = Plane::checkProjections(s1, s2, segments, true);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++) {
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            if (b)
+                segments.erase(s2);
+            else
+                segments.erase(s1);
+        }
+    }
+    if (!nodeExistsInPlane(s)) {
+        Point* ps2 = new Point(INT_MIN, s->getY());
+        Segment* s2 = new Segment(ps2, s, 1);
+        segments.insert(s2);
+    }
+    if (!nodeExistsInPlane(t)) {
+        Point* pt2 = new Point(INT_MIN, t->getY());
+        Segment* t2 = new Segment(pt2, t, 1);
+        segments.insert(t2);
+    }
+    sort(points1.rbegin(), points1.rend(), sortRTL());
+    while(points1.size() > 0) {
+        p = points1.back();
+        points1.pop_back();
+        Segment* s1 = p->getSeg1();
+        Segment* s2 = p->getSeg2();
+        if (s2 == 0) {
+            for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+                if ((*it)->getWeight() != 0) {
+                    if ((*it)->getRight()->getX() != p->getX()) {
+                        Point* steiner = Plane::createSteinerPoint(s1, *it);
+                        Segment* s = new Segment(steiner, (*it)->getRight());
+                        edges_.push_back(s);
+                        (*it)->setRight(steiner);
+                    }
+                }
+            }
+        }
+        else if (s1->getRight() == p && s2->getRight() == p) {
+            segments.insert(s1);
+            segments.insert(s2);
+            needErase = Plane::checkProjections(s1, s2, segments, false);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+        }
+        else if (s1->getLeft() == p && s2->getLeft() == p) {
+            needErase = Plane::checkProjections(s1, s2, segments, false);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            segments.erase(s1);
+            segments.erase(s2);
+        }
+        else {
+            bool b;
+            if(segments.find(s1) == segments.end()) {
+                segments.insert(s1);
+                b = true;
+            }
+            else {
+                segments.insert(s2);
+                b = false;
+            }
+            needErase = Plane::checkProjections(s1, s2, segments, false);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            if (b)
+                segments.erase(s2);
+            else
+                segments.erase(s1);
+        }
+    }
+    if (!nodeExistsInPlane(s)) {
+        Point* ps3 = new Point(s->getX(), INT_MIN);
+        Segment* s3 = new Segment(s, ps3, 1);
+        segments.insert(s3);
+    }
+    if (!nodeExistsInPlane(t)) {
+        Point* pt3 = new Point(t->getX(), INT_MIN);
+        Segment* t3 = new Segment(t, pt3, 1);
+        segments.insert(t3);
+    }
+    sort(points2.rbegin(), points2.rend(), sortTTB());
+    while(points2.size() > 0) {
+        p = points2.back();
+        points2.pop_back();
+        Segment* s1 = p->getSeg1();
+        Segment* s2 = p->getSeg2();
+        bool b1 = false, b2 = false;
+        if (s1->case1()) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+            b1 = true;
+        }
+        if (s2 != 0 && s2->case1()) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+            b2 = true;
+        }
+        if (s2 == 0) {
+            for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+                if ((*it)->getWeight() != 0) {
+                    if ((*it)->getLeft()->getY() != p->getY()) {
+                        Point* steiner = Plane::createSteinerPoint(s1, *it);
+                        Segment* s = new Segment((*it)->getLeft(), steiner);
+                        edges_.push_back(s);
+                        (*it)->setLeft(steiner);
+                    }
+                }
+                else {
+                    pair<double, double> point = Plane::findIntersection(s1, *it);
+                    int k;
+                    if (abs((*it)->getLeft()->getX() - point.first) < 0.0000001 && abs((*it)->getLeft()->getY() - point.second) < 0.00000001) {
+                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY())
+                            k = -2;
+                        else
+                            k = -3;
+                    }
+                    else if (abs((*it)->getRight()->getX() - point.first) < 0.0000001 && abs((*it)->getRight()->getY() - point.second) < 0.00000001) {
+                        if ((*it)->getRight()->getOther(*it)->getOther((*it)->getRight())->getY() != (*it)->getLeft()->getY()) {
+                            k = -2;
+                        }
+                        else
+                            k = -3;
+                    }
+                    else
+                        k = -1;
+                    Point* aux = new Point(point.first, point.second, k);
+                    s1->addSteinerPoint(aux);
+                    if (k == -1){
+                        createdSteiners.push_back(aux);
+                        segmentsWithSteiners.push_back(s1);
+                    }
+                }
+            }
+        }
+        else if (s1->getLeft() == p && s2->getLeft() == p) {
+            segments.insert(s1);
+            segments.insert(s2);
+            needErase = Plane::checkProjections(s1, s2, segments, true);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+        }
+        else if (s1->getRight() == p && s2->getRight() == p) {
+            needErase = Plane::checkProjections(s1, s2, segments, true);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            segments.erase(s1);
+            segments.erase(s2);
+        }
+        else {
+            bool b;
+            if(segments.find(s1) == segments.end()) {
+                segments.insert(s1);
+                b = true;
+            }
+            else {
+                segments.insert(s2);
+                b = false;
+            }
+            needErase = Plane::checkProjections(s1, s2, segments, true);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            if (b)
+                segments.erase(s2);
+            else
+                segments.erase(s1);
+        }
+        if (b1) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+        }
+        if (b2) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+        }
+    }
+    if (!nodeExistsInPlane(s)) {
+        Point* ps4 = new Point(s->getX(), INT_MAX);
+        Segment* s4 = new Segment(ps4, s, 1);
+        segments.insert(s4);
+    }
+    if (!nodeExistsInPlane(t)) {
+        Point* pt4 = new Point(t->getX(), INT_MAX);
+        Segment* t4 = new Segment(pt4, t, 1);
+        segments.insert(t4);
+    }
+    sort(points2.rbegin(), points2.rend(), sortBTT());
+    while(points2.size() > 0) {
+        p = points2.back();
+        points2.pop_back();
+        Segment* s1 = p->getSeg1();
+        Segment* s2 = p->getSeg2();
+        bool b1 = false, b2 = false;
+        if (s1->case1()) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+            b1 = true;
+        }
+        if (s2 != 0 && s2->case1()) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+            b2 = true;
+        }
+        if (s2 == 0) {
+            for(set<Segment*>::iterator it = segments.begin(); it != segments.end(); it++) {
+                if ((*it)->getWeight() != 0) {
+                    if ((*it)->getRight()->getY() != p->getY()) {
+                        Point* steiner = Plane::createSteinerPoint(s1, *it);
+                        Segment* s = new Segment(steiner, (*it)->getRight());
+                        edges_.push_back(s);
+                        (*it)->setRight(steiner);
+                    }
+                }
+            }
+        }
+        else if (s1->getRight() == p && s2->getRight() == p) {
+            segments.insert(s1);
+            segments.insert(s2);
+            needErase = Plane::checkProjections(s1, s2, segments, false);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+        }
+        else if (s1->getLeft() == p && s2->getLeft() == p) {
+            needErase = Plane::checkProjections(s1, s2, segments, false);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            segments.erase(s1);
+            segments.erase(s2);
+        }
+        else {
+            bool b;
+            if(segments.find(s1) == segments.end()) {
+                segments.insert(s1);
+                b = true;
+            }
+            else {
+                segments.insert(s2);
+                b = false;
+            }
+            needErase = Plane::checkProjections(s1, s2, segments, false);
+            for (vector<Segment*>::iterator it = needErase.begin(); it != needErase.end(); it++){
+                createdSteiners.push_back((*it)->getLeft());
+                segmentsWithSteiners.push_back((*it)->getAux());
+                segments.erase(*it);
+            }
+            if (b)
+                segments.erase(s2);
+            else
+                segments.erase(s1);
+        }
+        if (b1) {
+            Point* aux = s1->getLeft();
+            s1->setLeft(s1->getRight());
+            s1->setRight(aux);
+        }
+        if (b2) {
+            Point* aux = s2->getLeft();
+            s2->setLeft(s2->getRight());
+            s2->setRight(aux);
+        }
+    }
+    for(vector<Segment*>::iterator l = sourceSinkLines.begin(); l != sourceSinkLines.end(); ++l) {
+        vector<Point*> steiners = (*l)->getSteinerPoints();
+        sort(steiners.begin(), steiners.end(), sortLTR());
+        Point* prev = 0;
+        for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
+            if((*p)->getZ() < 0) {
+                if (prev != 0) {
+                    Segment* s = new Segment(prev, *p);
+                    edges_.push_back(s);
+                }
+                if ((*p)->getZ() == -2)
+                    prev = *p;
+                else {
+                    p++;
+                    prev = *p;
+                }
+            }
+            else {
+                if (prev != 0) {
+                    Segment* s = new Segment(prev, *p);
+                    edges_.push_back(s);
+                }
+                prev = *p;
+            }
+        }
+    }
+    vector<Point*>::iterator it = createdSteiners.begin();
+    for(vector<Segment*>::iterator l = segmentsWithSteiners.begin(); l != segmentsWithSteiners.end(); ++l, ++it) {
+        vector<Point*> steiners = (*l)->getSteinerPoints();
+        sort(steiners.begin(), steiners.end(), sortLTR());
+        for(vector<Point*>::iterator j = steiners.begin(); j != steiners.end(); ++j) {
+            if(*j == *it) {
+                Segment* aux1 = new Segment(*(j - 1), *j);
+                Segment* aux2 = new Segment(*j, *(j+1));
+                edges_.push_back(aux1);
+                edges_.push_back(aux2);
+            }
+        }
+    }
 }
 
 Point* Plane::getPointFromId(vector<Point*> nodes, int id){

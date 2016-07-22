@@ -370,24 +370,26 @@ int main (){
                     if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
                         //if it is, just adds the point to the plane
                         plane = planes[sourceZ];
-                        if(!plane->nodeExistsInPlane(source_)){
+                        plane -> projectPoints(source_, target_);
+                        /*if(!plane->nodeExistsInPlane(source_)){
                             plane -> projectPoint(source_);
                         }
                         if(!plane->nodeExistsInPlane(target_)){
                             plane -> projectPoint(target_);
-                        }
+                        }*/
                     } else {
                         //if it is not, a plane in that Z coordinate must be created
                         plane = new Plane(sourceZ);
                         planes[sourceZ] = plane;
                         plane -> findObstaclesInPlane(obstacles);
                         plane -> lineSweep();
-                        if(!plane->nodeExistsInPlane(source_)){
+                        plane -> projectPoints(source_, target_);
+                        /*if(!plane->nodeExistsInPlane(source_)){
                             plane -> projectPoint(source_);
                         }
                         if(!plane->nodeExistsInPlane(target_)){
                             plane -> projectPoint(target_);
-                        }
+                        }*/
                     }
                     
                     vector<Point*> nodes = plane->getNodes();
@@ -440,12 +442,13 @@ int main (){
                             if(plane->nodeExistsInPlane(targetProjection)){
                                 projectionExists = true;
                             }
-                            else{
+                            plane -> projectPoints(source_, targetProjection);
+                            /*else{
                                 plane -> projectPoint(targetProjection);
                             }
                             if(!plane->nodeExistsInPlane(source_)){
                                 plane -> projectPoint(source_);
-                            }
+                            }*/
                         }
                         //case 3
                         else {
@@ -457,12 +460,13 @@ int main (){
                             if(plane->nodeExistsInPlane(targetProjection)){
                                 projectionExists = true;
                             }
-                            else{
+                            plane -> projectPoints(source_, targetProjection);
+                            /*else{
                                 plane -> projectPoint(targetProjection);
                             }
                             if(!plane->nodeExistsInPlane(source_)){
                                 plane -> projectPoint(source_);
-                            }
+                            }*/
                         }
                         
                         vector<Point*> nodes = plane->getNodes();
@@ -531,12 +535,13 @@ int main (){
                             if(plane->nodeExistsInPlane(sourceProjection)){
                                 projectionExists = true;
                             }
-                            else{
+                            plane -> projectPoints(sourceProjection, target_);
+                            /*else{
                                 plane -> projectPoint(sourceProjection);
                             }
                             if(!plane->nodeExistsInPlane(target_)){
                                 plane -> projectPoint(target_);
-                            }
+                            }*/
                         }//case 5
                         else {
                             //if it is not, a plane in that Z coordinate must be created
@@ -547,12 +552,13 @@ int main (){
                             if(plane->nodeExistsInPlane(sourceProjection)){
                                 projectionExists = true;
                             }
-                            else{
+                            plane -> projectPoints(sourceProjection, target_);
+                            /*else{
                                 plane -> projectPoint(sourceProjection);
                             }
                             if(!plane->nodeExistsInPlane(target_)){
                                 plane -> projectPoint(target_);
-                            }
+                            }*/
                         }
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
@@ -626,15 +632,16 @@ int main (){
                         if(plane->nodeExistsInPlane(targetProjection)){
                             projectionExistsT = true;
                         }
-                        else{
-                            plane -> projectPoint(targetProjection);
-                        }
                         if(plane->nodeExistsInPlane(sourceProjection)){
                             projectionExistsS = true;
                         }
+                        plane -> projectPoints(sourceProjection, targetProjection);
+                        /*else{
+                            plane -> projectPoint(targetProjection);
+                        }
                         else{
                             plane -> projectPoint(sourceProjection);
-                        }
+                        }*/
                         
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
