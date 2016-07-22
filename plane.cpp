@@ -1337,6 +1337,10 @@ void Plane::projectPoints(Point* s, Point* t){
             }
         }
     }
+    if(!nodeExistsInPlane(s))
+        nodes.push_back(s);
+    if(!nodeExistsInPlane(t))
+        nodes.push_back(t);
 }
 
 Point* Plane::getPointFromId(vector<Point*> nodes, int id){
