@@ -18,19 +18,22 @@ public:
 		left = 0;
 		right = 0;
 		weight = 0;
-        aux = 0;
+        aux1 = 0;
+        aux2 = 0;
 	}
 	Segment(Point* a, Point* b) {
 		left = a;
 		right = b;
 		weight = 0;
-        aux = 0;
+        aux1 = 0;
+        aux2 = 0;
 	}
 	Segment(Point* a, Point* b, int w) {
 		left = a;
 		right = b;
 		weight = w;
-        aux = 0;
+        aux1 = 0;
+        aux2 = 0;
 	}
 
 	Point* getLeft() {return left;}
@@ -51,14 +54,17 @@ public:
     void addSteinerPoint(Point* p) {steinerPoints.push_back(p);}
     vector<Point*> getSteinerPoints() {return steinerPoints;}
     bool case1() {return ((left->getY() < right->getY()) || (left->getY() == right->getY() && left->getX() < right->getX()));}
-    void setAux(Segment* s) {aux = s;}
-    Segment* getAux() {return aux;}
+    void setAux1(Segment* s) {aux1 = s;}
+    Segment* getAux1() {return aux1;}
+    void setAux2(Point* p) {aux2 = p;}
+    Point* getAux2() {return aux2;}
 
 private:
 	Point* left; //left endpoint
 	Point* right; //right endpoint
 
-    Segment* aux;
+    Segment* aux1;
+    Point* aux2;
     vector<Point*> steinerPoints; //steiner points created in this segment
 };
 

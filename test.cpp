@@ -185,11 +185,11 @@ int main (){
                 vertices_input.clear();
                 
                 //Third obstacle
-                vertices_input.push_back(new Point(34.1,22));
+                /*vertices_input.push_back(new Point(34.1,22));
                 vertices_input.push_back(new Point(39.2,27.9));
                 vertices_input.push_back(new Point(41.8,20.5));
                 obstacles.push_back(new Obstacle(vertices_input,12));
-                vertices_input.clear();
+                vertices_input.clear();*/
                 
                 total_planes.push_back(0);
                 total_planes.push_back(12);
@@ -199,8 +199,8 @@ int main (){
                 obstacles[0]->print_num_vertices();
                 cout << endl << "Obstacle 2...";
                 obstacles[1]->print_num_vertices();
-                cout << endl << "Obstacle 3...";
-                obstacles[2]->print_num_vertices();
+                //cout << endl << "Obstacle 3...";
+                //obstacles[2]->print_num_vertices();
                 //---------------------------------
                 
                 break;
