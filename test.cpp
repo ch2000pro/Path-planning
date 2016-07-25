@@ -397,7 +397,7 @@ int main (){
                     //adding nodes to graph
                     for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                         Point* v = *it;
-                        cout << "vertice of plane " << v-> getX() << " " <<  v->getY() << " "<< v->getZ()<<endl;
+                        //cout << "vertice of plane " << v-> getX() << " " <<  v->getY() << " "<< v->getZ()<<endl;
                         if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
                             v->setId(id);
                             vertex_t u = boost::add_vertex(v, myGraph);
@@ -418,11 +418,9 @@ int main (){
                         Segment* edge = *it;
                         Point* right = edge->getRight();
                         Point* left =  edge->getLeft();
-                        if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
-                            vertex_t u = verts[right->getId()];
-                            vertex_t v = verts[left->getId()];
-                            boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
-                        }
+                        vertex_t u = verts[right->getId()];
+                        vertex_t v = verts[left->getId()];
+                        boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
                     }
                 }
                 else{
@@ -494,11 +492,9 @@ int main (){
                             Segment* edge = *it;
                             Point* right = edge->getRight();
                             Point* left =  edge->getLeft();
-                            if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
-                                vertex_t u = verts[right->getId()];
-                                vertex_t v = verts[left->getId()];
-                                boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
-                            }
+                            vertex_t u = verts[right->getId()];
+                            vertex_t v = verts[left->getId()];
+                            boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
                         }
                         
                         //add edge connecting target and target projection to the graph
@@ -517,7 +513,6 @@ int main (){
                     else if(targetZ > sourceZ){
                         highestZ = targetZ;
                         vertex_t sourceProjectionVertex;
-                        bool projectionExists = false;
                         Point* sourceProjection = new Point(source_->getX(), source_->getY(), target_->getZ());
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), targetZ) != total_planes.end()) {
@@ -575,11 +570,9 @@ int main (){
                             Segment* edge = *it;
                             Point* right = edge->getRight();
                             Point* left =  edge->getLeft();
-                            if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
-                                vertex_t u = verts[right->getId()];
-                                vertex_t v = verts[left->getId()];
-                                boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
-                            }
+                            vertex_t u = verts[right->getId()];
+                            vertex_t v = verts[left->getId()];
+                            boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
                         }
                         
                         //add edge connecting source and source projection to the graph
@@ -647,11 +640,9 @@ int main (){
                             Segment* edge = *it;
                             Point* right = edge->getRight();
                             Point* left =  edge->getLeft();
-                            if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
-                                vertex_t u = verts[right->getId()];
-                                vertex_t v = verts[left->getId()];
-                                boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
-                            }
+                            vertex_t u = verts[right->getId()];
+                            vertex_t v = verts[left->getId()];
+                            boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
                         }
                         
                         //add edge connecting the source in the plane below with the projection of the source in the plane above
@@ -727,6 +718,25 @@ int main (){
                 dot_file.close();
 
                 break;
+            }
+            case 3: {
+                int k;
+                double sourceX, sourceY, sourceZ, targetX, targetY, targetZ;
+                cout << "type plane z" << endl;
+                cin >> k;
+                cout << " What is the source point of the search? (x, y and z)" << endl;
+                cin >> sourceX;
+                cin >> sourceY;
+                cin >> sourceZ;
+                cout << " What is the target point of the search? (x, y and z)" << endl;
+                cin >> targetX;
+                cin >> targetY;
+                cin >> targetZ;
+                Point* source = new Point(sourceX, sourceY, sourceZ);
+                Point* sink = new Point(targetX, targetY, targetZ);
+                Plane* plane = new Plane(k);
+                plane -> findObstaclesInPlane(obstacles);
+                plane->lineSweep(source, sink);
             }
             // ================== DEFAULT ===================
             default:{
