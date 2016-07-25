@@ -37,12 +37,12 @@ int main (){
         cout << "2 - Use default map" << endl; //Default map is drawn
         cout << "3 - Use map1" << endl; //Professor's map
         cout << "4 - Use map2" << endl; //Big map
-        cout << "0 - Proceed" << endl;
+        //cout << "0 - Proceed" << endl;
         cin >> option;
         
         
         switch(option){
-            case 0:{
+            /*case 0:{
                 int z;
                 for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
                     z = *it;
@@ -51,7 +51,7 @@ int main (){
                     plane -> findObstaclesInPlane(obstacles);
                     plane -> lineSweep();
                 }
-            }
+            }*/
                 
             case 1:{
                 do{
@@ -156,14 +156,6 @@ int main (){
                 //plane -> lineSweep();
                 //plane -> createGraph();
                 
-                int z;
-                for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
-                    z = *it;
-                    Plane* plane = new Plane(z);
-                    planes[z] = plane;
-                    plane -> findObstaclesInPlane(obstacles);
-                    plane -> lineSweep();
-                }
                 
                 break;
             }
@@ -313,7 +305,6 @@ int main (){
         cout << "Select an option:" << endl;
         cout << "1 - Number of obstacles" << endl;
         cout << "2 - Find shortest path" << endl;
-        cout << "3 - Create edges" << endl;
         cout << "0 - Quit" << endl;
         cin >> option;
         
@@ -357,8 +348,14 @@ int main (){
                 map<unsigned int, Point*> totalNodes;
                 vector<Point*> finalPath;
                 vector<double> distances;
-                
-           
+
+                int z;
+                for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
+                    z = *it;
+                    Plane* plane = new Plane(z);
+                    planes[z] = plane;
+                    plane -> findObstaclesInPlane(obstacles);
+                }
                 
                 //case 1
                 if(sourceZ == targetZ){
@@ -370,26 +367,23 @@ int main (){
                     if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
                         //if it is, just adds the point to the plane
                         plane = planes[sourceZ];
-                        plane -> projectPoints(source_, target_);
-                        /*if(!plane->nodeExistsInPlane(source_)){
-                            plane -> projectPoint(source_);
-                        }
-                        if(!plane->nodeExistsInPlane(target_)){
-                            plane -> projectPoint(target_);
-                        }*/
+                        if(!plane->nodeExistsInPlane(source_) && !plane->nodeExistsInPlane(target_))
+                            plane -> lineSweep(source_, target_);
+                        else if (!plane->nodeExistsInPlane(source_))
+                            plane -> lineSweep(source_, 0);
+                        else if(!plane->nodeExistsInPlane(target_))
+                            plane -> lineSweep(0, target_);
                     } else {
                         //if it is not, a plane in that Z coordinate must be created
                         plane = new Plane(sourceZ);
                         planes[sourceZ] = plane;
                         plane -> findObstaclesInPlane(obstacles);
-                        plane -> lineSweep();
-                        plane -> projectPoints(source_, target_);
-                        /*if(!plane->nodeExistsInPlane(source_)){
-                            plane -> projectPoint(source_);
-                        }
-                        if(!plane->nodeExistsInPlane(target_)){
-                            plane -> projectPoint(target_);
-                        }*/
+                        if(!plane->nodeExistsInPlane(source_) && !plane->nodeExistsInPlane(target_))
+                            plane -> lineSweep(source_, target_);
+                        else if (!plane->nodeExistsInPlane(source_))
+                            plane -> lineSweep(source_, 0);
+                        else if(!plane->nodeExistsInPlane(target_))
+                            plane -> lineSweep(0, target_);
                     }
                     
                     vector<Point*> nodes = plane->getNodes();
@@ -433,40 +427,29 @@ int main (){
                     if(sourceZ > targetZ){
                         highestZ = sourceZ;
                         vertex_t targetProjectionVertex;
-                        bool projectionExists = false;
                         Point* targetProjection = new Point(target_->getX(), target_->getY(), source_->getZ());
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
                             //if it is, just adds the point to the plane
                             plane = planes[sourceZ];
-                            if(plane->nodeExistsInPlane(targetProjection)){
-                                projectionExists = true;
-                            }
-                            plane -> projectPoints(source_, targetProjection);
-                            /*else{
-                                plane -> projectPoint(targetProjection);
-                            }
-                            if(!plane->nodeExistsInPlane(source_)){
-                                plane -> projectPoint(source_);
-                            }*/
-                        }
+                            if(!plane->nodeExistsInPlane(targetProjection) && !plane->nodeExistsInPlane(source_))
+                                plane -> lineSweep(source_, targetProjection);
+                            else if (!plane->nodeExistsInPlane(targetProjection))
+                                plane -> lineSweep(0, targetProjection);
+                            else if(!plane->nodeExistsInPlane(source_))
+                                plane -> lineSweep(source_, 0);                        }
                         //case 3
                         else {
                             //if it is not, a plane in that Z coordinate must be created
                             plane = new Plane(source_->getZ());
                             planes[source_->getZ()] = plane;
                             plane -> findObstaclesInPlane(obstacles);
-                            plane -> lineSweep();
-                            if(plane->nodeExistsInPlane(targetProjection)){
-                                projectionExists = true;
-                            }
-                            plane -> projectPoints(source_, targetProjection);
-                            /*else{
-                                plane -> projectPoint(targetProjection);
-                            }
-                            if(!plane->nodeExistsInPlane(source_)){
-                                plane -> projectPoint(source_);
-                            }*/
+                            if(!plane->nodeExistsInPlane(targetProjection) && !plane->nodeExistsInPlane(source_))
+                                plane -> lineSweep(source_, targetProjection);
+                            else if (!plane->nodeExistsInPlane(targetProjection))
+                                plane -> lineSweep(0, targetProjection);
+                            else if(!plane->nodeExistsInPlane(source_))
+                                plane -> lineSweep(source_, 0);
                         }
                         
                         vector<Point*> nodes = plane->getNodes();
@@ -481,11 +464,11 @@ int main (){
                                 verts[id] = u;
                                 totalNodes[id] = v;
                                 id++;
-                                if(projectionExists){
-                                    if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
+                                
+                                if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
                                         targetProjectionVertex = u;
-                                    }
                                 }
+                             
                                 if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
                                     s_ = u;
                                 }
@@ -510,14 +493,9 @@ int main (){
                         //add edge connecting target and target projection to the graph
                         double edgeDistance = targetProjection->getZ() - target_->getZ();
                         vertex_t u = boost::add_vertex(target_, myGraph);
-
-                        if(projectionExists){
-                            boost::add_edge(u, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
-                        }
-                        else{
-                            vertex_t v = boost::add_vertex(targetProjection, myGraph);
-                            boost::add_edge(u, v,EdgeWeightProperty(edgeDistance), myGraph);
-                        }
+                        boost::add_edge(u, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
+                        
+                        
                         
                         sourceBelow = source_;
                         targetBelow = targetProjection;
@@ -532,34 +510,24 @@ int main (){
                         if(std::find(total_planes.begin(), total_planes.end(), targetZ) != total_planes.end()) {
                             //if it is, just adds the point to the plane
                             plane = planes[targetZ];
-                            if(plane->nodeExistsInPlane(sourceProjection)){
-                                projectionExists = true;
-                            }
-                            plane -> projectPoints(sourceProjection, target_);
-                            /*else{
-                                plane -> projectPoint(sourceProjection);
-                            }
-                            if(!plane->nodeExistsInPlane(target_)){
-                                plane -> projectPoint(target_);
-                            }*/
+                            if(!plane->nodeExistsInPlane(sourceProjection) && !plane->nodeExistsInPlane(target_))
+                                plane->lineSweep(sourceProjection, target_);
+                            else if (!plane->nodeExistsInPlane(sourceProjection))
+                                plane ->lineSweep(sourceProjection, 0);
+                            else if(!plane->nodeExistsInPlane(target_))
+                                plane -> lineSweep(0, target_);
                         }//case 5
                         else {
                             //if it is not, a plane in that Z coordinate must be created
                             plane = new Plane(target_->getZ());
                             planes[target_->getZ()] = plane;
                             plane -> findObstaclesInPlane(obstacles);
-                            plane -> lineSweep();
-                            if(plane->nodeExistsInPlane(sourceProjection)){
-                                projectionExists = true;
-                            }
-                            plane -> projectPoints(sourceProjection, target_);
-                            /*else{
-                                plane -> projectPoint(sourceProjection);
-                            }
-                            if(!plane->nodeExistsInPlane(target_)){
-                                plane -> projectPoint(target_);
-                            }*/
-                        }
+                            if(!plane->nodeExistsInPlane(sourceProjection) && !plane->nodeExistsInPlane(target_))
+                                plane->lineSweep(sourceProjection, target_);
+                            else if (!plane->nodeExistsInPlane(sourceProjection))
+                                plane ->lineSweep(sourceProjection, 0);
+                            else if(!plane->nodeExistsInPlane(target_))
+                                plane -> lineSweep(0, target_);                        }
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
                         
@@ -572,10 +540,8 @@ int main (){
                                 verts[id] = u;
                                 totalNodes[id] = v;
                                 id++;
-                                if(projectionExists){
-                                    if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
-                                        sourceProjectionVertex = u;
-                                    }
+                                if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
+                                    sourceProjectionVertex = u;
                                 }
                                 if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
                                     s_ = u;
@@ -602,13 +568,7 @@ int main (){
                         double edgeDistance = sourceProjection->getZ() - source_->getZ();
                         vertex_t u = boost::add_vertex(source_, myGraph);
                         
-                        if(projectionExists){
-                            boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
-                        }
-                        else{
-                            vertex_t v = boost::add_vertex(sourceProjection, myGraph);
-                            boost::add_edge(u, v,EdgeWeightProperty(edgeDistance), myGraph);
-                        }
+                        boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
    
                         sourceBelow = sourceProjection;
                         targetBelow = target_;
@@ -622,27 +582,17 @@ int main (){
                     double z = *it;
                     if(z>highestZ){
                         map <unsigned int, vertex_t> verts;
-                        bool projectionExistsT = false;
-                        bool projectionExistsS = false;
                         vertex_t targetProjectionVertex;
                         vertex_t sourceProjectionVertex;
                         Plane* plane = planes[z];
                         Point* targetProjection = new Point(target_->getX(), target_->getY(), z);
                         Point* sourceProjection = new Point(source_->getX(), source_->getY(), z);
-                        if(plane->nodeExistsInPlane(targetProjection)){
-                            projectionExistsT = true;
-                        }
-                        if(plane->nodeExistsInPlane(sourceProjection)){
-                            projectionExistsS = true;
-                        }
-                        plane -> projectPoints(sourceProjection, targetProjection);
-                        /*else{
-                            plane -> projectPoint(targetProjection);
-                        }
-                        else{
-                            plane -> projectPoint(sourceProjection);
-                        }*/
-                        
+                        if(!plane->nodeExistsInPlane(targetProjection) && !plane->nodeExistsInPlane(sourceProjection))
+                            plane->lineSweep(sourceProjection, targetProjection);
+                        else if(!plane->nodeExistsInPlane(sourceProjection))
+                            plane->lineSweep(sourceProjection, 0);
+                        else if(!plane->nodeExistsInPlane(targetProjection))
+                            plane->lineSweep(0, targetProjection);
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
                         
@@ -655,15 +605,11 @@ int main (){
                                 verts[id] = u;
                                 totalNodes[id] = v;
                                 id++;
-                                if(projectionExistsT){
-                                    if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
-                                        targetProjectionVertex = u;
-                                    }
+                                if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
+                                    targetProjectionVertex = u;
                                 }
-                                if(projectionExistsS){
-                                    if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
-                                        sourceProjectionVertex = u;
-                                    }
+                                if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
+                                    sourceProjectionVertex = u;
                                 }
                                 if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
                                     s_ = u;
@@ -690,25 +636,15 @@ int main (){
                         double edgeDistance = sourceProjection->getZ() - sourceBelow->getZ();
                         vertex_t u = boost::add_vertex(sourceBelow, myGraph);
                         
-                        if(projectionExistsS){
-                            boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
-                        }
-                        else{
-                            vertex_t v = boost::add_vertex(sourceProjection, myGraph);
-                            boost::add_edge(u, v,EdgeWeightProperty(edgeDistance), myGraph);
-                        }
+                  
+                        boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
+                        
 
                         //add edge connecting target and target projection to the graph
                         double edgeDistance2 = targetProjection->getZ() - targetBelow->getZ();
                         vertex_t r = boost::add_vertex(targetBelow, myGraph);
                         
-                        if(projectionExistsT){
-                            boost::add_edge(u, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
-                        }
-                        else{
-                            vertex_t s = boost::add_vertex(targetProjection, myGraph);
-                            boost::add_edge(r, s, EdgeWeightProperty(edgeDistance2), myGraph);
-                        }
+                        boost::add_edge(r, targetProjectionVertex, EdgeWeightProperty(edgeDistance2), myGraph);
 
                         sourceBelow = sourceProjection;
                         targetBelow = targetProjection;
@@ -773,14 +709,7 @@ int main (){
 
                 break;
             }
-            case 3: {
-                Plane* plane = new Plane(0);
-                plane -> findObstaclesInPlane(obstacles);
-                plane -> lineSweep();
-                //cout << "testing" << endl;
-                //plane -> createGraph();
-            }
-                // ================== DEFAULT ===================
+            // ================== DEFAULT ===================
             default:{
                 break;
             }

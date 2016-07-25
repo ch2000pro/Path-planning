@@ -40,7 +40,7 @@ public:
     Plane(unsigned int z); //constructor with the z coordinate
      ~Plane(); //destructor
     void addObstacle(vector<Point*>); //adds the vertices and edges of an obstacle that are in this plane
-    void lineSweep(); //the 2D path planning algo; creates a graph for the plane
+    void lineSweep(Point*, Point*); //the 2D path planning algo; creates a graph for the plane
     void findObstaclesInPlane(vector<Obstacle*> Map); //finds the obstacles that are found in this plane
     void createGraph();
     vector<Segment*> getEdges();

@@ -93,21 +93,18 @@ void Plane::addObstacle(vector<Point*> points) {
     obstacleSegments.push_back(seg);
 }
 
-void Plane::lineSweep() {
-    double sourceX, sourceY, sinkX, sinkY;
-    cout << " What is the source point of the search? (x, y and z)" << endl;
-    cin >> sourceX;
-    cin >> sourceY;
-    cout << " What is the target point of the search? (x, y and z)" << endl;
-    cin >> sinkX;
-    cin >> sinkY;
-    Point* source = new Point(sourceX, sourceY);
-    Point* sink = new Point(sinkX, sinkY);
+void Plane::lineSweep(Point* source, Point* sink) {
     vector<Point*> points1 = endpoints, points2 = endpoints;
-    points1.push_back(source);
-    points1.push_back(sink);
-    points2.push_back(source);
-    points2.push_back(sink);
+    if (source != 0) {
+        points1.push_back(source);
+        points2.push_back(source);
+        nodes.push_back(source);
+    }
+    if (sink != 0) {
+        points1.push_back(sink);
+        points2.push_back(sink);
+        nodes.push_back(sink);
+    }
     sort(points1.begin(), points1.end(), sortLTR());
     Plane::createVerticalMedianLines(points1, 1);
     sort(points2.begin(), points2.end(), sortTTB());
@@ -175,11 +172,10 @@ void Plane::lineSweep() {
             w *= -1;
         w += (x2 - x1);
         (*it)->setWeight(w);
+        cout << "AQUI " << w << endl;
     }
-    cout << "total edges: " << edges_.size() << endl;
-    cout << "total nodes: " << nodes.size() << endl;
-    for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); ++it)
-        cout << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
+    for (vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        (*it)->setZ(z);
 }
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
