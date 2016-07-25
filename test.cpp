@@ -42,16 +42,16 @@ int main (){
         
         
         switch(option){
-            /*case 0:{
-                int z;
-                for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
-                    z = *it;
-                    Plane* plane = new Plane(z);
-                    planes[z] = plane;
-                    plane -> findObstaclesInPlane(obstacles);
-                    plane -> lineSweep();
-                }
-            }*/
+                /*case 0:{
+                 int z;
+                 for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
+                 z = *it;
+                 Plane* plane = new Plane(z);
+                 planes[z] = plane;
+                 plane -> findObstaclesInPlane(obstacles);
+                 plane -> lineSweep();
+                 }
+                 }*/
                 
             case 1:{
                 do{
@@ -178,10 +178,10 @@ int main (){
                 
                 //Third obstacle
                 /*vertices_input.push_back(new Point(34.1,22));
-                vertices_input.push_back(new Point(39.2,27.9));
-                vertices_input.push_back(new Point(41.8,20.5));
-                obstacles.push_back(new Obstacle(vertices_input,12));
-                vertices_input.clear();*/
+                 vertices_input.push_back(new Point(39.2,27.9));
+                 vertices_input.push_back(new Point(41.8,20.5));
+                 obstacles.push_back(new Obstacle(vertices_input,12));
+                 vertices_input.clear();*/
                 
                 total_planes.push_back(0);
                 total_planes.push_back(12);
@@ -198,101 +198,101 @@ int main (){
                 break;
             }
             case 4:{
-              vector<Point*> vertices_input;
-               
-              //First obstacle
-              vertices_input.push_back(new Point(10,35));
-              vertices_input.push_back(new Point(50,35));
-              vertices_input.push_back(new Point(50,10));
-              vertices_input.push_back(new Point(10,10));
-              obstacles.push_back(new Obstacle(vertices_input,85));
-              vertices_input.clear();
-              
-              //Second obstacle
-              vertices_input.push_back(new Point(222,57));
-              vertices_input.push_back(new Point(222,15));
-              vertices_input.push_back(new Point(180,15));
-              obstacles.push_back(new Obstacle(vertices_input,50));
-              vertices_input.clear();
-              
-              //Third obstacle
-              vertices_input.push_back(new Point(250,263));
-              vertices_input.push_back(new Point(350,263));
-              vertices_input.push_back(new Point(350,13));
-              vertices_input.push_back(new Point(250,13));
-              obstacles.push_back(new Obstacle(vertices_input,75));
-              vertices_input.clear();
-              
-              //Fourth obstacle
-              vertices_input.push_back(new Point(20,250));
-              vertices_input.push_back(new Point(100,170));
-              vertices_input.push_back(new Point(20,170));
-              obstacles.push_back(new Obstacle(vertices_input,50));
-              vertices_input.clear();
-              
-              //Fifth obstacle
-              vertices_input.push_back(new Point(76,260));
-              vertices_input.push_back(new Point(126,260));
-              vertices_input.push_back(new Point(126,210));
-              vertices_input.push_back(new Point(76,110));
-              obstacles.push_back(new Obstacle(vertices_input,38));
-              vertices_input.clear();
-              
-              //Sixth obstacle
-              vertices_input.push_back(new Point(132,223));
-              vertices_input.push_back(new Point(212,223));
-              vertices_input.push_back(new Point(212,143));
-              obstacles.push_back(new Obstacle(vertices_input,90));
-              vertices_input.clear();
-              
-              //Seventh obstacle
-              vertices_input.push_back(new Point(35,130));
-              vertices_input.push_back(new Point(195,130));
-              vertices_input.push_back(new Point(195,50));
-              vertices_input.push_back(new Point(35,50));
-              obstacles.push_back(new Obstacle(vertices_input,40));
-              vertices_input.clear();
-              
-              vertices_input.push_back(new Point(65,115));
-              vertices_input.push_back(new Point(165,115));
-              vertices_input.push_back(new Point(165,65));
-              vertices_input.push_back(new Point(65,65));
-              obstacles[obstacles.size()-1]->add_vertices(vertices_input, 23);
-              vertices_input.clear();
-              
-              vertices_input.push_back(new Point(102,115));
-              vertices_input.push_back(new Point(165,115));
-              vertices_input.push_back(new Point(165,83));
-              vertices_input.push_back(new Point(102,83));
-              obstacles[obstacles.size()-1]->add_vertices(vertices_input, 19);
-              vertices_input.clear();
-              
-              total_planes.push_back(38);
-              total_planes.push_back(40);
-              total_planes.push_back(50);
-              total_planes.push_back(63);
-              total_planes.push_back(75);
-              total_planes.push_back(82);
-              total_planes.push_back(85);
-              total_planes.push_back(90);
-              
-              //---------DEBUG----REMOVE---------
-              cout << endl << "Obstacle 1...";
-              obstacles[0]->print_num_vertices();
-              cout << endl << "Obstacle 2...";
-              obstacles[1]->print_num_vertices();
-              cout << endl << "Obstacle 3...";
-              obstacles[2]->print_num_vertices();
-              cout << endl << "Obstacle 4...";
-              obstacles[3]->print_num_vertices();
-              cout << endl << "Obstacle 5...";
-              obstacles[4]->print_num_vertices();
-              cout << endl << "Obstacle 6...";
-              obstacles[5]->print_num_vertices();
-              cout << endl << "Obstacle 7...";
-              obstacles[6]->print_num_vertices();
-              //---------------------------------
-              break;
+                vector<Point*> vertices_input;
+                
+                //First obstacle
+                vertices_input.push_back(new Point(10,35));
+                vertices_input.push_back(new Point(50,35));
+                vertices_input.push_back(new Point(50,10));
+                vertices_input.push_back(new Point(10,10));
+                obstacles.push_back(new Obstacle(vertices_input,85));
+                vertices_input.clear();
+                
+                //Second obstacle
+                vertices_input.push_back(new Point(222,57));
+                vertices_input.push_back(new Point(222,15));
+                vertices_input.push_back(new Point(180,15));
+                obstacles.push_back(new Obstacle(vertices_input,50));
+                vertices_input.clear();
+                
+                //Third obstacle
+                vertices_input.push_back(new Point(250,263));
+                vertices_input.push_back(new Point(350,263));
+                vertices_input.push_back(new Point(350,13));
+                vertices_input.push_back(new Point(250,13));
+                obstacles.push_back(new Obstacle(vertices_input,75));
+                vertices_input.clear();
+                
+                //Fourth obstacle
+                vertices_input.push_back(new Point(20,250));
+                vertices_input.push_back(new Point(100,170));
+                vertices_input.push_back(new Point(20,170));
+                obstacles.push_back(new Obstacle(vertices_input,50));
+                vertices_input.clear();
+                
+                //Fifth obstacle
+                vertices_input.push_back(new Point(76,260));
+                vertices_input.push_back(new Point(126,260));
+                vertices_input.push_back(new Point(126,210));
+                vertices_input.push_back(new Point(76,110));
+                obstacles.push_back(new Obstacle(vertices_input,38));
+                vertices_input.clear();
+                
+                //Sixth obstacle
+                vertices_input.push_back(new Point(132,223));
+                vertices_input.push_back(new Point(212,223));
+                vertices_input.push_back(new Point(212,143));
+                obstacles.push_back(new Obstacle(vertices_input,90));
+                vertices_input.clear();
+                
+                //Seventh obstacle
+                vertices_input.push_back(new Point(35,130));
+                vertices_input.push_back(new Point(195,130));
+                vertices_input.push_back(new Point(195,50));
+                vertices_input.push_back(new Point(35,50));
+                obstacles.push_back(new Obstacle(vertices_input,40));
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(65,115));
+                vertices_input.push_back(new Point(165,115));
+                vertices_input.push_back(new Point(165,65));
+                vertices_input.push_back(new Point(65,65));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 23);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(102,115));
+                vertices_input.push_back(new Point(165,115));
+                vertices_input.push_back(new Point(165,83));
+                vertices_input.push_back(new Point(102,83));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 19);
+                vertices_input.clear();
+                
+                total_planes.push_back(38);
+                total_planes.push_back(40);
+                total_planes.push_back(50);
+                total_planes.push_back(63);
+                total_planes.push_back(75);
+                total_planes.push_back(82);
+                total_planes.push_back(85);
+                total_planes.push_back(90);
+                
+                //---------DEBUG----REMOVE---------
+                cout << endl << "Obstacle 1...";
+                obstacles[0]->print_num_vertices();
+                cout << endl << "Obstacle 2...";
+                obstacles[1]->print_num_vertices();
+                cout << endl << "Obstacle 3...";
+                obstacles[2]->print_num_vertices();
+                cout << endl << "Obstacle 4...";
+                obstacles[3]->print_num_vertices();
+                cout << endl << "Obstacle 5...";
+                obstacles[4]->print_num_vertices();
+                cout << endl << "Obstacle 6...";
+                obstacles[5]->print_num_vertices();
+                cout << endl << "Obstacle 7...";
+                obstacles[6]->print_num_vertices();
+                //---------------------------------
+                break;
             }
         }
         
@@ -347,10 +347,8 @@ int main (){
                 vertex_t t_;
                 unsigned int id=0;
                 vector<vertex_t> nodes_;
-                map<unsigned int, Point*> totalNodes;
-                vector<Point*> finalPath;
                 vector<double> distances;
-
+                
                 int z;
                 for (vector<double>::iterator it = total_planes.begin() ; it != total_planes.end(); ++it) {
                     z = *it;
@@ -394,6 +392,7 @@ int main (){
                     
                     vector<Point*> nodes = plane->getNodes();
                     vector<Segment*> edges_ = plane -> getEdges();
+                    
                     //adding nodes to graph
                     for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                         Point* v = *it;
@@ -402,7 +401,6 @@ int main (){
                             v->setId(id);
                             vertex_t u = boost::add_vertex(v, myGraph);
                             verts[id] = u;
-                            totalNodes[id] = v;
                             id++;
                             if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
                                 s_ = u;
@@ -422,6 +420,7 @@ int main (){
                         vertex_t v = verts[left->getId()];
                         boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
                     }
+                    
                 }
                 else{
                     //If Source and Target Zs are different
@@ -431,6 +430,12 @@ int main (){
                     if(sourceZ > targetZ){
                         highestZ = sourceZ;
                         vertex_t targetProjectionVertex;
+                        target_->setId(id);
+                        id++;
+                        cout <<"ID AQUI: "<<id<<endl;
+                        vertex_t t = boost::add_vertex(target_, myGraph);
+                        t_ = t;
+                        
                         Point* targetProjection = new Point(target_->getX(), target_->getY(), source_->getZ());
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
@@ -467,25 +472,21 @@ int main (){
                         //adding nodes to graph
                         for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                             Point* v = *it;
-                            if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
-                                v->setId(id);
-                                vertex_t u = boost::add_vertex(v, myGraph);
-                                verts[id] = u;
-                                totalNodes[id] = v;
-                                id++;
-                                
-                                if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
-                                        targetProjectionVertex = u;
-                                }
-                             
-                                if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
-                                    s_ = u;
-                                }
-                                if(v->getX() == target_->getX() && v->getY() == target_->getY() && v->getZ() == target_->getZ()){
-                                    t_ = u;
-                                }
+                            v->setId(id);
+                            vertex_t u = boost::add_vertex(v, myGraph);
+                            verts[id] = u;
+                            id++;
+                            
+                            if(abs(v->getX() - targetProjection->getX()) < 0.0000000001 && abs(v->getY() - targetProjection->getY()) < 0.00000000001 ){
+                                targetProjectionVertex = u;
                             }
+                            
+                            if(abs(v->getX() - source_->getX()) < 0.0000000001 && abs(v->getY() - source_->getY()) < 0.00000000001 ){
+                                s_ = u;
+                            }
+                            
                         }
+                        
                         
                         //adding edges between nodes
                         for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
@@ -499,20 +500,22 @@ int main (){
                         
                         //add edge connecting target and target projection to the graph
                         double edgeDistance = targetProjection->getZ() - target_->getZ();
-                        vertex_t u = boost::add_vertex(target_, myGraph);
-                        boost::add_edge(u, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
-                        
-                        
+                        boost::add_edge(t_, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
                         
                         sourceBelow = source_;
                         targetBelow = targetProjection;
                         sourceBelowVertex = s_;
                         targetBelowVertex = targetProjectionVertex;
+                        
                     }
                     //case 4
                     else if(targetZ > sourceZ){
                         highestZ = targetZ;
                         vertex_t sourceProjectionVertex;
+                        source_->setId(id);
+                        id++;
+                        vertex_t s = boost::add_vertex(source_, myGraph);
+                        s_ = s;
                         Point* sourceProjection = new Point(source_->getX(), source_->getY(), target_->getZ());
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), targetZ) != total_planes.end()) {
@@ -531,7 +534,7 @@ int main (){
                             //if it is not, a plane in that Z coordinate must be created
                             plane = new Plane(target_->getZ());
                             planes[target_->getZ()] = plane;
-                            plane -> findObstaclesInPlane(obstacles);
+                            plane->findObstaclesInPlane(obstacles);
                             if(!plane->nodeExistsInPlane(sourceProjection) && !plane->nodeExistsInPlane(target_))
                                 plane->lineSweep(sourceProjection, target_);
                             else if (!plane->nodeExistsInPlane(sourceProjection))
@@ -547,21 +550,17 @@ int main (){
                         //adding nodes to graph
                         for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                             Point* v = *it;
-                            if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
-                                v->setId(id);
-                                vertex_t u = boost::add_vertex(v, myGraph);
-                                verts[id] = u;
-                                totalNodes[id] = v;
-                                id++;
-                                if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
-                                    sourceProjectionVertex = u;
-                                }
-                                if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
-                                    s_ = u;
-                                }
-                                if(v->getX() == target_->getX() && v->getY() == target_->getY() && v->getZ() == target_->getZ()){
-                                    t_ = u;
-                                }
+                            v->setId(id);
+                            vertex_t u = boost::add_vertex(v, myGraph);
+                            verts[id] = u;
+                            id++;
+                            
+                            if(abs(v->getX() - sourceProjection->getX()) < 0.0000000001 && abs(v->getY() - sourceProjection->getY()) < 0.00000000001 ){
+                                sourceProjectionVertex = u;
+                            }
+                            
+                            if(abs(v->getX() - target_->getX()) < 0.0000000001 && abs(v->getY() - target_->getY()) < 0.00000000001 ){
+                                t_ = u;
                             }
                         }
                         
@@ -577,17 +576,17 @@ int main (){
                         
                         //add edge connecting source and source projection to the graph
                         double edgeDistance = sourceProjection->getZ() - source_->getZ();
-                        vertex_t u = boost::add_vertex(source_, myGraph);
                         
-                        boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
-   
+                        boost::add_edge(s_, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
+                        
+                        
                         sourceBelow = sourceProjection;
                         targetBelow = target_;
                         sourceBelowVertex = sourceProjectionVertex;
                         targetBelowVertex = t_;
                     }
                 }
-
+                
                 sort(total_planes.begin(), total_planes.end());
                 
                 //after the plane of the highest is created and added to the graph, it creates the projection in all planes above and adds that planes to the graph
@@ -614,27 +613,18 @@ int main (){
                         //adding nodes to graph
                         for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                             Point* v = *it;
-                            if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
-                                v->setId(id);
-                                vertex_t u = boost::add_vertex(v, myGraph);
-                                verts[id] = u;
-                                totalNodes[id] = v;
-                                id++;
-                                if(v->getX() == targetProjection->getX() && v->getY() == targetProjection->getY() && v->getZ() == targetProjection->getZ()){
-                                    targetProjectionVertex = u;
-                                }
-                                if(v->getX() == sourceProjection->getX() && v->getY() == sourceProjection->getY() && v->getZ() == sourceProjection->getZ()){
-                                    sourceProjectionVertex = u;
-                                }
-                                if(v->getX() == source_->getX() && v->getY() == source_->getY() && v->getZ() == source_->getZ()){
-                                    s_ = u;
-                                }
-                                if(v->getX() == target_->getX() && v->getY() == target_->getY() && v->getZ() == target_->getZ()){
-                                    t_ = u;
-                                }
+                            v->setId(id);
+                            vertex_t u = boost::add_vertex(v, myGraph);
+                            verts[id] = u;
+                            id++;
+                            if(abs(v->getX() - targetProjection->getX()) < 0.0000000001 && abs(v->getY() - targetProjection->getY()) < 0.0000000001){
+                                targetProjectionVertex = u;
+                            }
+                            if(abs(v->getX() - sourceProjection->getX()) < 0.000000001 && abs(v->getY() - sourceProjection->getY()) < 0.0000000001){
+                                sourceProjectionVertex = u;
                             }
                         }
-
+                        
                         //adding edges between nodes
                         for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
                             Segment* edge = *it;
@@ -649,25 +639,48 @@ int main (){
                         double edgeDistance = sourceProjection->getZ() - sourceBelow->getZ();
                         boost::add_edge(sourceBelowVertex, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
                         
-
                         //add edge connecting target and target projection to the graph
+                        
                         double edgeDistance2 = targetProjection->getZ() - targetBelow->getZ();
                         boost::add_edge(targetBelowVertex, targetProjectionVertex, EdgeWeightProperty(edgeDistance2), myGraph);
-
+                        
                         sourceBelow = sourceProjection;
                         targetBelow = targetProjection;
                         sourceBelowVertex = sourceProjectionVertex;
                         targetBelowVertex = targetProjectionVertex;
                         
-                        }
+                    }
                 }
+                
+                /*cout << "all vertex in graph"<<endl;
+                 boost::graph_traits <Graph>::vertex_iterator vi2, vend2;
+                 for (boost::tie(vi2, vend2) = vertices(myGraph); vi2 != vend2; ++vi2) {
+                 vertex_t v = *vi2;
+                 cout << "vertice: " << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ()<< endl;
+                 }
+                 std::cout << std::endl;
+                 */
                 
                 
                 // The property map associated with the weights.
-                boost::property_map < Graph,
-                boost::edge_weight_t >::type EdgeWeightMap = get(boost::edge_weight, myGraph);
+                boost::property_map < Graph, boost::edge_weight_t>::type EdgeWeightMap = get(boost::edge_weight, myGraph);
                 std::vector<vertex_t> p(num_vertices(myGraph));
                 std::vector<int> d(num_vertices(myGraph));
+                
+                boost::graph_traits < Graph >::edge_iterator ei, ei_end;
+                for (boost::tie(ei, ei_end) = edges(myGraph); ei != ei_end; ++ei) {
+                    edge_t e = *ei;
+                    EdgeWeightMap[e] *= 1000;
+                }
+                
+                cout << endl;
+                cout<< "all edges in graph"<< endl;
+                boost::graph_traits < Graph >::edge_iterator ei2, ei_end2;
+                for (boost::tie(ei2, ei_end2) = edges(myGraph); ei2 != ei_end2; ++ei2) {
+                    edge_t e = *ei2;
+                    boost::graph_traits < Graph >::vertex_descriptor u = source(e, myGraph), v = target(e, myGraph);
+                    cout << "edge from: " << myGraph[u]->getX() << " " << myGraph[u]->getY() << " " << myGraph[u]->getZ() << " to: " <<myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ()<< " weight: " << EdgeWeightMap[e] << endl;
+                }
                 
                 //running dijkstra
                 dijkstra_shortest_paths(myGraph,s_,
@@ -682,41 +695,39 @@ int main (){
                     vertex_t v = *vi;
                     vertex_t parent = p[*vi];
                     cout << "vertice: " << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ()<< endl;
-                    cout << "distance(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << ") = " << d[*vi] << ", ";
+                    cout << "distance(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << ") = " << (d[*vi] / 1000) << ", ";
                     cout << "parent(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() <<  ") = " << myGraph[parent]->getX() << " " << myGraph[parent]->getY() << " " << myGraph[parent]->getZ()<<endl;
                 }
                 cout << endl;
                 
-                
+                cout << myGraph[t_]->getX() << " " << myGraph[t_]->getY() << endl;
                 //backtracking path from target to source
                 do{
                     nodes_.push_back(t_);
-                    finalPath.push_back(totalNodes[myGraph[t_]->getId()]);
                     distances.push_back(d[t_]);
                     t_ = p[t_];
                 }while(t_ != s_);
-                
-                finalPath.push_back(totalNodes[myGraph[s_]->getId()]);
+                nodes_.push_back(s_);
                 distances.push_back(d[s_]);
                 
-
+                
                 //printing results
-                for(int i = 0; i<finalPath.size(); i++){
-                    Point* p = finalPath[i];
-                    cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
+                for(int i = 0; i<nodes_.size(); i++){
+                    vertex_t p = nodes_[i];
+                    cout << "distance(" << myGraph[p]->getX() << " " << myGraph[p]->getY() << " " << myGraph[p]->getZ() << ") = " << (distances[i]/ 1000) << endl;
                 }
                 
                 fstream dot_file("path.scr", fstream::out);
                 dot_file << "_-COLOR" << endl;
                 dot_file << "green" << endl;
                 dot_file << "3DPOLY" << endl;
-                for(int i = 0; i<finalPath.size(); i++){
-                    Point* p = finalPath[i];
-                    dot_file << p->getX() << "," << p->getY() << "," << p->getZ()<< endl;
+                for(int i = 0; i<nodes_.size(); i++){
+                    vertex_t p = nodes_[i];
+                    dot_file << myGraph[p]->getX() << "," << myGraph[p]->getY() << "," << myGraph[p]->getZ()<< endl;
                 }
                 dot_file << "CLOSE" << endl;
                 dot_file.close();
-
+                
                 break;
             }
             case 3: {
@@ -738,7 +749,7 @@ int main (){
                 plane -> findObstaclesInPlane(obstacles);
                 plane->lineSweep(source, sink);
             }
-            // ================== DEFAULT ===================
+                // ================== DEFAULT ===================
             default:{
                 break;
             }

@@ -106,9 +106,9 @@ void Plane::lineSweep(Point* source, Point* sink) {
         nodes.push_back(sink);
     }
     sort(points1.begin(), points1.end(), sortLTR());
-    Plane::createVerticalMedianLines(points1, 1);
+    Plane::createVerticalMedianLines(points1, 1, source, sink);
     sort(points2.begin(), points2.end(), sortTTB());
-    Plane::createHorizontalMedianLines(points2, 1);
+    Plane::createHorizontalMedianLines(points2, 1, source, sink);
     for(vector<Segment*>::iterator it = medianLines.begin(); it != medianLines.end(); it++) {
         if((*it)->getRight()->getY() == -2147483648)
             points1.push_back((*it)->getRight());
@@ -180,6 +180,10 @@ void Plane::lineSweep(Point* source, Point* sink) {
     }
     for (vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
         (*it)->setZ(z);
+    for (vector<Segment*>::iterator it = edges_.begin(); it!= edges_.end(); ++it) {
+        (*it)->getLeft()->setZ(z);
+        (*it)->getRight()->setZ(z);
+    }
 }
 
 //lineSweep will create a graph representing the plane, in order to find the shortest path on it
@@ -637,7 +641,7 @@ Point* Plane::createSteinerPoint(Segment* segment1, Segment* segment2) {
 }
 
 //Recursive function that creates median lines (that will be used to make type 1 Steiner points)
-void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
+void Plane::createVerticalMedianLines(vector<Point*> points, int w, Point* source, Point* sink) {
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + (points.size()/2);
         double x = (*middle)->getX();
@@ -651,8 +655,10 @@ void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
         Point* p2 = new Point(x, INT_MIN);
         Segment* l = new Segment(p1, p2, w);
         if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0) {
-            Point* p = new Point((*middle)->getX(), (*middle)->getY(), 0);
-            l->addSteinerPoint(p);
+            if((*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
+                l->addSteinerPoint(source);
+            else
+                l->addSteinerPoint(sink);
         }
         if (middle != points.begin() && (*(middle - 1))->getX() == x) {
             Point* p = new Point((*(middle - 1))->getX(), (*(middle - 1))->getY(), -3);
@@ -666,12 +672,12 @@ void Plane::createVerticalMedianLines(vector<Point*> points, int w) {
         p2->setSeg1(l);
         vector<Point*> aux1(points.begin(), middle);
         vector<Point*> aux2(middle + 1, points.end());
-        Plane::createVerticalMedianLines(aux1, w+1);
-        Plane::createVerticalMedianLines(aux2, w+1);
+        Plane::createVerticalMedianLines(aux1, w+1, source, sink);
+        Plane::createVerticalMedianLines(aux2, w+1, source, sink);
     }
 }
 
-void Plane::createHorizontalMedianLines(vector<Point*> points, int w) {
+void Plane::createHorizontalMedianLines(vector<Point*> points, int w, Point* source, Point* sink) {
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + points.size()/2;
         double y = (*middle)->getY();
@@ -685,8 +691,10 @@ void Plane::createHorizontalMedianLines(vector<Point*> points, int w) {
         Point* p2 = new Point(INT_MIN, y);
         Segment* l = new Segment(p1, p2, w);
         if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0) {
-            Point* p = new Point((*middle)->getX(), (*middle)->getY(), 0);
-            l->addSteinerPoint(p);
+            if((*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
+                l->addSteinerPoint(source);
+            else
+                l->addSteinerPoint(sink);
         }
         if (middle != points.begin() && (*(middle - 1))->getY() == y) {
             Point* p = new Point((*(middle - 1))->getX(), (*(middle - 1))->getY(), -3);
@@ -700,8 +708,8 @@ void Plane::createHorizontalMedianLines(vector<Point*> points, int w) {
         p2->setSeg1(l);
         vector<Point*> aux1(points.begin(), middle);
         vector<Point*> aux2(middle + 1, points.end());
-        Plane::createHorizontalMedianLines(aux1, w+1);
-        Plane::createHorizontalMedianLines(aux2, w+1);
+        Plane::createHorizontalMedianLines(aux1, w+1, source, sink);
+        Plane::createHorizontalMedianLines(aux2, w+1, source, sink);
     }
 }
 
