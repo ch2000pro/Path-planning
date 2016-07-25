@@ -57,8 +57,8 @@ private:
     vector<Point*> nodes; //nodes of the graph created for this plane
     vector<Segment*> medianLines;
     vector<Segment*> edges_; //edges of the graph created for this plane
-    vector<Segment*> edgesST;
-    vector<Point*> nodesST;
+    set<double> Xs;
+    set<double> Ys;
 
     //auxiliary functions
     void LineSweepLTR(vector<Point*>);

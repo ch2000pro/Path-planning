@@ -645,35 +645,38 @@ void Plane::createVerticalMedianLines(vector<Point*> points, int w, Point* sourc
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + (points.size()/2);
         double x = (*middle)->getX();
-        if ((*middle)->getSeg1() != 0 && (*middle)->getSeg2() != 0) {
-            if ((*middle)->getSeg1()->getOther(*middle)->getX() < x && (*middle)->getSeg2()->getOther(*middle)->getX() < x)
-                x += 0.1;
-            else if ((*middle)->getSeg1()->getOther(*middle)->getX() > x && (*middle)->getSeg2()->getOther(*middle)->getX() > x)
-                x -= 0.1;
+        if (Xs.find(x) == Xs.end()) {
+            Xs.insert(x);
+            if ((*middle)->getSeg1() != 0 && (*middle)->getSeg2() != 0) {
+                if ((*middle)->getSeg1()->getOther(*middle)->getX() < x && (*middle)->getSeg2()->getOther(*middle)->getX() < x)
+                    x += 0.1;
+                else if ((*middle)->getSeg1()->getOther(*middle)->getX() > x && (*middle)->getSeg2()->getOther(*middle)->getX() > x)
+                    x -= 0.1;
+            }
+            Point* p1 = new Point(x, INT_MAX);
+            Point* p2 = new Point(x, INT_MIN);
+            Segment* l = new Segment(p1, p2, w);
+            if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0) {
+                if((*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
+                    l->addSteinerPoint(source);
+                else
+                    l->addSteinerPoint(sink);
+            }
+            if (middle != points.begin() && (*(middle - 1))->getX() == x) {
+                Point* p = new Point((*(middle - 1))->getX(), (*(middle - 1))->getY(), -3);
+                l->addSteinerPoint(p);
+            }
+            else if((middle + 1) != points.end() && (*(middle + 1))->getX() == x) {
+                Point* p = new Point((*(middle + 1))->getX(), (*(middle + 1))->getY(), -3);
+                l->addSteinerPoint(p);
+            }
+            medianLines.push_back(l);
+            p2->setSeg1(l);
+            vector<Point*> aux1(points.begin(), middle);
+            vector<Point*> aux2(middle + 1, points.end());
+            Plane::createVerticalMedianLines(aux1, w+1, source, sink);
+            Plane::createVerticalMedianLines(aux2, w+1, source, sink);
         }
-        Point* p1 = new Point(x, INT_MAX);
-        Point* p2 = new Point(x, INT_MIN);
-        Segment* l = new Segment(p1, p2, w);
-        if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0) {
-            if((*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
-                l->addSteinerPoint(source);
-            else
-                l->addSteinerPoint(sink);
-        }
-        if (middle != points.begin() && (*(middle - 1))->getX() == x) {
-            Point* p = new Point((*(middle - 1))->getX(), (*(middle - 1))->getY(), -3);
-            l->addSteinerPoint(p);
-        }
-        else if((middle + 1) != points.end() && (*(middle + 1))->getX() == x) {
-            Point* p = new Point((*(middle + 1))->getX(), (*(middle + 1))->getY(), -3);
-            l->addSteinerPoint(p);
-        }
-        medianLines.push_back(l);
-        p2->setSeg1(l);
-        vector<Point*> aux1(points.begin(), middle);
-        vector<Point*> aux2(middle + 1, points.end());
-        Plane::createVerticalMedianLines(aux1, w+1, source, sink);
-        Plane::createVerticalMedianLines(aux2, w+1, source, sink);
     }
 }
 
@@ -681,6 +684,7 @@ void Plane::createHorizontalMedianLines(vector<Point*> points, int w, Point* sou
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + points.size()/2;
         double y = (*middle)->getY();
+        Ys.insert(y);
         if ((*middle)->getSeg1() != 0 && (*middle)->getSeg2() != 0) {
             if ((*middle)->getSeg1()->getOther(*middle)->getY() > y && (*middle)->getSeg2()->getOther(*middle)->getY() > y)
                 y -= 0.1;
@@ -1056,7 +1060,7 @@ void Plane::createGraph(){
         cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
     }
     
-    fstream dot_file("path.scr", fstream::out);
+    fstream dot_file("path_.scr", fstream::out);
     dot_file << "_-COLOR" << endl;
     dot_file << "green" << endl;
     dot_file << "3DPOLY" << endl;
