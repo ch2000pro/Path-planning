@@ -341,6 +341,8 @@ int main (){
                 Point* target_ = new Point(targetX, targetY, targetZ);
                 Point* sourceBelow = source_;
                 Point* targetBelow = target_;
+                vertex_t sourceBelowVertex;
+                vertex_t targetBelowVertex;
                 vertex_t s_;
                 vertex_t t_;
                 unsigned int id=0;
@@ -373,6 +375,8 @@ int main (){
                             plane -> lineSweep(source_, 0);
                         else if(!plane->nodeExistsInPlane(target_))
                             plane -> lineSweep(0, target_);
+                        else
+                            plane -> lineSweep(0, 0);
                     } else {
                         //if it is not, a plane in that Z coordinate must be created
                         plane = new Plane(sourceZ);
@@ -384,6 +388,8 @@ int main (){
                             plane -> lineSweep(source_, 0);
                         else if(!plane->nodeExistsInPlane(target_))
                             plane -> lineSweep(0, target_);
+                        else
+                            plane -> lineSweep(0, 0);
                     }
                     
                     vector<Point*> nodes = plane->getNodes();
@@ -437,7 +443,10 @@ int main (){
                             else if (!plane->nodeExistsInPlane(targetProjection))
                                 plane -> lineSweep(0, targetProjection);
                             else if(!plane->nodeExistsInPlane(source_))
-                                plane -> lineSweep(source_, 0);                        }
+                                plane -> lineSweep(source_, 0);
+                            else
+                                plane -> lineSweep(0, 0);
+                        }
                         //case 3
                         else {
                             //if it is not, a plane in that Z coordinate must be created
@@ -450,6 +459,8 @@ int main (){
                                 plane -> lineSweep(0, targetProjection);
                             else if(!plane->nodeExistsInPlane(source_))
                                 plane -> lineSweep(source_, 0);
+                            else
+                                plane -> lineSweep(0, 0);
                         }
                         
                         vector<Point*> nodes = plane->getNodes();
@@ -499,6 +510,8 @@ int main (){
                         
                         sourceBelow = source_;
                         targetBelow = targetProjection;
+                        sourceBelowVertex = s_;
+                        targetBelowVertex = targetProjectionVertex;
                     }
                     //case 4
                     else if(targetZ > sourceZ){
@@ -516,6 +529,8 @@ int main (){
                                 plane ->lineSweep(sourceProjection, 0);
                             else if(!plane->nodeExistsInPlane(target_))
                                 plane -> lineSweep(0, target_);
+                            else
+                                plane -> lineSweep(0, 0);
                         }//case 5
                         else {
                             //if it is not, a plane in that Z coordinate must be created
@@ -527,7 +542,10 @@ int main (){
                             else if (!plane->nodeExistsInPlane(sourceProjection))
                                 plane ->lineSweep(sourceProjection, 0);
                             else if(!plane->nodeExistsInPlane(target_))
-                                plane -> lineSweep(0, target_);                        }
+                                plane -> lineSweep(0, target_);
+                            else
+                                plane -> lineSweep(0, 0);
+                        }
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
                         
@@ -572,6 +590,8 @@ int main (){
    
                         sourceBelow = sourceProjection;
                         targetBelow = target_;
+                        sourceBelowVertex = sourceProjectionVertex;
+                        targetBelowVertex = t_;
                     }
                 }
 
@@ -593,6 +613,8 @@ int main (){
                             plane->lineSweep(sourceProjection, 0);
                         else if(!plane->nodeExistsInPlane(targetProjection))
                             plane->lineSweep(0, targetProjection);
+                        else
+                            plane -> lineSweep(0, 0);
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
                         
@@ -634,20 +656,17 @@ int main (){
                         
                         //add edge connecting the source in the plane below with the projection of the source in the plane above
                         double edgeDistance = sourceProjection->getZ() - sourceBelow->getZ();
-                        vertex_t u = boost::add_vertex(sourceBelow, myGraph);
-                        
-                  
-                        boost::add_edge(u, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
+                        boost::add_edge(sourceBelowVertex, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
                         
 
                         //add edge connecting target and target projection to the graph
                         double edgeDistance2 = targetProjection->getZ() - targetBelow->getZ();
-                        vertex_t r = boost::add_vertex(targetBelow, myGraph);
-                        
-                        boost::add_edge(r, targetProjectionVertex, EdgeWeightProperty(edgeDistance2), myGraph);
+                        boost::add_edge(targetBelowVertex, targetProjectionVertex, EdgeWeightProperty(edgeDistance2), myGraph);
 
                         sourceBelow = sourceProjection;
                         targetBelow = targetProjection;
+                        sourceBelowVertex = sourceProjectionVertex;
+                        targetBelowVertex = targetProjectionVertex;
                         
                         }
                 }
@@ -678,34 +697,34 @@ int main (){
                 cout << endl;
                 
                 
-//                //backtracking path from target to source
-//                do{
-//                    nodes_.push_back(t_);
-//                    finalPath.push_back(totalNodes[myGraph[t_]->getId()]);
-//                    distances.push_back(d[t_]);
-//                    t_ = p[t_];
-//                }while(t_ != s_);
-//                
-//                finalPath.push_back(totalNodes[myGraph[s_]->getId()]);
-//                distances.push_back(d[s_]);
-//                
-//
-//                //printing results
-//                for(int i = 0; i<finalPath.size(); i++){
-//                    Point* p = finalPath[i];
-//                    cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
-//                }
-//                
-//                fstream dot_file("path.scr", fstream::out);
-//                dot_file << "_-COLOR" << endl;
-//                dot_file << "green" << endl;
-//                dot_file << "3DPOLY" << endl;
-//                for(int i = 0; i<finalPath.size(); i++){
-//                    Point* p = finalPath[i];
-//                    dot_file << p->getX() << "," << p->getY() << "," << p->getZ()<< endl;
-//                }
-//                dot_file << "CLOSE" << endl;
-//                dot_file.close();
+                //backtracking path from target to source
+                do{
+                    nodes_.push_back(t_);
+                    finalPath.push_back(totalNodes[myGraph[t_]->getId()]);
+                    distances.push_back(d[t_]);
+                    t_ = p[t_];
+                }while(t_ != s_);
+                
+                finalPath.push_back(totalNodes[myGraph[s_]->getId()]);
+                distances.push_back(d[s_]);
+                
+
+                //printing results
+                for(int i = 0; i<finalPath.size(); i++){
+                    Point* p = finalPath[i];
+                    cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
+                }
+                
+                fstream dot_file("path.scr", fstream::out);
+                dot_file << "_-COLOR" << endl;
+                dot_file << "green" << endl;
+                dot_file << "3DPOLY" << endl;
+                for(int i = 0; i<finalPath.size(); i++){
+                    Point* p = finalPath[i];
+                    dot_file << p->getX() << "," << p->getY() << "," << p->getZ()<< endl;
+                }
+                dot_file << "CLOSE" << endl;
+                dot_file.close();
 
                 break;
             }

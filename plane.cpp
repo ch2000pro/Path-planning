@@ -165,7 +165,7 @@ void Plane::lineSweep(Point* source, Point* sink) {
         Segment* s = new Segment(prev, (*l)->getRight());
         edges_.push_back(s);
     }
-    for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
+    for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); ++it) {
         double x1 = (*it)->getLeft()->getX(), y1 = (*it)->getLeft()->getY(), x2 = (*it)->getRight()->getX(), y2 = (*it)->getRight()->getY(), w;
         w = y2 - y1;
         if (w < 0)
