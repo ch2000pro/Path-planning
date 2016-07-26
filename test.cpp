@@ -14,6 +14,8 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <ctime>
+#include <chrono>
 #include "obstacle.h"
 #include "point.h"
 #include "plane.h"
@@ -38,6 +40,7 @@ int main (){
         cout << "2 - Use default map" << endl; //Default map is drawn
         cout << "3 - Use map1" << endl; //Professor's map
         cout << "4 - Use map2" << endl; //Big map
+        cout << "5 - Map for tests" << endl; //Big map
         //cout << "0 - Proceed" << endl;
         cin >> option;
         
@@ -303,7 +306,7 @@ int main (){
                 
                 vector<Point*> vertices_input;
                 
-                for(int i =0; i<10; i++){
+                for(int i =0; i<10000; i++){
                     vertices_input.push_back(new Point(x1,1.8));
                     vertices_input.push_back(new Point(x2,13));
                     vertices_input.push_back(new Point(x3,17));
@@ -319,6 +322,7 @@ int main (){
                 }
                 total_planes.push_back(0);
                 total_planes.push_back(12);
+
                 cout << "biggest X"<<x4<<endl;
             }
         }
@@ -363,6 +367,7 @@ int main (){
                 cin >> targetX;
                 cin >> targetY;
                 cin >> targetZ;
+                
                 
                 /*cout <<"Beggining time: "<<endl;
                 auto begin = std::chrono::high_resolution_clock::now();*/
@@ -492,6 +497,7 @@ int main (){
                         targetProjectionVertex = boost::add_vertex(targetProjection, myGraph);
                         verts[id] = targetProjectionVertex;
                         id++;
+
                         
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
@@ -805,7 +811,6 @@ int main (){
                 auto end = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
                 cout << "duration: " << duration << "ns" << endl;*/
-                
                 break;
             }
             case 3: {
