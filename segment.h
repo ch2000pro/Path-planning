@@ -58,6 +58,7 @@ public:
     Segment* getAux1() {return aux1;}
     void setAux2(Point* p) {aux2 = p;}
     Point* getAux2() {return aux2;}
+    void zeroSteinerPoints() {while (steinerPoints.size() != 0) steinerPoints.pop_back();}
 
 private:
 	Point* left; //left endpoint

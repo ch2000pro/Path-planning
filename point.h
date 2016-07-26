@@ -56,6 +56,7 @@ public:
     void setSeg1(Segment* s) {seg1 = s;}
     void setSeg2(Segment* s) {seg2 = s;}
     Segment* getOther(Segment* s) {if (s == seg1) return seg2; else return seg1;}
+    Point* clone() const { return new Point(*this); }
     
 private:
     int id_;

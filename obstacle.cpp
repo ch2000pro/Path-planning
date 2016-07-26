@@ -47,10 +47,18 @@ vector<Point*> Obstacle::get_vertices(unsigned int height_search){
     if(height_search <= height_){
         for(unsigned int i = 0; i< planes_.size() -1; i++){
             if(planes_[i] == height_search){
-                return vertices_[height_search];
+                vector<Point*> points;
+                points.resize(vertices_[height_search].size());
+                for(unsigned i = 0; i < vertices_[height_search].size(); ++i)
+                    points[i] = vertices_[height_search][i]->clone();
+                return points;
             }
             if(planes_[i] < height_search && planes_[i+1] > height_search){
-                return vertices_[planes_[i]];
+                vector<Point*> points;
+                points.resize(vertices_[planes_[i]].size());
+                for(unsigned j = 0; j < vertices_[planes_[i]].size(); ++j)
+                    points[j] = vertices_[planes_[i]][j]->clone();
+                return points;
             }
         }
     }

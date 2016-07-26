@@ -115,6 +115,41 @@ void Plane::lineSweep(Point* source, Point* sink) {
         else
             points2.push_back((*it)->getRight());
     }
+    vector<Point*>::iterator prev = points1.begin();
+    for(vector<Point*>::iterator it = points1.begin()+1; it != points1.end(); ++it) {
+        if ((*prev)->getX() == (*it)->getX() && (*prev)->getSeg1() != 0 && (*it)->getSeg1() != 0) {
+            map<double,Segment*>::iterator s = verticalMedianLines.find((*it)->getX());
+            if (s != verticalMedianLines.end()) {
+                (*prev)->setZ(-3);
+                (*it)->setZ(-3);
+                s->second->addSteinerPoint(*prev);
+                s->second->addSteinerPoint(*it);
+                ++it;
+                if (it == points1.end())
+                    --it;
+            }
+        }
+        prev = it;
+    }
+    prev = points2.begin();
+    for(vector<Point*>::iterator it = points2.begin()+1; it != points2.end(); ++it) {
+        if ((*prev)->getY() == (*it)->getY() && (*prev)->getSeg1() != 0 && (*it)->getSeg1() != 0) {
+            map<double,Segment*>::iterator s = horizontalMedianLines.find((*it)->getY());
+            if (s != horizontalMedianLines.end()) {
+                (*prev)->setZ(-3);
+                (*it)->setZ(-3);
+                s->second->addSteinerPoint(*prev);
+                s->second->addSteinerPoint(*it);
+                ++it;
+                if (it == points2.end())
+                    --it;
+            }
+        }
+        prev = it;
+    }
+    for (vector<Segment*>::iterator it = obstacleSegments.begin(); it != obstacleSegments.end(); ++it)
+        (*it)->zeroSteinerPoints();
+        
     Plane::LineSweepLTR(points1);
     Plane::LineSweepRTL(points1);
     Plane::LineSweepTTB(points2);
@@ -171,18 +206,25 @@ void Plane::lineSweep(Point* source, Point* sink) {
     for (vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); ++it) {
         double x1 = (*it)->getLeft()->getX(), y1 = (*it)->getLeft()->getY(), x2 = (*it)->getRight()->getX(), y2 = (*it)->getRight()->getY(), w;
         w = y2 - y1;
-        if (w < 0)
+        if (abs(w - 0) > 0.000000001 && w < 0)
             w *= -1;
         w += (x2 - x1);
-        if (abs(w - 0) < 0.000000000001)
+        if (abs(w - 0) < 0.000000001)
             w = 0;
         (*it)->setWeight(w);
+        if (w < 0)
+            cout << w << endl;
     }
     for (vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
         (*it)->setZ(z);
-    for (vector<Segment*>::iterator it = edges_.begin(); it!= edges_.end(); ++it) {
-        (*it)->getLeft()->setZ(z);
-        (*it)->getRight()->setZ(z);
+    /*for (vector<Segment*>::iterator it = edges_.begin(); it!= edges_.end(); ++it) {
+        if((*it)->getLeft()->getZ() != (*it)->getRight()->getZ())
+            cout << "aqui " << z << " / " << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
+        
+    }*/
+    if (z == 5) {
+        for (vector<Segment*>::iterator it = edges_.begin(); it!= edges_.end(); ++it)
+            cout << "from: " << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getLeft()->getZ() << " to: " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << " " << (*it)->getRight()->getZ() << endl;
     }
 }
 
@@ -217,17 +259,16 @@ void Plane::LineSweepLTR(vector<Point*> points) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
                     if (abs((*it)->getLeft()->getX() - point.first) < 0.000000001 && abs((*it)->getLeft()->getY() - point.second) < 0.0000000001) {
-                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX())
+                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getX() != (*it)->getLeft()->getX()) {
                             k = -2;
+                            (*it)->getLeft()->setZ(k);
+                            s1->addSteinerPoint((*it)->getLeft());
+                        }
                         else
                             k = 0;
                     }
                     else {
-                        if (abs(point.first - 3.2) < 0.000000001 && abs(point.second - 6.7) < 0.000000001)
-                            cout << "aqui" << endl;
                         k = -1;
-                    }
-                    if(k != 0) {
                         Point* aux = new Point(point.first, point.second, k);
                         s1->addSteinerPoint(aux);
                     }
@@ -393,21 +434,25 @@ void Plane::LineSweepTTB(vector<Point*> points) {
                     pair<double, double> point = Plane::findIntersection(s1, *it);
                     int k;
                     if (abs((*it)->getLeft()->getX() - point.first) < 0.0000001 && abs((*it)->getLeft()->getY() - point.second) < 0.00000001) {
-                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY())
+                        if ((*it)->getLeft()->getOther(*it)->getOther((*it)->getLeft())->getY() != (*it)->getLeft()->getY()) {
                             k = -2;
+                            (*it)->getLeft()->setZ(k);
+                            s1->addSteinerPoint((*it)->getLeft());
+                        }
                         else
                             k = 0;
                     }
                     else if (abs((*it)->getRight()->getX() - point.first) < 0.0000001 && abs((*it)->getRight()->getY() - point.second) < 0.00000001) {
                         if ((*it)->getRight()->getOther(*it)->getOther((*it)->getRight())->getY() != (*it)->getLeft()->getY()) {
                             k = -2;
+                            (*it)->getRight()->setZ(k);
+                            s1->addSteinerPoint((*it)->getRight());
                         }
                         else
                             k = 0;
                     }
-                    else
+                    else {
                         k = -1;
-                    if (k != 0) {
                         Point* aux = new Point(point.first, point.second, k);
                         s1->addSteinerPoint(aux);
                     }
@@ -645,8 +690,7 @@ void Plane::createVerticalMedianLines(vector<Point*> points, int w, Point* sourc
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + (points.size()/2);
         double x = (*middle)->getX();
-        if (Xs.find(x) == Xs.end()) {
-            Xs.insert(x);
+        if (verticalMedianLines.count(x) == 0) {
             if ((*middle)->getSeg1() != 0 && (*middle)->getSeg2() != 0) {
                 if ((*middle)->getSeg1()->getOther(*middle)->getX() < x && (*middle)->getSeg2()->getOther(*middle)->getX() < x)
                     x += 0.1;
@@ -656,19 +700,12 @@ void Plane::createVerticalMedianLines(vector<Point*> points, int w, Point* sourc
             Point* p1 = new Point(x, INT_MAX);
             Point* p2 = new Point(x, INT_MIN);
             Segment* l = new Segment(p1, p2, w);
-            if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0) {
-                if((*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
+            verticalMedianLines.insert(pair<double, Segment*>(x, l));
+            if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0 ) {
+                if(source != 0 && (*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
                     l->addSteinerPoint(source);
                 else
                     l->addSteinerPoint(sink);
-            }
-            if (middle != points.begin() && (*(middle - 1))->getX() == x) {
-                Point* p = new Point((*(middle - 1))->getX(), (*(middle - 1))->getY(), -3);
-                l->addSteinerPoint(p);
-            }
-            else if((middle + 1) != points.end() && (*(middle + 1))->getX() == x) {
-                Point* p = new Point((*(middle + 1))->getX(), (*(middle + 1))->getY(), -3);
-                l->addSteinerPoint(p);
             }
             medianLines.push_back(l);
             p2->setSeg1(l);
@@ -684,36 +721,30 @@ void Plane::createHorizontalMedianLines(vector<Point*> points, int w, Point* sou
     if (points.size() > 1) {
         vector<Point*>::iterator middle = points.begin() + points.size()/2;
         double y = (*middle)->getY();
-        Ys.insert(y);
-        if ((*middle)->getSeg1() != 0 && (*middle)->getSeg2() != 0) {
-            if ((*middle)->getSeg1()->getOther(*middle)->getY() > y && (*middle)->getSeg2()->getOther(*middle)->getY() > y)
-                y -= 0.1;
-            else if ((*middle)->getSeg1()->getOther(*middle)->getY() < y && (*middle)->getSeg2()->getOther(*middle)->getY() < y)
-                y += 0.1;
+        if (horizontalMedianLines.count(y) == 0) {
+            if ((*middle)->getSeg1() != 0 && (*middle)->getSeg2() != 0) {
+                if ((*middle)->getSeg1()->getOther(*middle)->getY() > y && (*middle)->getSeg2()->getOther(*middle)->getY() > y)
+                    y -= 0.1;
+                else if ((*middle)->getSeg1()->getOther(*middle)->getY() < y && (*middle)->getSeg2()->getOther(*middle)->getY() < y)
+                    y += 0.1;
+            }
+            Point* p1 = new Point(INT_MAX, y);
+            Point* p2 = new Point(INT_MIN, y);
+            Segment* l = new Segment(p1, p2, w);
+            horizontalMedianLines.insert(pair<double,Segment*>(y, l));
+            if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0) {
+                if(source != 0 && (*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
+                    l->addSteinerPoint(source);
+                else
+                    l->addSteinerPoint(sink);
+            }
+            medianLines.push_back(l);
+            p2->setSeg1(l);
+            vector<Point*> aux1(points.begin(), middle);
+            vector<Point*> aux2(middle + 1, points.end());
+            Plane::createHorizontalMedianLines(aux1, w+1, source, sink);
+            Plane::createHorizontalMedianLines(aux2, w+1, source, sink);
         }
-        Point* p1 = new Point(INT_MAX, y);
-        Point* p2 = new Point(INT_MIN, y);
-        Segment* l = new Segment(p1, p2, w);
-        if ((*middle)->getSeg1() == 0 && (*middle)->getSeg2() == 0) {
-            if((*middle)->getX() == source->getX() && (*middle)->getY() == source->getY())
-                l->addSteinerPoint(source);
-            else
-                l->addSteinerPoint(sink);
-        }
-        if (middle != points.begin() && (*(middle - 1))->getY() == y) {
-            Point* p = new Point((*(middle - 1))->getX(), (*(middle - 1))->getY(), -3);
-            l->addSteinerPoint(p);
-        }
-        else if((middle + 1) != points.end() && (*(middle + 1))->getY() == y) {
-            Point* p = new Point((*(middle + 1))->getX(), (*(middle + 1))->getY(), -3);
-            l->addSteinerPoint(p);
-        }
-        medianLines.push_back(l);
-        p2->setSeg1(l);
-        vector<Point*> aux1(points.begin(), middle);
-        vector<Point*> aux2(middle + 1, points.end());
-        Plane::createHorizontalMedianLines(aux1, w+1, source, sink);
-        Plane::createHorizontalMedianLines(aux2, w+1, source, sink);
     }
 }
 
@@ -950,7 +981,7 @@ double Plane::findAngle(double a, double b, double c){
 bool Plane::nodeExistsInPlane(Point* p){
      for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
          Point* v = *it;
-         if(p->getX() == v->getX() && p->getY() == v->getY()){
+         if(abs(p->getX() - v->getX()) < 0.0000000001 && abs(p->getY() - v->getY()) < 0.0000000001){
              return true;
          }
      }
@@ -1070,9 +1101,5 @@ void Plane::createGraph(){
     }
     dot_file << "CLOSE" << endl;
     dot_file.close();
-}
-
-void Plane::projectPoints(Point* a, Point* b) {
-    
 }
 

@@ -44,7 +44,6 @@ public:
     void findObstaclesInPlane(vector<Obstacle*> Map); //finds the obstacles that are found in this plane
     void createGraph();
     vector<Segment*> getEdges();
-    void projectPoints(Point*, Point*);
     Point* getPointFromId(vector<Point*> nodes, int id);
     vector<Point*> getNodes();
     bool nodeExistsInPlane(Point* p);
@@ -57,8 +56,8 @@ private:
     vector<Point*> nodes; //nodes of the graph created for this plane
     vector<Segment*> medianLines;
     vector<Segment*> edges_; //edges of the graph created for this plane
-    set<double> Xs;
-    set<double> Ys;
+    map<double, Segment*> verticalMedianLines;
+    map<double, Segment*> horizontalMedianLines;
 
     //auxiliary functions
     void LineSweepLTR(vector<Point*>);
