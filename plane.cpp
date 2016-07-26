@@ -1060,7 +1060,7 @@ void Plane::createGraph(){
         cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
     }
     
-    fstream dot_file("path_.scr", fstream::out);
+    fstream dot_file("path.scr", fstream::out);
     dot_file << "_-COLOR" << endl;
     dot_file << "green" << endl;
     dot_file << "3DPOLY" << endl;

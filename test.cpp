@@ -14,6 +14,8 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <ctime>
+#include <chrono>
 #include "obstacle.h"
 #include "point.h"
 #include "plane.h"
@@ -37,6 +39,7 @@ int main (){
         cout << "2 - Use default map" << endl; //Default map is drawn
         cout << "3 - Use map1" << endl; //Professor's map
         cout << "4 - Use map2" << endl; //Big map
+        cout << "5 - Map for tests" << endl; //Big map
         //cout << "0 - Proceed" << endl;
         cin >> option;
         
@@ -294,6 +297,30 @@ int main (){
                 //---------------------------------
                 break;
             }
+            case 5:{
+                double x1 = 10;
+                double x2 = 5;
+                double x3 = 15;
+                double x4 = 20;
+                
+                vector<Point*> vertices_input;
+                
+                for(int i =0; i<10000; i++){
+                    vertices_input.push_back(new Point(x1,1.8));
+                    vertices_input.push_back(new Point(x2,13));
+                    vertices_input.push_back(new Point(x3,17));
+                    vertices_input.push_back(new Point(x4,5.8));
+                    obstacles.push_back(new Obstacle(vertices_input,12));
+                    
+                    x1 += 20;
+                    x2 += 20;
+                    x3 += 20;
+                    x4 += 20;
+                    
+                    vertices_input.clear();
+                }
+                cout << "biggest X"<<x4<<endl;
+            }
         }
         
     }while(option == 1);
@@ -336,6 +363,9 @@ int main (){
                 cin >> targetX;
                 cin >> targetY;
                 cin >> targetZ;
+                
+                cout <<"Beggining time: "<<endl;
+                auto begin = std::chrono::high_resolution_clock::now();
                 
                 Point* source_ = new Point(sourceX, sourceY, sourceZ);
                 Point* target_ = new Point(targetX, targetY, targetZ);
@@ -432,7 +462,6 @@ int main (){
                         vertex_t targetProjectionVertex;
                         target_->setId(id);
                         id++;
-                        cout <<"ID AQUI: "<<id<<endl;
                         vertex_t t = boost::add_vertex(target_, myGraph);
                         t_ = t;
                         
@@ -673,14 +702,14 @@ int main (){
                     EdgeWeightMap[e] *= 1000;
                 }
                 
-                cout << endl;
+               /* cout << endl;
                 cout<< "all edges in graph"<< endl;
                 boost::graph_traits < Graph >::edge_iterator ei2, ei_end2;
                 for (boost::tie(ei2, ei_end2) = edges(myGraph); ei2 != ei_end2; ++ei2) {
                     edge_t e = *ei2;
                     boost::graph_traits < Graph >::vertex_descriptor u = source(e, myGraph), v = target(e, myGraph);
                     cout << "edge from: " << myGraph[u]->getX() << " " << myGraph[u]->getY() << " " << myGraph[u]->getZ() << " to: " <<myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ()<< " weight: " << EdgeWeightMap[e] << endl;
-                }
+                }*/
                 
                 //running dijkstra
                 dijkstra_shortest_paths(myGraph,s_,
@@ -727,6 +756,13 @@ int main (){
                 }
                 dot_file << "CLOSE" << endl;
                 dot_file.close();
+                
+                
+                 cout <<"Ending time: "<<endl;
+                auto end = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
+                cout << "duration: " << duration << "ns" << endl;
+                
                 
                 break;
             }
