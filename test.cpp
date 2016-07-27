@@ -20,10 +20,12 @@
 #include "point.h"
 #include "plane.h"
 #include <chrono>
+#include "graphics.hpp"
+
 
 using namespace std;
 
-int main (){
+int main (int argc, char **argv){
     unsigned int option = 0, vertices_ = 0, planesInserted = 0, flag_planes = 0;
     double height;
     vector<double> total_planes;
@@ -751,16 +753,6 @@ int main (){
                     EdgeWeightMap[e] *= 1000;
                 }
                 
-                /*cout << endl;
-                 cout<< "all edges in graph"<< endl;
-                 boost::graph_traits < Graph >::edge_iterator ei2, ei_end2;
-                 for (boost::tie(ei2, ei_end2) = edges(myGraph); ei2 != ei_end2; ++ei2) {
-                 edge_t e = *ei2;
-                 boost::graph_traits < Graph >::vertex_descriptor u = source(e, myGraph), v = target(e, myGraph);
-                 cout << "edge from: " << myGraph[u]->getId() << " / " << myGraph[u]->getX() << " " << myGraph[u]->getY() << " " << myGraph[u]->getZ() << " to: " << myGraph[v]->getId() << " / " << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << endl;
-                     cout << EdgeWeightMap[e] << endl;
-                 }*/
-                
                 //running dijkstra
                 dijkstra_shortest_paths(myGraph,s_,
                                         boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, myGraph))).
@@ -796,16 +788,36 @@ int main (){
                     cout << "distance(" << myGraph[p]->getX() << " " << myGraph[p]->getY() << " " << myGraph[p]->getZ() << ") = " << (distances[i]/ 1000) << endl;
                 }
                 
-                fstream dot_file("path.scr", fstream::out);
-                dot_file << "_-COLOR" << endl;
+                fstream dot_file("path.txt", fstream::out);
+                /*dot_file << "_-COLOR" << endl;
                 dot_file << "green" << endl;
-                dot_file << "3DPOLY" << endl;
-                for(int i = 0; i<nodes_.size(); i++){
+                dot_file << "3DPOLY" << endl;*/
+                vertex_t prev = nodes_[0];
+                for(int i = 1; i<nodes_.size(); i++){
                     vertex_t p = nodes_[i];
-                    dot_file << myGraph[p]->getX() << "," << myGraph[p]->getY() << "," << myGraph[p]->getZ()<< endl;
+                    dot_file << myGraph[prev]->getX() << " " << myGraph[prev]->getY() << " " << myGraph[prev]->getZ() << " " << myGraph[p]->getX() << " " << myGraph[p]->getY() << " " << myGraph[p]->getZ()<< endl;
+                    prev = p;
                 }
                 
                 dot_file.close();
+                                
+                glutInit               (&argc, argv);
+                glutInitWindowSize     (900, 600);
+                glutInitWindowPosition (300, 300);
+                glutInitDisplayMode    (GLUT_DEPTH | GLUT_DOUBLE);
+                
+                glutCreateWindow ("Orbital Font Demo");
+                glutDisplayFunc  (   redraw  );
+                glutKeyboardFunc (  Keyboard );
+                glutSpecialFunc  (Special_Keys);
+                
+                glClearColor (0.1, 0.0, 0.1, 1.0);
+                
+                glMatrixMode   (GL_PROJECTION);
+                gluPerspective (60, 1.5, 1, 10);
+                glMatrixMode   (GL_MODELVIEW);
+                glutMainLoop   ();
+                
                 
                 /*cout <<"Ending time: "<<endl;
                 auto end = std::chrono::high_resolution_clock::now();
