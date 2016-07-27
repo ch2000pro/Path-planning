@@ -238,7 +238,7 @@ int main (){
                 vertices_input.push_back(new Point(76,260));
                 vertices_input.push_back(new Point(126,260));
                 vertices_input.push_back(new Point(126,210));
-                vertices_input.push_back(new Point(76,110));
+                vertices_input.push_back(new Point(76,210));
                 obstacles.push_back(new Obstacle(vertices_input,38));
                 vertices_input.clear();
                 

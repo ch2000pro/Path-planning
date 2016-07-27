@@ -110,10 +110,14 @@ void Plane::lineSweep(Point* source, Point* sink) {
     sort(points2.begin(), points2.end(), sortTTB());
     Plane::createHorizontalMedianLines(points2, 1, source, sink);
     for(vector<Segment*>::iterator it = medianLines.begin(); it != medianLines.end(); it++) {
-        if((*it)->getRight()->getY() == -2147483648)
+        if((*it)->getRight()->getY() == -2147483648) {
+            //cout << (*it)->getRight()->getX() << endl;
             points1.push_back((*it)->getRight());
-        else
+        }
+        else {
             points2.push_back((*it)->getRight());
+            //cout << (*it)->getRight()->getY() << endl;
+        }
     }
     vector<Point*>::iterator prev = points1.begin();
     for(vector<Point*>::iterator it = points1.begin()+1; it != points1.end(); ++it) {
@@ -159,6 +163,8 @@ void Plane::lineSweep(Point* source, Point* sink) {
         sort(steiners.begin(), steiners.end(), sortLTR());
         Point* prev = 0;
         for(vector<Point*>::iterator p = steiners.begin(); p != steiners.end(); ++p) {
+            //if ((*l)->getLeft()->getX() == 76)
+                //cout << (*p)->getX() << " " << (*p)->getY() << " " << (*p)->getZ() << endl;
             if((*p)->getZ() < 0) {
                 if ((*p)->getZ() == -2 || (*p)->getZ() == -3) {
                     if (prev != 0) {
@@ -222,7 +228,8 @@ void Plane::lineSweep(Point* source, Point* sink) {
             cout << "aqui " << z << " / " << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
         
     }*/
-    if (z == 5) {
+    cout << "total edges: " << edges_.size() << endl;
+    if (z == 1) {
         for (vector<Segment*>::iterator it = edges_.begin(); it!= edges_.end(); ++it)
             cout << "from: " << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getLeft()->getZ() << " to: " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << " " << (*it)->getRight()->getZ() << endl;
     }
