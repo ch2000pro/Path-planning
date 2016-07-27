@@ -645,7 +645,7 @@ void Draw_Box (void)
     double x1, y1, z1, x2, y2, z2;
     while (myfile >> x1 >> y1 >> z1 >> x2 >> y2 >> z2)
     {
-        //cout << x1 << " " << y1 << " " << z1 << " " << x2 << " "<< y2 " " << z2 << endl;
+        //cout << x1 << " " << y1 << " " << z1 << " " << x2 << " "<< y2 << " " << z2 << endl;
         glBegin(GL_LINES);
         glVertex3f (x1, y1, z1);
         glVertex3f (x2, y2, z2);

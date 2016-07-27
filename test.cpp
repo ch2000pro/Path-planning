@@ -273,6 +273,7 @@ int main (int argc, char **argv){
                 obstacles[obstacles.size()-1]->add_vertices(vertices_input, 19);
                 vertices_input.clear();
                 
+                total_planes.push_back(0);
                 total_planes.push_back(38);
                 total_planes.push_back(40);
                 total_planes.push_back(50);
