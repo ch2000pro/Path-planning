@@ -14,8 +14,6 @@
 #include <fstream>
 #include <string>
 #include <map>
-#include <ctime>
-#include <chrono>
 #include "obstacle.h"
 #include "point.h"
 #include "plane.h"

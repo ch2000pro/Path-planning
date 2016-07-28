@@ -1,9 +1,9 @@
-/*
- * plane.cpp
- *
- *  Created on: Jul 5, 2016
- *      Author: feisabel
- */
+/*----------------------------------------------------------------------*/
+/*  plane.cpp                                                           */
+/*  Plane representing a given Z coordinate                             */
+/*  Fernanda Isabel, Gianluca Cagliari, Laura Vieira, Leonardo Castilho */
+/*  Start: July 5, 2016                                                 */
+/*----------------------------------------------------------------------*/
 
 #include <vector>
 #include <iterator>
@@ -13,17 +13,21 @@
 #include <typeinfo>
 #define PI 3.14159265
 
-Plane::Plane(unsigned int z_){
+//constructor, it receives a Z coordinate
+Plane::Plane(double z_){
     z = z_;
 }
 
+//destructor
 Plane::~Plane(){
 }
 
+//returns the private vector of segments 'edges_'
 vector<Segment*> Plane::getEdges(){
     return edges_;
 }
 
+//returns the private vector of nodes of the plane
 vector<Point*> Plane::getNodes(){
     return nodes;
 }
@@ -677,9 +681,6 @@ pair<double, double> Plane::findIntersection(Segment* segment1, Segment* segment
         x = 0;
     if (y == -0)
         y = 0;
-    //cout << "s1= " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
-    //cout << "s2= " << x3 << " " << y3 << " " << x4 << " " << y4 << endl;
-    //cout << x << " " << y << endl;
     return pair<double,double>(x,y);
 }
 
@@ -985,6 +986,8 @@ double Plane::findAngle(double a, double b, double c){
     return acos((pow(a, 2) + pow(b, 2) - pow(c, 2))/(2 * a * b));
 }
 
+//returns if a given point is in that plane or not
+//it is an auxiliary function to be used in the program Main() during the source and target projections to the graph
 bool Plane::nodeExistsInPlane(Point* p){
      for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
          Point* v = *it;
@@ -994,119 +997,3 @@ bool Plane::nodeExistsInPlane(Point* p){
      }
     return false;
 }
-
-Point* Plane::getPointByCoordinates(double x, double y, double z){
-    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-        Point* v = *it;
-        if(v->getX() == x && v->getY() == y && v->getZ() == z){
-            return v;
-        }
-    }
-    return NULL;
-}
-
-Point* Plane::getPointFromId(vector<Point*> nodes, int id){
-    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-        Point* v = *it;
-        if(v->getId() == id){
-            return v;
-        }
-    }
-    return NULL;
-}
-
-void Plane::createGraph(){
-    typedef boost::property<boost::edge_weight_t, double> EdgeWeightProperty;
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point*, EdgeWeightProperty> Graph;
-    typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
-    typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
-    Graph myGraph;
-    vertex_t s_;
-    vertex_t t_;
-    vector<vertex_t> nodes_;
-    vector<Point*> finalPath;
-    vector<double> distances;
-    int id=0;
-    cout <<endl<< "Creating graph and running dijkstra"<< endl;
-    map <int, vertex_t> verts;
-
-    //adding nodes to graph
-    for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-        Point* v = *it;
-        if(v-> getX() >= 0 && v->getY() >=0 && v->getZ()>= 0){
-            v->setId(id);
-            vertex_t u = boost::add_vertex(v, myGraph);
-            verts[id] = u;
-            id++;
-            if(v->getX() == 0 && v->getY() ==0 && v->getZ()== 0){
-                s_ = u;
-            }
-            if(v->getX() == 10 && v->getY() ==20 && v->getZ()== 0){
-                t_ = u;
-            }
-        }
-    }
-    
-    //adding edges between nodes
-    for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
-        Segment* edge = *it;
-        Point* right = edge->getRight();
-        Point* left =  edge->getLeft();
-        if(right->getX() >= 0 && right->getY() >=0 && right->getZ()>= 0 && left->getX() >= 0 && left->getY() >= 0 && left->getZ() >= 0){
-            vertex_t u = verts[right->getId()];
-            vertex_t v = verts[left->getId()];
-            edge_t e; bool b;
-            boost::tie(e,b) = boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
-        }
-    }
-    
-    // The property map associated with the weights.
-    boost::property_map < Graph,
-    boost::edge_weight_t >::type EdgeWeightMap = get(boost::edge_weight, myGraph);
-    std::vector<vertex_t> p(num_vertices(myGraph));
-    std::vector<int> d(num_vertices(myGraph));
-
-    dijkstra_shortest_paths(myGraph,s_,
-                            boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, myGraph))).
-                            distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, myGraph))).
-                            weight_map(EdgeWeightMap));
-
-    cout << "distances and parents: (distance of that point to the point (0, 0, 0)" << endl;
-    boost::graph_traits <Graph>::vertex_iterator vi, vend;
-    for (boost::tie(vi, vend) = vertices(myGraph); vi != vend; ++vi) {
-        vertex_t v = *vi;
-        vertex_t parent = p[*vi];
-        cout << "vertice: " << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ()<< endl;
-        cout << "distance(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() << ") = " << d[*vi] << ", ";
-        cout << "parent(" << myGraph[v]->getX() << " " << myGraph[v]->getY() << " " << myGraph[v]->getZ() <<  ") = " << myGraph[parent]->getX() << " " << myGraph[parent]->getY() << " " << myGraph[parent]->getZ()<<endl;
-    }
-    cout << endl;
-
-    //backtracking path from target to source
-    do{
-        nodes_.push_back(t_);
-        finalPath.push_back(getPointFromId(nodes, myGraph[t_]->getId()));
-        distances.push_back(d[t_]);
-        t_ = p[t_];
-    }while(t_ != s_);
-    
-    finalPath.push_back(getPointFromId(nodes, myGraph[s_]->getId()));
-    distances.push_back(d[s_]);
-    
-    for(int i = 0; i<finalPath.size(); i++){
-        Point* p = finalPath[i];
-        cout << "distance(" << p->getX() << " " << p->getY() << " " << p->getZ() << ") = " << distances[i] << endl;
-    }
-    
-    fstream dot_file("path.scr", fstream::out);
-    dot_file << "_-COLOR" << endl;
-    dot_file << "green" << endl;
-    dot_file << "3DPOLY" << endl;
-    for(int i = 0; i<finalPath.size(); i++){
-        Point* p = finalPath[i];
-        dot_file << p->getX() << "," << p->getY() << "," << p->getZ()<< endl;
-    }
-    dot_file << "CLOSE" << endl;
-    dot_file.close();
-}
-
