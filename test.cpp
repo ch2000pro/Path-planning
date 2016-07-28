@@ -25,7 +25,7 @@
 using namespace std;
 
 int main (int argc, char **argv){
-    unsigned int option = 0, vertices_ = 0, planesInserted = 0, flag_planes = 0; //options in the input menu
+    unsigned int option = 0, vertices_ = 0, planesInserted = 0, flag_planes = 0, m = 0; //options in the input menu
     double height; //variable  input the height of an obstacle
     vector<double> total_planes; //vector storing all Z coordinates where the obstacles change
     vector<Obstacle*> obstacles; //total vector of all obstacles
@@ -38,7 +38,8 @@ int main (int argc, char **argv){
         cout << "1 - Create a new obstacle" << endl; //option to create a new obstacle
         cout << "2 - Use default map 1" << endl; //default map 1
         cout << "3 - Use default map 2" << endl; //default map 2
-        cout << "4 - Use default map 3" << endl; //default map 2 - Big map
+        cout << "4 - Use default map 3" << endl; //default map 3 - Big map
+        cout << "5 - Use Chicago map" << endl; //Chicago map
         cout << "0 - Proceed" << endl; //option to stop creating obstacles and go to the second menu
         cin >> option;
         
@@ -105,6 +106,7 @@ int main (int argc, char **argv){
             }
             //default map containing rectangles
             case 2:{
+                m = 2;
                 vector<Point*> vertices_input;
                 //First obstacle
                 vertices_input.push_back(new Point(0,0));
@@ -147,6 +149,7 @@ int main (int argc, char **argv){
             }
             //default map containing rectangles and triangles
             case 3:{
+                m = 3;
                 vector<Point*> vertices_input;
                 //First obstacle
                 vertices_input.push_back(new Point(26.5,1.8));
@@ -178,6 +181,7 @@ int main (int argc, char **argv){
             }
             //default map with more obstacles - big obstacles
             case 4:{
+                m = 4;
                 vector<Point*> vertices_input;
                 
                 //First obstacle
@@ -258,6 +262,202 @@ int main (int argc, char **argv){
                 total_planes.push_back(85);
                 total_planes.push_back(90);
                 
+                break;
+            }
+            //chicago map
+            case 5: {
+                m = 5;
+                vector<Point*> vertices_input;
+                //First obstacle
+                vertices_input.push_back(new Point(20,110));
+                vertices_input.push_back(new Point(110,110));
+                vertices_input.push_back(new Point(110,20));
+                vertices_input.push_back(new Point(20,20));
+                obstacles.push_back(new Obstacle(vertices_input,200));
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(20,80));
+                vertices_input.push_back(new Point(50,80));
+                vertices_input.push_back(new Point(50,110));
+                vertices_input.push_back(new Point(110,110));
+                vertices_input.push_back(new Point(110,50));
+                vertices_input.push_back(new Point(80,50));
+                vertices_input.push_back(new Point(80,20));
+                vertices_input.push_back(new Point(20,20));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 70);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(20,80));
+                vertices_input.push_back(new Point(50,80));
+                vertices_input.push_back(new Point(50,110));
+                vertices_input.push_back(new Point(80,110));
+                vertices_input.push_back(new Point(80,80));
+                vertices_input.push_back(new Point(110,80));
+                vertices_input.push_back(new Point(110,50));
+                vertices_input.push_back(new Point(80,50));
+                vertices_input.push_back(new Point(80,20));
+                vertices_input.push_back(new Point(50,20));
+                vertices_input.push_back(new Point(50,50));
+                vertices_input.push_back(new Point(20,50));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 110);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(20,80));
+                vertices_input.push_back(new Point(80,80));
+                vertices_input.push_back(new Point(80,50));
+                vertices_input.push_back(new Point(20,50));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 60);
+                vertices_input.clear();
+
+                //Second obstacle
+                vertices_input.push_back(new Point(60,200));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(140,200));
+                vertices_input.push_back(new Point(100,160));
+                obstacles.push_back(new Obstacle(vertices_input,100));
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(65,205));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(135,205));
+                vertices_input.push_back(new Point(100,170));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(70,210));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(130,210));
+                vertices_input.push_back(new Point(100,180));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(75,215));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(125,215));
+                vertices_input.push_back(new Point(100,190));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(80,220));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(120,220));
+                vertices_input.push_back(new Point(100,200));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(85,225));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(115,225));
+                vertices_input.push_back(new Point(100,210));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(90,230));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(110,230));
+                vertices_input.push_back(new Point(100,220));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(95,235));
+                vertices_input.push_back(new Point(100,240));
+                vertices_input.push_back(new Point(105,235));
+                vertices_input.push_back(new Point(100,230));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 11);
+                vertices_input.clear();
+                
+                //Third obstacle
+                vertices_input.push_back(new Point(200,150));
+                vertices_input.push_back(new Point(300,150));
+                vertices_input.push_back(new Point(250,110));
+                vertices_input.push_back(new Point(200,110));
+                obstacles.push_back(new Obstacle(vertices_input,70));
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(245,132));
+                vertices_input.push_back(new Point(261,145));
+                vertices_input.push_back(new Point(277,132));
+                vertices_input.push_back(new Point(261,119));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 60);
+                vertices_input.clear();
+
+                //Fourth obstacle
+                vertices_input.push_back(new Point(330,95));
+                vertices_input.push_back(new Point(380,95));
+                vertices_input.push_back(new Point(380,45));
+                vertices_input.push_back(new Point(330,45));
+                obstacles.push_back(new Obstacle(vertices_input,340));
+                vertices_input.clear();
+                
+                //Fifth obstacle
+                vertices_input.push_back(new Point(230,220));
+                vertices_input.push_back(new Point(280,220));
+                vertices_input.push_back(new Point(280,170));
+                vertices_input.push_back(new Point(230,170));
+                obstacles.push_back(new Obstacle(vertices_input,262));
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(235,215));
+                vertices_input.push_back(new Point(275,215));
+                vertices_input.push_back(new Point(275,175));
+                vertices_input.push_back(new Point(235,175));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 7);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(240,210));
+                vertices_input.push_back(new Point(270,210));
+                vertices_input.push_back(new Point(270,180));
+                vertices_input.push_back(new Point(240,180));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 7);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(245,205));
+                vertices_input.push_back(new Point(265,205));
+                vertices_input.push_back(new Point(265,185));
+                vertices_input.push_back(new Point(245,185));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 7);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(250,200));
+                vertices_input.push_back(new Point(260,200));
+                vertices_input.push_back(new Point(260,190));
+                vertices_input.push_back(new Point(250,190));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 7);
+                vertices_input.clear();
+                
+                vertices_input.push_back(new Point(253,197));
+                vertices_input.push_back(new Point(257,197));
+                vertices_input.push_back(new Point(257,193));
+                vertices_input.push_back(new Point(253,193));
+                obstacles[obstacles.size()-1]->add_vertices(vertices_input, 15);
+                vertices_input.clear();
+
+                
+                
+                //adding planes to the vector of Z coordinates
+                total_planes.push_back(0);
+                total_planes.push_back(70);
+                total_planes.push_back(100);
+                total_planes.push_back(111);
+                total_planes.push_back(122);
+                total_planes.push_back(130);
+                total_planes.push_back(133);
+                total_planes.push_back(144);
+                total_planes.push_back(155);
+                total_planes.push_back(166);
+                total_planes.push_back(177);
+                total_planes.push_back(200);
+                total_planes.push_back(262);
+                total_planes.push_back(269);
+                total_planes.push_back(270);
+                total_planes.push_back(276);
+                total_planes.push_back(283);
+                total_planes.push_back(290);
+                total_planes.push_back(305);
+                total_planes.push_back(340);
+                total_planes.push_back(380);
+                total_planes.push_back(440);
+
                 break;
             }
         }
@@ -689,6 +889,7 @@ int main (int argc, char **argv){
                 }
                 
                 fstream dot_file("path.txt", fstream::out);
+                dot_file << m << endl;
                 vertex_t prev = nodes_[0];
                 for(int i = 1; i<nodes_.size(); i++){
                     vertex_t p = nodes_[i];
