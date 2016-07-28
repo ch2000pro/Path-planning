@@ -33,19 +33,19 @@ vector<Point*> Plane::getNodes(){
 }
 
 struct sortLTR { //sorts the points first by their x-coordinate in ascending order then by their y-coordinate in descending order
-    bool operator() (Point* a, Point* b) { return (((abs(a->getX() - b->getX()) > abs(min(a->getX(), b->getX())) * numeric_limits<double>::epsilon()) && (a->getX() < b->getX())) || ((abs(a->getX() - b->getX()) < abs(min(a->getX(), b->getX())) * numeric_limits<double>::epsilon()) && (a->getY() > b->getY()))); }
+    bool operator() (Point* a, Point* b) { return ((abs(a->getX() - b->getX()) > 0.000000001 && a->getX() < b->getX()) || (abs(a->getX() - b->getX()) < 0.000000001 && a->getY() > b->getY())); }
 };
 
 struct sortRTL { //sorts the points first by their x-coordinate in descending order then by their y-coordinate in descending order
-    bool operator() (Point* a, Point* b) { return (a->getX() > b->getX() || (a->getX() == b->getX() && a->getY() > b->getY())); }
+    bool operator() (Point* a, Point* b) { return ((abs(a->getX() - b->getX()) > 0.000000001 && a->getX() > b->getX()) || (abs(a->getX() - b->getX()) < 0.000000001 && a->getY() > b->getY())); }
 };
 
 struct sortTTB { //sorts the points first by their y-coordinate in descending order then by their x-coordinate in descending order
-    bool operator() (Point* a, Point* b) { return (a->getY() > b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
+    bool operator() (Point* a, Point* b) { return ((abs(a->getY() - b->getY()) > 0.0000000001 && a->getY() > b->getY()) || (abs(a->getY() - b->getY()) < 0.0000000001 && a->getX() > b->getX())); }
 };
 
 struct sortBTT { //sorts the points first by their y-coordinate in ascending order then by their x-coordinate in descending order
-    bool operator() (Point* a, Point* b) { return (a->getY() < b->getY() || (a->getY() == b->getY() && a->getX() > b->getX())); }
+    bool operator() (Point* a, Point* b) { return ( (abs(a->getY() - b->getY()) > 0.0000000001 && a->getY() < b->getY()) || (abs(a->getY() - b->getY()) < 0.0000000001 && a->getX() > b->getX())); }
 };
 
 //Function that runs through all the obstacles to check if they are obstacles in that plane
