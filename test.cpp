@@ -312,7 +312,7 @@ int main (int argc, char **argv){
                 
                 vertex_t s_; //source stored in the format vertex_t
                 vertex_t t_; //target stored in the format vertex_t
-                unsigned int id= 0; //variable to set the points ids
+                unsigned int id= 0; //auxiliary variable to set the points ids
                 vector<vertex_t> nodes_; //nodes of Points in the format vertex_t
                 vector<double> distances; //vector storing the distances to assist in the backtraking after dijkstra
                 
@@ -327,22 +327,22 @@ int main (int argc, char **argv){
                 
                 //case 1: if the source and target are in the same Z coordinate
                 if(sourceZ == targetZ){
-                    highestZ = sourceZ;
+                    highestZ = sourceZ; //if both points are in the same z, both have the highest Z
                     Plane* plane;
-                    map <unsigned int, vertex_t> verts;
-                    source_->setId(id);
-                    s_ = boost::add_vertex(source_, myGraph);
-                    verts[id] = s_;
-                    id++;
+                    map <unsigned int, vertex_t> verts; //map of all the vertex_t, with the Point Id as a key
+                    source_->setId(id); //sets source Id
+                    s_ = boost::add_vertex(source_, myGraph); //creates a vertex_t, adds to graph and stores as the source vertex_t
+                    verts[id] = s_; //stores the vertex_t in the map
+                    id++; //increments the variable Id
                     
-                    target_->setId(id);
-                    t_ = boost::add_vertex(target_, myGraph);
-                    verts[id] = t_;
-                    id++;
+                    target_->setId(id); //sets target Id
+                    t_ = boost::add_vertex(target_, myGraph); //creates a vertex_t, adds to graph and stores as the target vertex_t
+                    verts[id] = t_; //stores the vertex_t in the map
+                    id++; //increments the variable Id
                     
                     //check if there is a plane in that z already
                     if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
-                        //if it is, just adds the point to the plane
+                        //if it is, just adds the point to the plane and calls the line sweep
                         plane = planes[sourceZ];
                         if(!plane->nodeExistsInPlane(source_) && !plane->nodeExistsInPlane(target_))
                             plane -> lineSweep(source_, target_);
@@ -354,6 +354,7 @@ int main (int argc, char **argv){
                             plane -> lineSweep(0, 0);
                     } else {
                         //if it is not, a plane in that Z coordinate must be created
+                        //then the source and target must be added to the plane and the line sweep called
                         plane = new Plane(sourceZ);
                         planes[sourceZ] = plane;
                         plane -> findObstaclesInPlane(obstacles);
@@ -370,15 +371,17 @@ int main (int argc, char **argv){
                     vector<Point*> nodes = plane->getNodes();
                     vector<Segment*> edges_ = plane -> getEdges();
                     
-                    //adding nodes to graph
+                    //adds the plane nodes to graph
                     for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                         Point* v = *it;
+                        //if the point is the target or source, it doesnt create a new vertex_t, since they were already created
                         if((abs(v->getX() - target_->getX()) > 0.0000000001 || abs(v->getY() - target_->getY()) > 0.00000000001) && (abs(v->getX() - source_->getX()) > 0.0000000001 || abs(v->getY() - source_->getY()) > 0.00000000001)){
                             v->setId(id);
                             vertex_t u = boost::add_vertex(v, myGraph);
                             verts[id] = u;
                             id++;
                         }
+                        //in case the point is the target or source (if the plane already contained that points in the first place), it doesnt creat new vertex_t, just sets the Id to match the created target_ and source_ Ids
                         else {
                             if (abs(v->getX() - target_->getX()) < 0.0000000001 && abs(v->getY() - target_->getY()) < 0.00000000001)
                                 v->setId(target_->getId());
@@ -387,7 +390,7 @@ int main (int argc, char **argv){
                         }
                     }
                     
-                    //adding edges between nodes
+                    //adds edges between nodes in the plane. It gets the vertex_t from the verts map, so it doesn't create a vertex_t more than once each time an edge contains that point
                     for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
                         Segment* edge = *it;
                         Point* right = edge->getRight();
@@ -397,39 +400,39 @@ int main (int argc, char **argv){
                         boost::add_edge(u,v , EdgeWeightProperty(edge->getWeight()), myGraph);
                     }
                     
+                    //updates the source and target below
                     sourceBelowVertex = s_;
                     targetBelowVertex = t_;
                     
                 }
                 else{
-                    //If Source and Target Zs are different
+                    //in case the source and target Z coordinates are different
                     Plane* plane;
                     map <unsigned int, vertex_t> verts;
-                    //case 2
+                    //case 2: the source Z is higher than the target Z
                     if(sourceZ > targetZ){
                         highestZ = sourceZ;
-                        vertex_t targetProjectionVertex;
-                        Point* targetProjection = new Point(target_->getX(), target_->getY(), source_->getZ());
+                        Point* targetProjection = new Point(target_->getX(), target_->getY(), source_->getZ()); //since the target will be projected up to the level of S, it creates a new Point
+                        vertex_t targetProjectionVertex; //it creates a vertex_t of the projection
                         
-                        target_->setId(id);
-                        t_ = boost::add_vertex(target_, myGraph);
-                        verts[id] = t_;
-                        id++;
+                        target_->setId(id); //sets Id
+                        t_ = boost::add_vertex(target_, myGraph); //creates a vertex_t, adds to graph and stores as the target vertex_t
+                        verts[id] = t_; //stores the vertex_t in the map
+                        id++; //increments the variable Id
                         
-                        source_->setId(id);
-                        s_ = boost::add_vertex(source_, myGraph);
-                        verts[id] = s_;
-                        id++;
+                        source_->setId(id); //sets source Id
+                        s_ = boost::add_vertex(source_, myGraph); //creates a vertex_t, adds to graph and stores as the source vertex_t
+                        verts[id] = s_; //stores the vertex_t in the map
+                        id++; //increments the variable Id
                         
                         targetProjection->setId(id);
                         targetProjectionVertex = boost::add_vertex(targetProjection, myGraph);
                         verts[id] = targetProjectionVertex;
                         id++;
                         
-                        
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), sourceZ) != total_planes.end()) {
-                            //if it is, just adds the point to the plane
+                            //if it is, just adds the points to the plane and calls the line sweep
                             plane = planes[sourceZ];
                             if(!plane->nodeExistsInPlane(targetProjection) && !plane->nodeExistsInPlane(source_))
                                 plane -> lineSweep(source_, targetProjection);
@@ -440,9 +443,9 @@ int main (int argc, char **argv){
                             else
                                 plane -> lineSweep(0, 0);
                         }
-                        //case 3
                         else {
                             //if it is not, a plane in that Z coordinate must be created
+                            //then the source and target must be added to the plane and the line sweep called
                             plane = new Plane(source_->getZ());
                             planes[source_->getZ()] = plane;
                             plane -> findObstaclesInPlane(obstacles);
@@ -459,15 +462,17 @@ int main (int argc, char **argv){
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
                         
-                        //adding nodes to graph
+                        //adds the plane nodes to graph
                         for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                             Point* v = *it;
+                            //if the point is the target or source, it doesnt create a new vertex_t, since they were already created
                             if((abs(v->getX() - source_->getX()) > 0.0000000001 || abs(v->getY() - source_->getY()) > 0.00000000001) && (abs(v->getX() - targetProjection->getX()) > 0.0000000001 || abs(v->getY() - targetProjection->getY()) > 0.00000000001)){
                                 v->setId(id);
                                 vertex_t u = boost::add_vertex(v, myGraph);
                                 verts[id] = u;
                                 id++;
                             }
+                            //in case the point is the target or source (if the plane already contained that points in the first place), it doesnt creat new vertex_t, just sets the Id to match the created target_ and source_ Ids
                             else {
                                 if (abs(v->getX() - targetProjection->getX()) < 0.0000000001 && abs(v->getY() - targetProjection->getY()) < 0.00000000001)
                                     v->setId(targetProjection->getId());
@@ -476,7 +481,7 @@ int main (int argc, char **argv){
                             }
                         }
                         
-                        //adding edges between nodes
+                        //adds edges between nodes in the plane. It gets the vertex_t from the verts map, so it doesn't create a vertex_t more than once each time an edge contains that point
                         for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
                             Segment* edge = *it;
                             Point* right = edge->getRight();
@@ -489,24 +494,36 @@ int main (int argc, char **argv){
                         //add edge connecting target and target projection to the graph
                         double edgeDistance = targetProjection->getZ() - target_->getZ();
                         boost::add_edge(t_, targetProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
-
+                        
+                        //updates the source and target below
                         sourceBelowVertex = s_;
                         targetBelowVertex = targetProjectionVertex;
                         
                     }
-                    //case 4
+                    //case 4: the target Z is higher than the source Z
                     else if(targetZ > sourceZ){
                         highestZ = targetZ;
-                        vertex_t sourceProjectionVertex;
-                        source_->setId(id);
-                        s_ = boost::add_vertex(source_, myGraph);
-                        verts[id] = s_;
+                        Point* sourceProjection = new Point(source_->getX(), source_->getY(), target_->getZ()); //since the source will be projected up to the level of T, it creates a new Point
+                        vertex_t sourceProjectionVertex; //it creates a vertex_t of the projection
+
+                        target_->setId(id); //sets Id
+                        t_ = boost::add_vertex(target_, myGraph); //creates a vertex_t, adds to graph and stores as the target vertex_t
+                        verts[id] = t_; //stores the vertex_t in the map
+                        id++; //increments the variable Id
+                        
+                        source_->setId(id); //sets source Id
+                        s_ = boost::add_vertex(source_, myGraph); //creates a vertex_t, adds to graph and stores as the source vertex_t
+                        verts[id] = s_; //stores the vertex_t in the map
+                        id++; //increments the variable Id
+                        
+                        sourceProjection->setId(id);
+                        sourceProjectionVertex = boost::add_vertex(sourceProjection, myGraph);
+                        verts[id] = sourceProjectionVertex;
                         id++;
                         
-                        Point* sourceProjection = new Point(source_->getX(), source_->getY(), target_->getZ());
                         //check if there is a plane in that z already
                         if(std::find(total_planes.begin(), total_planes.end(), targetZ) != total_planes.end()) {
-                            //if it is, just adds the point to the plane
+                            //if it is, just adds the points to the plane and calls the line sweep
                             plane = planes[targetZ];
                             if(!plane->nodeExistsInPlane(sourceProjection) && !plane->nodeExistsInPlane(target_))
                                 plane->lineSweep(sourceProjection, target_);
@@ -516,9 +533,10 @@ int main (int argc, char **argv){
                                 plane -> lineSweep(0, target_);
                             else
                                 plane -> lineSweep(0, 0);
-                        }//case 5
+                        }
                         else {
                             //if it is not, a plane in that Z coordinate must be created
+                            //then the source and target must be added to the plane and the line sweep called
                             plane = new Plane(target_->getZ());
                             planes[target_->getZ()] = plane;
                             plane->findObstaclesInPlane(obstacles);
@@ -534,24 +552,26 @@ int main (int argc, char **argv){
                         vector<Point*> nodes = plane->getNodes();
                         vector<Segment*> edges_ = plane -> getEdges();
                         
-                        //adding nodes to graph
+                        //adds the plane nodes to graph
                         for(vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); it++) {
                             Point* v = *it;
-                            v->setId(id);
-                            vertex_t u = boost::add_vertex(v, myGraph);
-                            verts[id] = u;
-                            id++;
-                            
-                            if(abs(v->getX() - sourceProjection->getX()) < 0.0000000001 && abs(v->getY() - sourceProjection->getY()) < 0.00000000001 ){
-                                sourceProjectionVertex = u;
+                            //if the point is the target or source, it doesnt create a new vertex_t, since they were already created
+                            if((abs(v->getX() - target_->getX()) > 0.0000000001 || abs(v->getY() - target_->getY()) > 0.00000000001) && (abs(v->getX() - sourceProjection->getX()) > 0.0000000001 || abs(v->getY() - sourceProjection->getY()) > 0.00000000001)){
+                                v->setId(id);
+                                vertex_t u = boost::add_vertex(v, myGraph);
+                                verts[id] = u;
+                                id++;
                             }
-                            
-                            if(abs(v->getX() - target_->getX()) < 0.0000000001 && abs(v->getY() - target_->getY()) < 0.00000000001 ){
-                                t_ = u;
+                            //in case the point is the target or source (if the plane already contained that points in the first place), it doesnt creat new vertex_t, just sets the Id to match the created target_ and source_ Ids
+                            else {
+                                if (abs(v->getX() - sourceProjection->getX()) < 0.0000000001 && abs(v->getY() - sourceProjection->getY()) < 0.00000000001)
+                                    v->setId(sourceProjection->getId());
+                                else
+                                    v->setId(target_->getId());
                             }
                         }
                         
-                        //adding edges between nodes
+                        //adds edges between nodes in the plane. It gets the vertex_t from the verts map, so it doesn't create a vertex_t more than once each time an edge contains that point
                         for(vector<Segment*>::iterator it = edges_.begin(); it != edges_.end(); it++) {
                             Segment* edge = *it;
                             Point* right = edge->getRight();
@@ -565,13 +585,13 @@ int main (int argc, char **argv){
                         double edgeDistance = sourceProjection->getZ() - source_->getZ();
                         boost::add_edge(s_, sourceProjectionVertex, EdgeWeightProperty(edgeDistance), myGraph);
                         
+                        //updates the source and target below
                         sourceBelowVertex = sourceProjectionVertex;
                         targetBelowVertex = t_;
                     }
                 }
                 
                 sort(total_planes.begin(), total_planes.end());
-                
                 //after the plane of the highest is created and added to the graph, it creates the projection in all planes above and adds that planes to the graph
                 for(vector<double>::iterator it = total_planes.begin(); it != total_planes.end(); it++) {
                     double z = *it;
@@ -582,6 +602,7 @@ int main (int argc, char **argv){
                         Plane* plane = planes[z];
                         Point* targetProjection = new Point(target_->getX(), target_->getY(), z);
                         Point* sourceProjection = new Point(source_->getX(), source_->getY(), z);
+                        
                         if(!plane->nodeExistsInPlane(targetProjection) && !plane->nodeExistsInPlane(sourceProjection))
                             plane->lineSweep(sourceProjection, targetProjection);
                         else if(!plane->nodeExistsInPlane(sourceProjection))
@@ -632,7 +653,7 @@ int main (int argc, char **argv){
                     }
                 }
                 
-                // The property map associated with the weights.
+                //the property map associated with the weights is created
                 boost::property_map < Graph, boost::edge_weight_t>::type EdgeWeightMap = get(boost::edge_weight, myGraph);
                 std::vector<vertex_t> p(num_vertices(myGraph));
                 std::vector<int> d(num_vertices(myGraph));
@@ -652,7 +673,7 @@ int main (int argc, char **argv){
                 
 
                 cout << "Shortest path from the source ("<< myGraph[t_]->getX() << " " << myGraph[t_]->getY() << " " << myGraph[t_]->getZ() << ") is :"<< endl;
-                //backtracking path from target to source
+                //backtracking path from target to source storing the distances and the nodes forming the path
                 do{
                     nodes_.push_back(t_);
                     distances.push_back(d[t_]);
@@ -660,7 +681,6 @@ int main (int argc, char **argv){
                 }while(t_ != s_);
                 nodes_.push_back(s_);
                 distances.push_back(d[s_]);
-                
                 
                 //printing results
                 for(int i = 0; i<nodes_.size(); i++){
