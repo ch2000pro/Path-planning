@@ -77,7 +77,7 @@ void Draw_Box (void)
 {
     glBegin (GL_QUADS);
     
-    glColor3f  ( 1.0, 1.0,  1.0);
+    glColor3f  ( 0.9, 0.9,  0.9);
     glVertex3f (10.0,  35.0, 0.0);
     glVertex3f ( 50.0,  35.0, 0.0);
     glVertex3f ( 50.0, 10.0, 0.0);
@@ -303,11 +303,17 @@ void Draw_Box (void)
     glVertex3f (102.0,  115.0, 82.0);
     glVertex3f (102.0,  83.0, 82.0);
     
+    glColor3f  ( 0.6, 0.6,  0.6);
+    glVertex3f (-40.0,  -10.0, 0.0);
+    glVertex3f (-40.0,  300.0, 0.0);
+    glVertex3f (400.0,  300.0, 0.0);
+    glVertex3f (400.0,  -10.0, 0.0);
+    
     glEnd();
     
     glBegin(GL_TRIANGLES);
     
-    glColor3f  ( 1.0, 1.0,  1.0);
+    glColor3f  ( 0.9, 0.9,  0.9);
     glVertex3f (132.0,  223.0, 0.0);
     glVertex3f ( 212.0,  223.0, 0.0);
     glVertex3f ( 212.0, 143.0, 0.0);
@@ -335,7 +341,7 @@ void Draw_Box (void)
     
     glEnd();
     
-    glLineWidth(1.0);
+    glLineWidth(1.3);
     
     glBegin(GL_LINES);
     glColor3f  ( 0.0, 0.0,  0.0);
@@ -645,58 +651,12 @@ void Draw_Box (void)
     double x1, y1, z1, x2, y2, z2;
     while (myfile >> x1 >> y1 >> z1 >> x2 >> y2 >> z2)
     {
-        //cout << x1 << " " << y1 << " " << z1 << " " << x2 << " "<< y2 << " " << z2 << endl;
         glBegin(GL_LINES);
         glVertex3f (x1, y1, z1);
         glVertex3f (x2, y2, z2);
         glEnd();
     }
     myfile.close();
-    
-    
-    /*glBegin(GL_LINES);
-    glColor3f  (1.0, 0.0,  0.0);
-    glVertex3f (0.0, 0.0, 0.0);
-    glVertex3f (10.0, 0.0, 0.0);
-    
-    glVertex3f (10.0, 0.0, 0.0);
-    glVertex3f (10.0, 10.0, 0.0);
-    
-    glVertex3f (10.0, 10.0, 0.0);
-    glVertex3f (10.0, 35.0, 0.0);
-    
-    glVertex3f (10.0, 35.0, 0.0);
-    glVertex3f (10.0, 50.0, 0.0);
-    
-    glVertex3f (10.0, 50.0, 0.0);
-    glVertex3f (35.0, 50.0, 0.0);
-    
-    glVertex3f (35.0, 50.0, 0.0);
-    glVertex3f (35.0, 130.0, 0.0);
-    
-    glVertex3f (35.0, 130.0, 0.0);
-    glVertex3f (100.0, 130.0, 0.0);
-    
-    glVertex3f (100.0, 130.0, 0.0);
-    glVertex3f (126.0, 130.0, 0.0);
-    
-    glVertex3f (126.0, 130.0, 0.0);
-    glVertex3f (126.0, 170.0, 0.0);
-    
-    glVertex3f (126.0, 170.0, 0.0);
-    glVertex3f (126.0, 210.0, 0.0);
-    
-    glVertex3f (126.0, 210.0, 0.0);
-    glVertex3f (126.0, 223.0, 0.0);
-    
-    glVertex3f (126.0, 223.0, 0.0);
-    glVertex3f (126.0, 240.0, 0.0);
-    
-    glVertex3f (126.0, 240.0, 0.0);
-    glVertex3f (165.0, 240.0, 0.0);
-    
-    glEnd();*/
-    
     
 }
 

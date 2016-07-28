@@ -14,10 +14,12 @@ class Segment;
 class Point
 {
 public:
+    //default constructor
     Point(){
         x = 0; y = 0; z = 0; seg1 = 0; seg2 = 0;
     }
     
+    //constructor that receives 
     Point(double my_x, double my_y){
         x = my_x; y = my_y; z = 0; seg1 = 0; seg2 = 0;
     }
