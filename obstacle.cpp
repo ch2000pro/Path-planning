@@ -30,11 +30,10 @@ map<int,vector<Point*> > Obstacle::get_vert_map(){
 }
 
 //add vertices of a new plane to the obstacle
-unsigned int Obstacle::add_vertices(vector<Point*> vertices, unsigned int height){
+void Obstacle::add_vertices(vector<Point*> vertices, unsigned int height){
     vertices_[height_] = vertices;
     height_ += height;
     planes_.push_back(height_);
-    return height_;
 }
 
 //returns the number of vertices at a given height

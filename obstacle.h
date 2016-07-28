@@ -18,7 +18,7 @@ class Obstacle{
     Obstacle(vector<Point*> vertices, unsigned int height); //constructor initializes the obstacle
     ~Obstacle(); //destructor
     
-    unsigned int add_vertices(vector<Point*> vertices, unsigned int height); //add vertices of a new plane to the obstacle
+    void add_vertices(vector<Point*> vertices, unsigned int height); //add vertices of a new plane to the obstacle
     unsigned int get_num_vert(unsigned int height); //returns the number of vertices at a given height (z-coordinate)
     Point* next_vertice(unsigned int height, int x, int y); //next vertice in the same height
     Point* previous_vertice(unsigned int height, int x, int y); //previous vertice in the same height
