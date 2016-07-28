@@ -55,10 +55,8 @@ void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
     Obstacle* obstacle;
     for (it = obstacles.begin() ; it != obstacles.end(); ++it) {
         obstacle = *it;
-        if(obstacle-> get_height() > z){
-            cout << obstacle-> get_height() << endl;
+        if(obstacle-> get_height() > z)
             addObstacle(obstacle -> get_vertices(z));
-        }
     }
 }
 
@@ -224,8 +222,6 @@ void Plane::lineSweep(Point* source, Point* sink) {
         if (abs(w - 0) < 0.000000001)
             w = 0;
         (*it)->setWeight(w);
-        if (w < 0)
-            cout << w << endl;
     }
     //sets the z-coordinate of each node back to the plane z-coordinate
     for (vector<Point*>::iterator it = nodes.begin(); it != nodes.end(); ++it)

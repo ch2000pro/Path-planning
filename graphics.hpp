@@ -1,3 +1,10 @@
+/*----------------------------------------------------------------------*/
+/*  graphics.h                                                          */
+/*  Draws the map and the path using openGL                             */
+/*  adapted code from https://www.opengl.org/discussion_boards/showthread.php/169966-How-to-control-cube-rotation-using-Keyboard-keys                                        */
+/*  Fernanda Isabel, Gianluca Cagliari, Laura Vieira, Leonardo Castilho */
+/*  Start: July 5, 2016                                                 */
+/*----------------------------------------------------------------------*/
 
 #include <stdlib.h>
 #include <iostream>
@@ -29,10 +36,7 @@ GLfloat d[3] = {0.1, 0.1, 0.1};
 GLfloat  xAngle = 0.0, yAngle = 0.0, zAngle = 0.0;
 
 
-//---+----3----+----2----+----1----+---<>---+----1----+----2----+----3----+----4
-
 //  Use arrow keys to rotate entire scene !!!
-
 void Special_Keys (int key, int x, int y)
 {
     switch (key) {
@@ -47,8 +51,6 @@ void Special_Keys (int key, int x, int y)
     
     glutPostRedisplay();
 }
-
-//---+----3----+----2----+----1----+---<>---+----1----+----2----+----3----+----4
 
 void Keyboard (unsigned char key, int x, int y)
 {
@@ -71,8 +73,7 @@ void Keyboard (unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-//---+----3----+----2----+----1----+---<>---+----1----+----2----+----3----+----4
-
+//draws the obstacles' faces, edges and the path (the latter one from a txt with the coordinates)
 void Draw_Box (void)
 {
     glBegin (GL_QUADS);
@@ -659,8 +660,6 @@ void Draw_Box (void)
     myfile.close();
     
 }
-
-//---+----3----+----2----+----1----+---<>---+----1----+----2----+----3----+----4
 
 void redraw (void)
 {    
