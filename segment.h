@@ -56,7 +56,7 @@ public:
     void setWeight(double w) {weight = w;} //given a value, sets the weight to that value
     void addSteinerPoint(Point* p) {steinerPoints.push_back(p);} //given a point, adds that point to the list of steiner points on this segment
     vector<Point*> getSteinerPoints() {return steinerPoints;} //returns the list of steiner points on this segment
-    bool case1() {return ((left->getY() < right->getY()) || (left->getY() == right->getY() && left->getX() < right->getX()));} //checks if the endpoints need to be swapped, in order to perform the horizontal line sweeps
+    bool case1() {return ((left->getY() < right->getY()) || (left->getY() == right->getY() && left->getX() < right->getX()));} //checks if the endpoints need to be switched, in order to perform the horizontal line sweeps
     void setAux1(Segment* s) {aux1 = s;} //given a segment, sets the auxiliary segment to that segment
     Segment* getAux1() {return aux1;} //returns the auxiliary segment
     void setAux2(Point* p) {aux2 = p;} //given a point, sets the auxialiary point to that point
