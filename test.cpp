@@ -271,6 +271,7 @@ int main (int argc, char **argv){
                 obstacles[obstacles.size()-1]->add_vertices(vertices_input, 19);
                 vertices_input.clear();
                 
+                total_planes.push_back(0);
                 total_planes.push_back(38);
                 total_planes.push_back(40);
                 total_planes.push_back(50);
@@ -306,7 +307,7 @@ int main (int argc, char **argv){
                 
                 vector<Point*> vertices_input;
                 
-                for(int i =0; i<10000; i++){
+                for(int i =0; i<1000; i++){
                     vertices_input.push_back(new Point(x1,1.8));
                     vertices_input.push_back(new Point(x2,13));
                     vertices_input.push_back(new Point(x3,17));
@@ -369,8 +370,8 @@ int main (int argc, char **argv){
                 cin >> targetZ;
                 
                 
-                /*cout <<"Beggining time: "<<endl;
-                auto begin = std::chrono::high_resolution_clock::now();*/
+                cout <<"Beggining time: "<<endl;
+                auto begin = std::chrono::high_resolution_clock::now();
                 
                 Point* source_ = new Point(sourceX, sourceY, sourceZ);
                 Point* target_ = new Point(targetX, targetY, targetZ);
@@ -798,7 +799,7 @@ int main (int argc, char **argv){
                 }
                 
                 dot_file.close();
-                                
+                
                 glutInit               (&argc, argv);
                 glutInitWindowSize     (900, 600);
                 glutInitWindowPosition (300, 300);
@@ -809,18 +810,19 @@ int main (int argc, char **argv){
                 glutKeyboardFunc (  Keyboard );
                 glutSpecialFunc  (Special_Keys);
                 
-                glClearColor (0.1, 0.0, 0.1, 1.0);
-                
+                //glClearColor(0.8, 0.87, 0.94, 0.0);	// White Background
+                glClearColor(0.88, 0.97, 1.0, 0.0);	// White Background
+
                 glMatrixMode   (GL_PROJECTION);
                 gluPerspective (60, 1.5, 1, 10);
                 glMatrixMode   (GL_MODELVIEW);
                 glutMainLoop   ();
                 
                 
-                /*cout <<"Ending time: "<<endl;
+                cout <<"Ending time: "<<endl;
                 auto end = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
-                cout << "duration: " << duration << "ns" << endl;*/
+                cout << "duration: " << duration << "ns" << endl;
                 break;
             }
             case 3: {

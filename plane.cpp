@@ -56,10 +56,8 @@ void Plane::findObstaclesInPlane(vector<Obstacle*> obstacles){
     for (it = obstacles.begin() ; it != obstacles.end(); ++it) {
         obstacle = *it;
         if(obstacle-> get_height() > z){
+            cout << obstacle-> get_height() << endl;
             addObstacle(obstacle -> get_vertices(z));
-        }
-        else{
-            return;
         }
     }
 }
@@ -109,6 +107,8 @@ void Plane::lineSweep(Point* source, Point* sink) {
         points2.push_back(sink);
         nodes.push_back(sink);
     }
+    for(vector<Point*>::iterator it = points2.begin(); it != points2.end(); ++it)
+        cout << (*it)->getX() << " " << (*it)->getY() << endl;
     sort(points1.begin(), points1.end(), sortLTR());
     Plane::createVerticalMedianLines(points1, 1, source, sink);
     sort(points2.begin(), points2.end(), sortTTB());
@@ -232,8 +232,8 @@ void Plane::lineSweep(Point* source, Point* sink) {
             cout << "aqui " << z << " / " << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << endl;
         
     }*/
-    cout << "total edges: " << edges_.size() << endl;
-    if (z == 1) {
+    //cout << "total edges: " << edges_.size() << endl;
+    if (z == 5) {
         for (vector<Segment*>::iterator it = edges_.begin(); it!= edges_.end(); ++it)
             cout << "from: " << (*it)->getLeft()->getX() << " " << (*it)->getLeft()->getY() << " " << (*it)->getLeft()->getZ() << " to: " << (*it)->getRight()->getX() << " " << (*it)->getRight()->getY() << " " << (*it)->getRight()->getZ() << endl;
     }
