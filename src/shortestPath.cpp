@@ -3,7 +3,6 @@
 /*  Leading program containing to Main()                                */
 /*  Fernanda Isabel, Gianluca Cagliari, Laura Vieira, Leonardo Castilho */
 /*  Distributed under the Boost Software License, Version 1.61          */
-/*
 /*  Start: June 15, 2016                                                */
 /*----------------------------------------------------------------------*/
 
@@ -17,10 +16,8 @@
 #include <fstream>
 #include <string>
 #include <map>
-#include "obstacle.h"
-#include "point.h"
-#include "plane.h"
-#include "graphics.hpp"
+#include "../include/plane.h"
+#include "../include/graphics.hpp"
 
 using namespace std;
 

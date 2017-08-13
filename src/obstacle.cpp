@@ -5,15 +5,10 @@
 /*  Start: June 15th                             */
 /*-----------------------------------------------*/
 
-#include "obstacle.h"
+#include "../include/obstacle.h"
 
-<<<<<<< HEAD
-//testando
-  Obstacle::Obstacle(vector<Point*>vertices, int height){
-=======
 //constructor, it initializes the obstacle in the plane 0 (terrain ground)
 Obstacle::Obstacle(vector<Point*>vertices, unsigned int height){
->>>>>>> d3ac1ba6fc41d572c627bdb828f0cd48d0f3a2e1
     vertices_[0] = vertices;
     height_ = height;
     planes_.push_back(0);
@@ -35,11 +30,10 @@ map<int,vector<Point*> > Obstacle::get_vert_map(){
 }
 
 //add vertices of a new plane to the obstacle
-unsigned int Obstacle::add_vertices(vector<Point*> vertices, unsigned int height){
+void Obstacle::add_vertices(vector<Point*> vertices, unsigned int height){
     vertices_[height_] = vertices;
     height_ += height;
     planes_.push_back(height_);
-    return height_;
 }
 
 //returns the number of vertices at a given height
@@ -49,17 +43,25 @@ unsigned int Obstacle::get_num_vert(unsigned int height_search){
 
 //returns the vertices at a given height or at a height below if the obstacle does not change in that z-coordinate
 vector<Point*> Obstacle::get_vertices(unsigned int height_search){
-    if(height_search <= height_){o
+    if(height_search <= height_){
         for(unsigned int i = 0; i< planes_.size() -1; i++){
             if(planes_[i] == height_search){
-                return vertices_[height_search];
+                vector<Point*> points;
+                points.resize(vertices_[height_search].size());
+                for(unsigned i = 0; i < vertices_[height_search].size(); ++i)
+                    points[i] = vertices_[height_search][i]->clone();
+                return points;
             }
             if(planes_[i] < height_search && planes_[i+1] > height_search){
-                return vertices_[planes_[i]];
+                vector<Point*> points;
+                points.resize(vertices_[planes_[i]].size());
+                for(unsigned j = 0; j < vertices_[planes_[i]].size(); ++j)
+                    points[j] = vertices_[planes_[i]][j]->clone();
+                return points;
             }
         }
     }
-    return {};
+    return vector<Point*>();
 }
 
 //returns the next vertice in the same height (assuming that the points were inserted in clockwise order)
@@ -116,11 +118,7 @@ void Obstacle::print_num_vertices(){
     vector<unsigned int>::iterator it;
     cout << endl << "---DEBUG FUNCTION---";
     for(it = planes_.begin(); it != planes_.end(); ++it){
-<<<<<<< HEAD
-      cout << endl << "Plane " << *it << " has " << (vertices_[*it]).size() << " vertices." << endl;
-=======
         cout << endl <<"Plane " << *it << " has " << (vertices_[*it]).size() << " vertices.";
->>>>>>> d3ac1ba6fc41d572c627bdb828f0cd48d0f3a2e1
     }
     cout << endl;
     cout << "--------END---------" << endl;

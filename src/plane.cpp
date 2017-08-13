@@ -7,8 +7,7 @@
 
 #include <vector>
 #include <iterator>
-#include "plane.h"
-#include "segment.h"
+#include "../include/plane.h"
 #include <cmath>
 #include <typeinfo>
 #define PI 3.14159265
