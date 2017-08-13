@@ -80,7 +80,7 @@ void Draw_Box (void)
     
     
     
-    ifstream myfile("path.txt");
+    ifstream myfile("output/path.txt");
     int m;
     myfile >> m;
     if (m == 5) {

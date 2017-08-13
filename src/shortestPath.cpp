@@ -885,7 +885,7 @@ int main (int argc, char **argv){
                     cout << "Point(" << myGraph[p]->getX() << " " << myGraph[p]->getY() << " " << myGraph[p]->getZ() << "), with distance " << (distances[i]/ 1000) << endl;
                 }
                 
-                fstream dot_file("path.txt", fstream::out);
+                fstream dot_file("output/path.txt", fstream::out);
                 dot_file << m << endl;
                 vertex_t prev = nodes_[0];
                 for(int i = 1; i<nodes_.size(); i++){
